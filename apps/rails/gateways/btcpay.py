@@ -23,7 +23,7 @@ from apps.payments import matching
 from apps.quotes.errors import QuoteError
 from apps.quotes.models import Quote
 from apps.rails import health, http
-from apps.rails.gateways import registry
+from apps.rails.gateways import idle_probe, registry
 from apps.rails.gateways.rotation import rotated
 from apps.rails.models import BTCPAY_SPEED_POLICIES, RailAccount
 from apps.vault.vault import VaultSealed, vault
@@ -189,6 +189,16 @@ class BTCPayGateway:
         except (KeyError, TypeError, ValueError, InvalidOperation, AttributeError) as exc:
             raise _bad(exc) from None
 
+    def probe(self) -> bool:
+        """One read-only call that shows whether BTCPay answers (`idle_probe`): this store's newest
+        invoice, which the key is known to read. False when the store has none yet."""
+        newest = (Quote.objects.filter(rail_account_id=self.account_pk).exclude(external_id="")
+                  .order_by("-pk").values_list("external_id", flat=True).first())
+        if not newest:
+            return False
+        http.get_json(self._url(newest), headers=self._headers(), service=SERVICE, guard=http.STAFF_URL)
+        return True
+
     def poll(self, quote) -> None:
         status, extra, network, mismatch, paid, due = self._read(quote)
         full = quote.invoice_amount_minor
@@ -301,8 +311,15 @@ def btcpay_poll() -> int:
                 failure = failure or "error"
         if failure:
             health.failed(name, failure)
-        elif gateway.speed not in BTCPAY_SPEED_POLICIES:
-            health.failed(name, SPEED_POLICY_KIND)  # read fine, but still makes no new quote
         else:
-            health.ok(name)
+            _read_fine(name, gateway)
+    idle_probe.probe_idle("btcpay", by_account, answered=_read_fine)
     return looked
+
+
+def _read_fine(name, gateway) -> None:
+    """BTCPay answered. A speed policy we refuse still makes no new quote, so it stays failing."""
+    if gateway.speed not in BTCPAY_SPEED_POLICIES:
+        health.failed(name, SPEED_POLICY_KIND)
+    else:
+        health.ok(name)

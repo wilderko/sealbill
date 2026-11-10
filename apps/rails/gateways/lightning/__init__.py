@@ -20,7 +20,7 @@ from apps.payments import matching
 from apps.quotes.errors import QuoteError
 from apps.quotes.models import Quote
 from apps.rails import fx, health, http
-from apps.rails.gateways import registry
+from apps.rails.gateways import idle_probe, registry
 from apps.rails.gateways.lightning.cln import ClnBackend
 from apps.rails.gateways.lightning.lnbits import LnbitsBackend
 from apps.rails.gateways.lightning.lnd import LndBackend
@@ -93,6 +93,21 @@ class LightningGateway:
         soonest = timezone.now() + datetime.timedelta(seconds=EXPIRY_S)
         if soonest < quote.expires_at:
             quote.expires_at = soonest
+
+    def probe(self) -> bool:
+        """One read-only call that shows whether the node answers (`idle_probe`). A backend with an
+        info call uses it; the others read this rail's newest invoice, the one call their credential
+        is known to allow. False when there is nothing to ask with."""
+        own = getattr(self.backend, "probe", None)
+        if own is not None:
+            own()
+            return True
+        newest = (Quote.objects.filter(rail_account_id=self.account_pk).exclude(external_id="")
+                  .order_by("-pk").values_list("external_id", flat=True).first())
+        if not newest:
+            return False
+        self.backend.invoice_state(newest)
+        return True
 
     def poll(self, quote) -> bool:
         """Read the invoice and record what became of it. False when the node's answer says
@@ -190,4 +205,5 @@ def lightning_poll() -> int:
             health.failed(name, failure)
         else:
             health.ok(name)
+    idle_probe.probe_idle("lightning", by_account)
     return looked

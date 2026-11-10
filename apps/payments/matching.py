@@ -848,7 +848,7 @@ def record_gateway_payment(quote: Quote, *, network: str, external_id: str, rece
     again returns the same payment, and only a `detected` payment moves on (to `confirmed` or
     `needs_review`, or to waiting for staff). A confirmed payment consumes its quote and is
     applied, unless the quote was paid by another payment (`duplicate`) or the invoice is closed
-    (`invoice_closed`): those go to review. `needs_staff_confirmation` (XMR, ZEC) e-mails staff."""
+    (`invoice_closed`): those go to review. `needs_staff_confirmation` e-mails staff (no gateway sets it since 2026-11-09)."""
     received = _check_gateway_args(network, external_id, received_amount, amount_minor, state, review_reason,
                                    refund_due_base_units, needs_staff_confirmation)
     now = timezone.now()

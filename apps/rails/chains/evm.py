@@ -689,18 +689,20 @@ class EvmAdapter:
             return (str(native.get("to") or "").lower() == to
                     and _int(native.get("value") or "0x0", network) == amount)
         logs = receipt.get("logs")
-        if not isinstance(logs, list):
+        if not isinstance(logs, list) or not all(isinstance(log, dict) for log in logs):
             raise run.unavailable("bad_answer")
-        for log in logs:
-            if not isinstance(log, dict):
-                raise run.unavailable("bad_answer")
-            topics = log.get("topics") or []
-            data = log.get("data") or "0x"
-            if (str(log.get("address", "")).lower() == contract and len(topics) == 3 and not log.get("removed")
-                    and str(topics[0]).lower() == TRANSFER_TOPIC and _addr_from_topic(str(topics[2])) == to
-                    and len(data) == 66 and _int(data, network) == amount):
-                return True
-        return False
+        # The log at the payment's own place (`place_in_tx`), not the first one that looks alike:
+        # two identical transfers in one transaction are two payments, and a re-mined receipt that
+        # kept only one of them must not leave both standing (independent audit DEF-PAY-01).
+        place = payment.log_index
+        if not isinstance(place, int) or not 0 <= place < len(logs):
+            return False
+        log = logs[place]
+        topics = log.get("topics") or []
+        data = log.get("data") or "0x"
+        return (str(log.get("address", "")).lower() == contract and len(topics) == 3 and not log.get("removed")
+                and str(topics[0]).lower() == TRANSFER_TOPIC and _addr_from_topic(str(topics[2])) == to
+                and len(data) == 66 and _int(data, network) == amount)
 
 
 def _stored_balance(extra) -> int | None:

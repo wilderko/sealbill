@@ -77,6 +77,10 @@ class NwcBackend:
     def __init__(self, nwc_url: str):
         self._url = nwc_url
 
+    def probe(self) -> None:
+        """Whether the wallet answers at all: one `get_info`, which needs no invoice (`idle_probe`)."""
+        capabilities(self._url)
+
     def create_invoice(self, amount_msat, description, expiry_s):
         from nostr_sdk import MakeInvoiceRequest
 

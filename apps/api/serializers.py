@@ -267,7 +267,7 @@ class PaymentOutSerializer(serializers.Serializer):
         help_text="True for a confirmed payment, or a chain transfer deep enough that staff may confirm it. False "
                   "when not confirmed yet: a chain transfer below finality, or a gateway payment not settled or "
                   "waiting for a person.")
-    review_reason = serializers.CharField(help_text="Why the payment waits for a person; empty otherwise.")
+    review_reason = serializers.CharField(help_text="Why the payment waits, or waited, for a person; kept after a person confirms it, empty if none ever had to.")
     refund_due_base_units = serializers.CharField(help_text="What was paid beyond what the quote settles; empty if nothing.")
     needs_staff_confirmation = serializers.BooleanField()
     quote = serializers.IntegerField(source="quote_id", allow_null=True)

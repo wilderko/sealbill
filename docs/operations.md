@@ -56,9 +56,9 @@ Django app: it talks to the public API with a bearer token and uses only `reques
 where the MCP server runs with `uv sync --group mcp` (development gets it through the dev group, so
 its tests run; a production `uv sync --no-dev` leaves it out).
 
-Tools (exactly these eight): `list_invoices`, `get_invoice`, `create_invoice` (needs an
+Tools (exactly these eleven): `list_invoices`, `get_invoice`, `create_invoice` (needs an
 `idempotency_key`), `send_invoice`, `list_payments`, `get_payment_methods`, `list_contacts`,
-`list_quotes`. It offers nothing that confirms, rejects, reverses, assigns or refunds a payment, voids
+`list_quotes`, `list_payment_links`, `create_payment_link` and `deactivate_payment_link`. It offers nothing that confirms, rejects, reverses, assigns or refunds a payment, voids
 an invoice or manages webhooks.
 
 Issue the token with only `read` and `invoices:write`:
@@ -319,14 +319,16 @@ declared hash that is not a transaction hash at all (a typo) is never sent to a 
 ### Needs a person
 
 `/` lists what no program should decide: payments that matched no invoice or matched
-badly (with the reason), Monero and Zcash payments waiting for a human to confirm, BTCPay and
+badly (with the reason), BTCPay and
 Lightning payments the gateway saw more than six hours ago and has not settled, refunds due
 for overpayments, transfers still short of finality, queued transfers that could not be
 recorded, and watchers that cannot see their chain. A person assigns a payment to an invoice or
 acknowledges a refund there; the API does the same with `payments:confirm`
 (`POST /api/v1/payments/{id}/assign`, `.../acknowledge-refund`). A payment that is not yet on an invoice
 needs an `admin` token, and is shown only to the organizations that may be credited with it. A payment
-waiting for a person (`needs_staff_confirmation`) is confirmed or assigned only by an active staff user:
+waiting for a person (`needs_staff_confirmation`) is confirmed or assigned only by an active staff user
+(since 2026-11-09 no gateway sets it: Monero and Zcash that BTCPay calls Settled are confirmed like
+bitcoin, and only payments recorded before then still carry it):
 `confirm_payment` and `assign_payment` refuse anyone else, so every API token gets 409 `needs_person`. A manual
 payment ("staff saw the money arrive", on the invoice page) is recorded only by a person too: no chain or gateway
 stands behind it, so `record_manual_payment` refuses every token the same way.
@@ -407,7 +409,11 @@ Paid orders of a link with fulfilment on are listed "to fulfil" until someone ma
   database cannot be read), the vault state, the worker heartbeat's age and three counts: watchers
   failing for at least ten minutes (as long as their alert waits), failed e-mails and failed webhook
   deliveries. No names, no client data. `manage.py healthcheck` checks the same, plus the rates
-  (cron mails a non-zero exit). Point the monitor at either.
+  (cron mails a non-zero exit). Point the monitor at either. A BTCPay or Lightning rail with no
+  quote to poll is still asked every five minutes whether it answers (one `get_info` over NWC,
+  otherwise a read of its newest invoice), so a node that comes back clears its watcher, and one
+  that stops answering (Alby Hub locked after an update or a reboot) shows up even with no
+  payment open (`apps/rails/gateways/idle_probe.py`).
 - **Backups**: `deploy/backup/backup-db.sh` writes one AES-256 encrypted archive,
   `pay-DATE.tar.enc`, holding the `pg_dump` **and the vault config** (`vault.json`: the salt
   and the sentinel, never the key) into `$BACKUP_DIR` (mode 0600, 14 days kept). Run it from

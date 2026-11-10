@@ -673,3 +673,32 @@ class FixRoundTests(Base):
         self.chain.logs = [my_log(n=1005, contract="0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9")]
         self.assertEqual(evm.EvmAdapter().scan(a, "arbitrum"), [])
         self.assertEqual(len(evm.EvmAdapter().scan(b, "arbitrum")), 1)
+
+
+class StillThereReadsTheRecordedLogTests(Base):
+    """Finality reads the log the payment was recorded at (its place in the receipt), not the first
+    log that looks alike: two identical transfers in one transaction are two payments, and a
+    re-mined receipt keeping only one of them must not confirm both (independent audit DEF-PAY-01)."""
+
+    def still_there(self, logs, place):
+        run = evm._Run("arbitrum")
+        payment = SimpleNamespace(to_address=MINE, contract=USDC_ARB, log_index=place)
+        return evm.EvmAdapter()._still_there(run, {"status": "0x1", "logs": logs}, payment,
+                                             "0x" + "ab" * 32, 1_000_000)
+
+    def test_the_payment_at_its_own_place_is_there(self):
+        logs = [my_log(idx=0), my_log(idx=1)]
+        self.assertTrue(self.still_there(logs, 0))
+        self.assertTrue(self.still_there(logs, 1))
+
+    def test_a_dropped_second_transfer_is_not_there_although_the_first_is(self):
+        self.assertTrue(self.still_there([my_log(idx=0)], 0))
+        self.assertFalse(self.still_there([my_log(idx=0)], 1))
+
+    def test_another_log_at_its_place_is_not_it(self):
+        other = my_log(idx=1, amount=2_000_000)
+        self.assertFalse(self.still_there([my_log(idx=0), other], 1))
+
+    def test_a_place_outside_the_receipt_is_not_there(self):
+        self.assertFalse(self.still_there([my_log(idx=0)], -1))
+        self.assertFalse(self.still_there([my_log(idx=0)], 5))

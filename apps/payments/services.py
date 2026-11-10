@@ -170,8 +170,9 @@ def _match_claims(payment: Payment) -> None:
 
 def awaiting_finality(payment: Payment) -> bool:
     """A chain transfer the chain has not finalized yet. It is decided when it is final (it may
-    still vanish), so no person confirms it before then. XMR and ZEC are the exception: nothing
-    watches them, so `needs_staff_confirmation` hands them to a person."""
+    still vanish), so no person confirms it before then. A payment with `needs_staff_confirmation`
+    (Monero and Zcash recorded before 2026-11-09, when BTCPay's Settled became enough) waits for a
+    person instead."""
     return payment.rail in CHAIN_KINDS and not payment.final and not payment.needs_staff_confirmation
 
 
