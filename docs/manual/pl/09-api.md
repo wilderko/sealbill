@@ -53,7 +53,7 @@ Odpowiedź niesie numer i **jednorazowo** `view_url` oraz `pay_url`. `email_clie
 | `payments:confirm` | narzędzie back-office, które potwierdza, odrzuca, cofa lub przypisuje płatności. Zmienia stan pieniędzy. |
 | `admin` | wszystko powyżej plus webhooki |
 
-Niektóre akcje są **tylko dla człowieka** i każdy token, także `admin`, dostaje `409 needs_person`: rejestracja płatności ręcznej oraz potwierdzenie lub przypisanie płatności, która czeka na człowieka.
+Niektóre akcje są **tylko dla człowieka** i każdy token, także `admin`, dostaje `409 needs_person`: rejestracja płatności ręcznej oraz potwierdzenie, przypisanie lub odrzucenie płatności, która czeka na człowieka.
 
 ## Webhooki
 

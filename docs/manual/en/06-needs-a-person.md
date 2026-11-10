@@ -31,7 +31,7 @@ watches.
 
 Two rules run through the page:
 
-- A payment that is **waiting for a person** is confirmed or assigned only by a signed-in staff member. A token, even an
+- A payment that is **waiting for a person** is confirmed, assigned or rejected only by a signed-in staff member. A token, even an
   `admin` one, is answered `409 needs_person` and nothing changes. Recording a manual payment is a person's job too.
 - Every action asks for a note where it matters, and every action is in the audit log.
 

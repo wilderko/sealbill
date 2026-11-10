@@ -1,14 +1,16 @@
+import hashlib
 import ipaddress
 import logging
 import threading
 import time
 
-from django.core.cache import caches
+from django.db import IntegrityError, transaction
+from django.db.models import F
 
 logger = logging.getLogger(__name__)
 
 # Used only while the shared store fails: one count per process, so the limit still holds
-# (per worker) and a broken cache can never stop the vault from being unlocked.
+# (per worker) and a broken database can never stop the vault from being unlocked.
 _fallback: dict[str, tuple[int, float]] = {}
 _fallback_lock = threading.Lock()
 _FALLBACK_MAX = 10000
@@ -49,37 +51,71 @@ def _count_locally(key, now, window_s) -> int:
             for k in [k for k, (_c, end) in _fallback.items() if end <= now]:
                 del _fallback[k]
             if len(_fallback) >= _FALLBACK_MAX:
-                _fallback.clear()
+                # Drop the tenth that closes soonest, never every count at once: a flood of new
+                # keys must not reset the one being guessed at (red-team A1).
+                for k, _entry in sorted(_fallback.items(), key=lambda kv: kv[1][1])[:_FALLBACK_MAX // 10]:
+                    del _fallback[k]
         count, end = _next(_fallback.get(key), now, window_s)
         _fallback[key] = (count, end)
     return count
 
 
+def _key(bucket: str, ident: str) -> str:
+    key = f"rl:{bucket}:{ident}"
+    if len(key) <= 200:
+        return key
+    return f"rl:{bucket}:sha256:{hashlib.sha256(ident.encode('utf-8', 'surrogatepass')).hexdigest()}"
+
+
+def _count_shared(key: str, now: float, window_s: int) -> int:
+    """Count one attempt in the database, atomically.
+
+    A live window is incremented in place (one UPDATE, so two attempts never read the same
+    count); a closed one is reopened at 1 by an UPDATE that only matches while it is still closed;
+    a missing one is created, and losing that race to another attempt means trying again. What is
+    read back after an increment may include attempts made at the same moment: it only errs high."""
+    from .models import RateCounter
+
+    end = now + window_s
+    for _ in range(5):
+        if RateCounter.objects.filter(key=key, window_end__gt=now).update(count=F("count") + 1):
+            return RateCounter.objects.filter(key=key).values_list("count", flat=True).first() or 1
+        if RateCounter.objects.filter(key=key, window_end__lte=now).update(count=1, window_end=end):
+            return 1
+        try:
+            with transaction.atomic():
+                RateCounter.objects.create(key=key, count=1, window_end=end)
+            return 1
+        except IntegrityError:
+            continue  # another attempt created it a moment ago: count against that one
+    raise RuntimeError(f"the rate counter {key!r} did not settle")
+
+
 def count_attempt(bucket: str, ident: str, window_s: int) -> int:
     """Count this attempt and return how many fall in the current window.
 
-    The window is fixed from the first hit: the value carries its start time and every
-    write passes the remaining time as the timeout (file/db caches reset TTL on set).
-    If the shared store fails, the attempt is counted in this process instead."""
-    key = f"rl:{bucket}:{ident}"
+    The window is fixed from the first hit. The count lives in the database (`RateCounter`) and
+    is incremented there in one statement. If the database fails, the attempt is counted in this
+    process instead."""
+    key = _key(bucket, ident)
     now = time.time()
     try:
-        store = caches["ratelimit"]
-        count, end = _next(store.get(key), now, window_s)
-        store.set(key, (count, end), max(1, int(end - now) + 1))
+        return _count_shared(key, now, window_s)
     except Exception as exc:  # noqa: BLE001 - an outage of the store must not become a 500
         logger.error("rate-limit store unavailable (%s); counting in this process", type(exc).__name__)
         return _count_locally(key, now, window_s)
-    return count
 
 
 def attempts_so_far(bucket: str, ident: str) -> int:
     """How many attempts the current window of this bucket holds, counting nothing. For a bucket that
     counts only what succeeded (`count_attempt` after the fact): ask first, count once it is done."""
-    key = f"rl:{bucket}:{ident}"
+    from .models import RateCounter
+
+    key = _key(bucket, ident)
     now = time.time()
     try:
-        entry = caches["ratelimit"].get(key)
+        row = RateCounter.objects.filter(key=key, window_end__gt=now).values_list("count", flat=True).first()
+        return row or 0
     except Exception as exc:  # noqa: BLE001 - an outage of the store must not become a 500
         logger.error("rate-limit store unavailable (%s); counting in this process", type(exc).__name__)
         with _fallback_lock:
@@ -87,6 +123,23 @@ def attempts_so_far(bucket: str, ident: str) -> int:
     if not entry or entry[1] <= now:
         return 0
     return entry[0]
+
+
+def reset(bucket: str, ident: str) -> None:
+    """Close the current window of this bucket: the next attempt counts from one."""
+    from .models import RateCounter
+
+    key = _key(bucket, ident)
+    with _fallback_lock:
+        _fallback.pop(key, None)
+    RateCounter.objects.filter(key=key).delete()
+
+
+def purge_expired() -> int:
+    """Delete the windows that have closed; returns how many went."""
+    from .models import RateCounter
+
+    return RateCounter.objects.filter(window_end__lte=time.time()).delete()[0]
 
 
 def rate_limited(bucket: str, ident: str, limit: int, window_s: int) -> bool:

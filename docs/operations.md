@@ -34,7 +34,8 @@ and exits.
 ## Tests
 
 ```bash
-uv run manage.py test
+uv sync --group dev                   # tblib among them: a parallel run reports a failure instead of crashing
+uv run manage.py test --parallel 8    # or without --parallel
 ```
 
 The suite runs on SQLite in memory. Tests that assert PostgreSQL behaviour (row locking) are skipped
@@ -153,10 +154,11 @@ On a host that other accounts share, every one of them can reach `127.0.0.1:8000
 that header: set `PROXY_SECRET` in `.env` (generate it with `secrets.token_urlsafe(32)`) and have
 the proxy send it on every request as `X-Pay-Proxy-Secret` (Apache: `RequestHeader set
 X-Pay-Proxy-Secret "<value>"`). A request without it is refused with 403, `/healthz` included
-(`curl -H 'X-Pay-Proxy-Secret: <value>' localhost:8000/healthz`). Leave it empty only where no other
-account can reach the port: `manage.py check --deploy` warns and `manage.py healthcheck` prints
-`proxy_secret_empty 1` while it is, and both refuse the `change-me` placeholder for `PROXY_SECRET`
-and `SECRET_KEY`.
+(`curl -H 'X-Pay-Proxy-Secret: <value>' localhost:8000/healthz`). Production refuses to start while
+it is empty. Where no other account can reach the port, say so with `ALLOW_EMPTY_PROXY_SECRET=true`:
+the app then starts, `manage.py check --deploy` warns and `manage.py healthcheck` prints
+`proxy_secret_empty 1`. The `change-me` placeholder is refused at start for `PROXY_SECRET` and
+`SECRET_KEY`.
 
 Static files are collected when the image is built and served by WhiteNoise.
 
@@ -295,7 +297,9 @@ quote is made on it, a declared TON hash is not looked up, and the pay page does
 ### Network access and environment variables
 
 Chains are read through public endpoints by default. Set your own where the free tiers are too
-slow (see `.env.example`; keys are optional and must never be committed):
+slow (see `.env.example`; keys are optional and must never be committed). Production refuses to start
+with any of these on plain http, except on `127.0.0.1`, `::1` or `localhost`, where a node of your own
+may answer:
 
 | Variable | Meaning |
 |---|---|
@@ -303,7 +307,7 @@ slow (see `.env.example`; keys are optional and must never be committed):
 | `TRONGRID_API_URL`, `TRONGRID_API_KEY` | Tron watcher |
 | `SOLANA_RPC_URLS` | Comma separated, tried in order |
 | `TONCENTER_API_URL`, `TONCENTER_API_KEY` | TON watcher |
-| `FX_FRANKFURTER_URL` | Frankfurter (ECB): the EUR to other-fiat leg, multiplied into both prices. It has no second source; Bitstamp and Coinbase are the two cross-checked sources, and a divergence over 100 bps refuses the quote. A Frankfurter answer dated more than 5 days ago is refused (Thursday's rate on Easter Tuesday morning is 5 days old and still used), and so is one more than 10 % from the last rate accepted for that currency. Crypto quotes in that currency are then refused: staff are told, and Needs a person lists it under "Exchange rates refused" with what to do. A stale rate is waited out; a jump that is real (check the ECB's rate) is accepted there, with a note, and audited |
+| `FX_FRANKFURTER_URL` | Frankfurter (ECB): the EUR to other-fiat leg, multiplied into both prices. It has no second source; Bitstamp and Coinbase are the two cross-checked sources, and a divergence over 100 bps refuses the quote. A Frankfurter answer dated more than 5 days ago is refused (Thursday's rate on Easter Tuesday morning is 5 days old and still used), and so is one more than 10 % from the last rate accepted for that currency, or another rate for a day already accepted (the ECB never changes a published rate, so a source inside the bound cannot walk the rate away in a few calls; an answer older than the accepted day is not used, the accepted rate is). Crypto quotes in that currency are then refused: staff are told, and Needs a person lists it under "Exchange rates refused" with what to do. A stale rate is waited out; a jump that is real (check the ECB's rate) is accepted there, with a note, and audited |
 | `TON_ENABLED` | `true` turns TON on; leave it `false` until the credit leg is verified (above) |
 | `RAILS_HTTP_ENABLED` | `false` stops every outbound rails call (tests set it) |
 | `LOCAL_LIGHTNING_PORT` | The one port an LND or CLN on this machine is reached on (loopback, plain http allowed there). Default unset: no rail URL may lead to this machine at all. BTCPay, LNbits and any other rail URL must resolve to public addresses only (audit SEC-4) |
@@ -348,10 +352,10 @@ recorded, and watchers that cannot see their chain. A person assigns a payment t
 acknowledges a refund there; the API does the same with `payments:confirm`
 (`POST /api/v1/payments/{id}/assign`, `.../acknowledge-refund`). A payment that is not yet on an invoice
 needs an `admin` token, and is shown only to the organizations that may be credited with it. A payment
-waiting for a person (`needs_staff_confirmation`) is confirmed or assigned only by an active staff user
+waiting for a person (`needs_staff_confirmation`) is confirmed, assigned or rejected only by an active staff user
 (since 2026-11-09 no gateway sets it: Monero and Zcash that BTCPay calls Settled are confirmed like
 bitcoin, and only payments recorded before then still carry it):
-`confirm_payment` and `assign_payment` refuse anyone else, so every API token gets 409 `needs_person`. A manual
+`confirm_payment`, `assign_payment` and `reject_payment` refuse anyone else, so every API token gets 409 `needs_person`. A manual
 payment ("staff saw the money arrive", on the invoice page) is recorded only by a person too: no chain or gateway
 stands behind it, so `record_manual_payment` refuses every token the same way.
 
@@ -694,12 +698,12 @@ passkeys alone. A superuser can also remove another person's authenticator or pa
 **Powers that need a superuser and a fresh second factor** (audit SEC-3). Creating, rescoping or
 revoking an API token; creating, changing or (de)activating a rail account, setting its credentials or
 registering its BTCPay webhook; an organization's US-resident issuer flag and its return hosts; creating,
-changing or (de)activating a bank account or a payment link; adding a contact's e-mail address or making
-one primary; and removing another person's second factor. Each needs a superuser who gave a second factor
+changing or (de)activating a bank account or a payment link; creating or deleting a webhook endpoint;
+adding a contact's e-mail address or making one primary; and removing another person's second factor. Each needs a superuser who gave a second factor
 within the last ten minutes, the same rule as the Security page. Anyone else gets a 403 and nothing
 changes; a superuser whose second factor is older is sent to verify again and comes back to the page. The
 rest of the staff pages (invoices, payments, contacts' other fields, an organization's other fields,
-webhooks, links) stay open to every staff account.
+a webhook's ping and retry, links) stay open to every staff account.
 
 The hidden Django admin keeps the same rule. It is open to superusers only, and any change there (any request
 but GET, HEAD or OPTIONS; signing out excepted) needs a second factor from the last ten minutes, or the

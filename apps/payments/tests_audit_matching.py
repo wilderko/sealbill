@@ -109,6 +109,20 @@ class NeighbourShortfallTests(MatchingBase):
         self.assertReview(p, "ambiguous")
 
 
+class ExactAmountAgainstALiveNeighbourTests(MatchingBase):
+    """Red-team report 2026-11-10, V1, kept as it is for now (see `_by_amount`): the transfer is one
+    client's exact amount and, one cent short, the other's shortfall. The exact amount wins. Pinned so
+    that changing it is a decision, not an accident: holding it would put every exact payment of the
+    lower of two same-price quotes in front of a person."""
+
+    def test_an_exact_amount_beats_a_live_neighbours_underpay_window(self):
+        neighbour = self.sent()
+        nq = self.hold(neighbour, K0 - STEP)  # 108.26, open while V's 108.27 is
+        self.assertTrue(self.quote.min_accept <= K0 - STEP < self.quote.amount)  # V's window takes it too
+        p = self.row(self.ingest(transfer(K0 - STEP)))
+        self.assertEqual((p.state, p.invoice_id, p.quote_id), ("confirmed", neighbour.pk, nq.pk))
+
+
 class DirectionFreeRuleTests(MatchingBase):
     """MONEY-1, the rest of the ruling: fits counted per invoice, and the bound on a shortfall."""
 

@@ -48,4 +48,4 @@ Kupujący wpisuje adres e-mail, imię i nazwisko, jeśli jest pytany, odpowiada 
 - **Nieopłacone zamówienia są anulowane po 7 dniach.** Pieniądze, które wpłyną później, trafiają do weryfikacji, jak przy każdej anulowanej fakturze.
 - **Realizacja.** Przy włączonym *Paid orders need fulfilling* opłacone zamówienia są na stronie linku wymienione jako do realizacji, dopóki ktoś nie naciśnie **Mark fulfilled**.
 - **Limity**: 5 prób checkoutu na 10 minut na adres i 50 ukończonych checkoutów na godzinę na link. Żadna strona nie może osadzać linku w ramce.
-- Tworzenie lub edycja linku przez API wymaga `invoices:write`; URL linku jest podawany przy tworzeniu, przy rotacji i przy odczycie pojedynczego linku.
+- Tworzenie lub edycja linku przez API wymaga `invoices:write`; URL linku jest podawany przy tworzeniu, przy rotacji i przy odczycie pojedynczego linku tokenem, który ma też `invoices:write` (sam `read` dostaje null).

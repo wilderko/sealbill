@@ -20,6 +20,11 @@ services:
       - media:/app/media
     depends_on:
       - postgres
+    # The app runs as uid 10001 on port 8000: it needs no capability and gains none (red-team report).
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
 
   worker:
     build: .
@@ -36,6 +41,10 @@ services:
     depends_on:
       - postgres
       - web
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
 
   postgres:
     image: postgres:16

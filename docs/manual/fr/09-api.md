@@ -53,7 +53,7 @@ La réponse porte le numéro et, **une seule fois**, `view_url` et `pay_url`. `e
 | `payments:confirm` | un outil de back-office qui confirme, rejette, annule ou affecte des paiements. Il fait évoluer l'état de l'argent. |
 | `admin` | tout ce qui précède plus les webhooks |
 
-Certaines actions sont **réservées aux personnes** et tout jeton, même `admin`, reçoit `409 needs_person` : enregistrer un paiement manuel, et confirmer ou affecter un paiement qui attend une personne.
+Certaines actions sont **réservées aux personnes** et tout jeton, même `admin`, reçoit `409 needs_person` : enregistrer un paiement manuel, et confirmer, affecter ou rejeter un paiement qui attend une personne.
 
 ## Webhooks
 

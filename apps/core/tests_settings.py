@@ -9,7 +9,7 @@ from django.test import SimpleTestCase
 
 ENV = {"SECRET_KEY": "x" * 50, "ALLOWED_HOSTS": "pay.example.org", "DATABASE_URL": "postgres://u:p@db:5432/pay",
        "SITE_URL": "https://pay.example.org", "VAULT_KEY_PATH": "/run/pay-invoicing/vault.key",
-       "DJANGO_ADMIN_PATH": "x7Kq-prod-admin-path-0123456789/"}
+       "DJANGO_ADMIN_PATH": "x7Kq-prod-admin-path-0123456789/", "PROXY_SECRET": "stub-proxy-secret-0123456789"}
 
 
 def production_settings():
@@ -57,6 +57,25 @@ class ProductionLoggingTests(SimpleTestCase):
         record = logging.LogRecord("django.request", logging.ERROR, __file__, 1, "Not Found: %s", ("/i/abc/",), None)
         flt.filter(record)
         self.assertEqual(record.getMessage(), "Not Found: /i/<token>/")
+
+    def test_tracebacks_and_stack_info_are_redacted_too(self):
+        # Red-team report 2026-11-10: only the message was rewritten, and a 500 is logged with its traceback.
+        import sys
+
+        from django.utils.module_loading import import_string
+
+        flt = import_string(self.logging["filters"]["redact_tokens"]["()"])()
+        try:
+            raise ValueError("no invoice behind /p/SECRETtoken123_-/declare")
+        except ValueError:
+            info = sys.exc_info()
+        record = logging.LogRecord("django.request", logging.ERROR, __file__, 1, "Internal Server Error", (), info)
+        record.stack_info = "Stack (most recent call last):\n  for /l/LINKtoken456/ in a frame"
+        self.assertTrue(flt.filter(record))
+        text = logging.Formatter("%(message)s").format(record)
+        self.assertIn("ValueError: no invoice behind /p/<token>/declare", text)
+        self.assertNotIn("SECRETtoken123_-", text)
+        self.assertNotIn("LINKtoken456", text)
 
     def test_every_capability_path_is_redacted(self):
         # /i/ (view), /p/ (pay), /k/ (key confirmation) and /l/ (payment link): each token is the only

@@ -396,7 +396,14 @@ def _by_amount(c: _Candidates) -> tuple[Quote | None, int | None, str, str]:
     held predecessor are one invoice: the newest wins), unless another invoice's window anywhere
     in the group holds it too, another invoice's exact amount is elsewhere in the group, or
     another invoice's quote may be the one paid short (`_asked_for_more`, MONEY-1). Every one of
-    those is `ambiguous`; no window here at all is `no_matching_invoice`."""
+    those is `ambiguous`; no window here at all is `no_matching_invoice`.
+
+    An exact amount is not held up by another live quote's underpay window either, although one cent
+    short of 108.27 is exactly 108.26 (red-team report 2026-11-10, V1). Holding it would send every
+    exact payment to a person while another client is quoted the same price on the address, the next
+    amount up; confirming it misattributes only a shortfall of exactly the distance to an amount in use.
+    The second kind surfaces when either client acts: the payer's own transfer then arrives for a paid
+    invoice, or their declaration contradicts the amount (MONEY-2)."""
     exact_here = c.exact_here()
     if exact_here:
         if len(_invoices(c.exact)) > 1:

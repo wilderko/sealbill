@@ -79,6 +79,15 @@ class ApiTokenRefusedTests(Waiting):
         self.assertEqual((fresh.state, fresh.idempotency_key, fresh.confirmed_by_id), ("needs_review", "", None))
         self.assertEqual(Invoice.objects.get(pk=self.invoice.pk).status, "sent")
 
+    def test_api_reject_is_refused(self):
+        # Red-team report 2026-11-10, A3: a rejection cannot be undone, so it is a person's decision too.
+        p = self.waiting()
+        client, _token = api(self.org)
+        r = client.post(f"/api/v1/payments/{p.pk}/reject", {"note": "script"}, format="json")
+        self.assertEqual((r.status_code, r.json()["error"]), (409, "needs_person"), r.content)
+        self.assertEqual(Payment.objects.get(pk=p.pk).state, "detected")
+        self.assertFalse(AuditEntry.objects.filter(action="payment.reject", object_pk=str(p.pk)).exists())
+
     def test_a_payment_not_waiting_for_a_person_is_still_confirmed_by_a_token(self):
         """The guard is the flag, nothing else: a BTC payment BTCPay sees but has not settled is not waiting
         for a person, and a token still confirms it."""
@@ -137,6 +146,15 @@ class ServiceGuardTests(Waiting):
         services.assign_payment(p, self.invoice, self.staff, amount_minor=10000, note="checked the wallet")
         self.assertEqual(Payment.objects.get(pk=p.pk).state, "confirmed")
         self.assertEqual(Invoice.objects.get(pk=self.invoice.pk).status, "paid")
+
+    def test_reject_refuses_anyone_but_an_active_staff_user(self):
+        p = self.waiting()
+        for label, user in self.not_people().items():
+            with self.subTest(label), self.assertRaises(services.NeedsPerson):
+                services.reject_payment(p, user, "machine")
+            self.assertUntouched(p)
+        services.reject_payment(p, self.staff, "not ours")
+        self.assertEqual(Payment.objects.get(pk=p.pk).state, "rejected")
 
     def test_needs_person_is_an_invoice_error(self):
         """Every caller that already turns an InvoiceError into a refusal (the staff pages) keeps doing so."""

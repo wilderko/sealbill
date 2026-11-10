@@ -79,6 +79,7 @@ Te zmiany wymagają **superużytkownika**, który podał drugi składnik **w ci�
 - konto kanału płatności i jego dane dostępowe (oraz webhook BTCPay, który przechowuje sekret);
 - znacznik wystawcy dla amerykańskich rezydentów podatkowych organizacji i jej hosty powrotu;
 - konto bankowe lub fiat link do płatności organizacji;
+- utworzenie lub usunięcie webhooka (dokąd trafiają zdarzenia organizacji);
 - dodanie adresu e-mail do kontaktu lub uczynienie go głównym (trafiają tam e-maile, linki do płatności i PDF-y);
 - usunięcie drugiego składnika innego pracownika.
 

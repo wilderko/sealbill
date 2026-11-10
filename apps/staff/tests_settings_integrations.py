@@ -122,7 +122,7 @@ class WebhookPagesTest(UnsealedVaultMixin, TestCase):
     def setUp(self):
         super().setUp()
         self.org = Organization.objects.create(slug="eu", legal_name="Liberation s.r.o.")
-        self.c = verified_staff_client()
+        self.c = verified_staff_client(superuser=True)  # creating and deleting take the step-up (red-team A6)
 
     def make(self, url=URL, **extra):
         with resolving():

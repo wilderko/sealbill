@@ -5,7 +5,8 @@ These changes need a superuser who gave a second factor within the last ten minu
 - creating, rescoping or revoking an API token;
 - a rail account and its credentials (and the BTCPay webhook, which stores a secret);
 - an organization's US-resident issuer flag and its return hosts;
-- a bank account or a payment link;
+- a bank account or a payment link (a fiat link of the organization);
+- creating or deleting a webhook endpoint (red-team A6: a lasting outbound channel, as a token is access);
 - adding a contact's e-mail address or making one primary (letters, pay links and PDFs go there);
 - removing another staff member's second factor.
 

@@ -14,6 +14,7 @@ from apps.notify import services as notify
 from apps.notify.models import OutboxMessage
 from apps.orgs.models import BankAccount, FiatLink, Organization
 from apps.rails.gateways.lightning import nwc
+from apps.webhooks.models import WebhookEndpoint
 from apps.rails.models import RailAccount
 from apps.staff import passkeys, stepup
 from apps.staff.models import StaffPasskey, StaffTOTPDevice
@@ -76,6 +77,8 @@ class StepUpBase(UnsealedVaultMixin, TestCase):
                                             currencies=["EUR"])
         self.contact, _ = find_or_create_contact(self.org, "first@client.example", legal_name="Client")
         self.second = ContactEmail.objects.create(contact=self.contact, address="second@client.example", primary=False)
+        self.hook = WebhookEndpoint.objects.create(org=self.org, url="https://hooks.example.com/in/HOOK-PATH-SECRET",
+                                                   secret="HOOK-SIGNING-SECRET", events=["*"])
         self.colleague = User.objects.create_user("colleague", password="pw-x-1-long", is_staff=True)
         self.colleague_key = StaffPasskey.objects.create(user=self.colleague, name="yubikey", confirmed=True,
                                                          credential_id="cred-1", public_key=b"PK")
@@ -144,6 +147,13 @@ class StepUpBase(UnsealedVaultMixin, TestCase):
             ("contact e-mail primary",
              reverse("staff:contact_email_primary", args=[self.contact.pk, self.second.pk]), {},
              lambda: fresh(ContactEmail, self.second.pk).primary, contact_url),
+            # Red-team A6: an endpoint is a lasting outbound channel, as a token is lasting access.
+            ("webhook create", reverse("staff:webhook_new"),
+             {"org": self.org.pk, "url": "https://hooks.example.com/in/NEW-PATH-SECRET"},
+             lambda: WebhookEndpoint.objects.exclude(pk=self.hook.pk).exists(), reverse("staff:webhook_list")),
+            ("webhook delete", reverse("staff:webhook_delete", args=[self.hook.pk]), {},
+             lambda: not WebhookEndpoint.objects.filter(pk=self.hook.pk).exists(),
+             reverse("staff:webhook_detail", args=[self.hook.pk])),
             ("colleague's factor", reverse("staff:team_factor_remove"), {"kind": "passkey", "pk": self.colleague_key.pk},
              lambda: not StaffPasskey.objects.filter(pk=self.colleague_key.pk).exists(), reverse("staff:team")),
         ]
@@ -238,6 +248,7 @@ class FreshSuperuserTests(StepUpBase):
             self.run_action(self.boss, url, data)
         text = " ".join(str(m.body_context) + str(m.subject_context) for m in self.alerts())
         for secret in ("SECRET-API-KEY-1", "WHSEC-SECRET-9", NWC, "cd" * 32, "SK12 3456", "attacker@evil.example",
+                       "HOOK-PATH-SECRET", "NEW-PATH-SECRET", "HOOK-SIGNING-SECRET",
                        "second@client.example", "first@client.example"):
             self.assertNotIn(secret, text)
         self.assertNotIn(ApiToken.objects.get(name="agent").token_hash, text)

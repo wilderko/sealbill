@@ -144,6 +144,9 @@ def webhook_list(request):
 @sensitive_post_parameters()
 @require_POST
 def webhook_new(request):
+    # An endpoint is a lasting outbound channel, as a token is lasting access (red-team A6).
+    if refused := stepup.refusal(request, reverse("staff:webhook_list")):
+        return refused
     org = _org(request)
     url = request.POST.get("url", "").strip()
     description = request.POST.get("description", "").strip()[:200]
@@ -154,8 +157,12 @@ def webhook_new(request):
     if len(url) > 2000:
         return _webhook_page(request, "The address is longer than 2000 characters.", 400, form)
     try:
-        endpoint, plain = webhook_delivery.create_endpoint(
-            org, url, events=events, description=description, actor=request.user)
+        with transaction.atomic():
+            endpoint, plain = webhook_delivery.create_endpoint(
+                org, url, events=events, description=description, actor=request.user)
+            stepup.announce(request.user, "Webhook endpoint created",
+                            f"Created webhook endpoint #{endpoint.pk} for organization {org.slug}, delivering to "
+                            f"{_host(endpoint)}.", reverse("staff:webhook_detail", args=[endpoint.pk]))
     except webhook_delivery.WebhookRefused as exc:
         return _webhook_page(request, f"Refused ({exc.code}): {REFUSALS.get(exc.code, 'not an allowed destination.')}",
                              400, form)
@@ -177,8 +184,15 @@ def webhook_detail(request, pk):
 @staff_required
 @require_POST
 def webhook_delete(request, pk):
-    endpoint = get_object_or_404(WebhookEndpoint.objects.only("pk", "org_id"), pk=pk)
-    webhook_delivery.delete_endpoint(endpoint, actor=request.user)
+    if refused := stepup.refusal(request, reverse("staff:webhook_detail", args=[pk])):
+        return refused
+    endpoint = get_object_or_404(WebhookEndpoint.objects.only("pk", "org_id", "url").select_related("org"), pk=pk)
+    host, slug = _host(endpoint), endpoint.org.slug
+    with transaction.atomic():
+        webhook_delivery.delete_endpoint(endpoint, actor=request.user)
+        stepup.announce(request.user, "Webhook endpoint deleted",
+                        f"Deleted webhook endpoint #{pk} of organization {slug}, which delivered to {host}.",
+                        reverse("staff:webhook_list"))
     messages.success(request, "Deleted the endpoint and its delivery log. The events are kept.")
     return redirect(reverse("staff:webhook_list"))
 

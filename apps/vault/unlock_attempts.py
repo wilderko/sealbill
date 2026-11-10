@@ -10,7 +10,7 @@ import logging
 
 from django.core.cache import caches
 
-from .ratelimit import count_attempt
+from .ratelimit import count_attempt, reset
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +41,7 @@ def _first_alert(failures: int) -> bool:
 def unsealed() -> None:
     """The episode is over: the next wrong password starts counting from one."""
     try:
-        caches["ratelimit"].delete_many([f"rl:{BUCKET}:{IDENT}", ALERTED_KEY])
+        reset(BUCKET, IDENT)
+        caches["ratelimit"].delete(ALERTED_KEY)
     except Exception as exc:  # noqa: BLE001 - never stand between a correct password and the vault
         logger.error("unlock-failure counter: store unavailable (%s)", type(exc).__name__)

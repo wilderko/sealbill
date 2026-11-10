@@ -79,6 +79,7 @@ Estos cambios exigen un **superusuario** que haya dado un segundo factor **en lo
 - una cuenta de canal de pago y sus credenciales (y el webhook de BTCPay, que guarda un secreto);
 - el indicador de emisor para residentes fiscales de EE. UU. de una organización y sus hosts de retorno;
 - una cuenta bancaria o un enlace de pago fiat de una organización;
+- crear o eliminar un webhook (adonde van los eventos de una organización);
 - añadir una dirección de correo a un contacto o hacerla principal (a ella van los correos, los enlaces de pago y los PDF);
 - eliminar el segundo factor de otro miembro del personal.
 

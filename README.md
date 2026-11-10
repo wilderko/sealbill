@@ -85,13 +85,16 @@ What is below is what the code does; the operations manual explains how to run i
 - **Staff sign-in with a second factor.** A password and then either a TOTP code (its secret is
   encrypted with the vault key) or a passkey (WebAuthn, user verification required, bound to the
   host of `SITE_URL`). Sign-in, second-factor and unlock attempts are rate limited per address,
-  account and device. The last second factor of an account cannot be removed.
+  account and device, each counted in one database statement so that parallel attempts cannot share
+  a count. The last second factor of an account cannot be removed.
 - **Per-contact encryption keys.** A client can give an OpenPGP public key or an S/MIME certificate,
   uploaded through a link of their own and confirmed by answering a letter encrypted to it. From
   then on every letter to that client is encrypted to it (PGP/MIME or S/MIME), attachments included.
 - **Capability links.** The links to an invoice, its pay page, a key upload and a payment link are
-  random 256-bit tokens. Only their SHA-256 hashes are stored, they are cut out of logged paths, and
-  the Apache example logs no URL at all under those paths.
+  random 256-bit tokens, looked up by their SHA-256 hashes. Most are stored as the hash alone. Two are
+  also kept encrypted under the vault key: a payment link's token, so staff can show its URL again, and
+  a payment-link order's invoice links, until its receipt is out. They are cut out of logged paths
+  (tracebacks included), and the Apache example logs no URL at all under those paths.
 - **A strict Content Security Policy** with a fresh nonce per response: scripts and styles from the
   site only, no inline event handlers or inline styles, `frame-ancestors 'none'`.
 - **Signed webhooks, both ways.** Outgoing events are signed with HMAC-SHA256 over the exact body
@@ -113,9 +116,9 @@ What is below is what the code does; the operations manual explains how to run i
 - **A hidden admin.** The Django admin lives at a path you choose (`DJANGO_ADMIN_PATH`, which
   production requires and refuses when short, guessable or the placeholder). It is open only to a
   superuser who has passed a second factor; everyone else gets 404.
-- **Behind a proxy.** The app trusts the last `X-Forwarded-For` entry and can require a shared
-  secret header from the reverse proxy (`PROXY_SECRET`), for hosts where other accounts could reach
-  the app directly. The systemd units run with a read-only file system, `NoNewPrivileges` and
+- **Behind a proxy.** The app trusts the last `X-Forwarded-For` entry and requires a shared secret
+  header from the reverse proxy (`PROXY_SECRET`): production refuses to start without one unless
+  `ALLOW_EMPTY_PROXY_SECRET=true` says no other account can reach the app. The systemd units run with a read-only file system, `NoNewPrivileges` and
   `ProtectHome`, and serve gunicorn on a Unix socket only Apache's group can reach.
 - **Encrypted backups.** `deploy/backup/backup-db.sh` writes one AES-256 encrypted archive holding
   the database dump and `vault.json` (salt and sentinel, never the key).

@@ -105,6 +105,7 @@ These changes need a **superuser** who gave a second factor **within the last te
 - a rail account and its credentials (and the BTCPay webhook, which stores a secret);
 - an organization's US-resident issuer flag and its return hosts;
 - a bank account or a fiat payment link of an organization;
+- creating or deleting a webhook endpoint (where an organization's events are sent);
 - adding an e-mail address to a contact or making one primary (letters, pay links and PDFs go there);
 - removing another staff member's second factor.
 

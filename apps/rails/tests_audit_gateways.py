@@ -703,8 +703,8 @@ class FrankfurterLegTests(UnsealedVaultMixin, TestCase):  # accepting a rate wri
         self.refused(Prices(ecb="26.80"), "jump")
 
     def test_a_leg_within_ten_percent_is_used_and_becomes_the_reference(self):
-        self.price(Prices(ecb="24.353"))
-        p = self.price(Prices(ecb="26.78"))  # +9.97 %
+        self.price(Prices(ecb="24.353", day=self.days_ago(1)))
+        p = self.price(Prices(ecb="26.78"))  # +9.97 %, the next day
         self.assertEqual(p.rate, Decimal("69583") * Decimal("26.78"))
         self.assertEqual(Decimal(rails_models.FxLegRate.objects.get(base="EUR", quote="CZK").rate), Decimal("26.78"))
         self.assertIsNone(WatcherHealth.objects.get(name="fx:EUR:CZK").failing_since)
@@ -728,7 +728,7 @@ class FrankfurterLegTests(UnsealedVaultMixin, TestCase):  # accepting a rate wri
         self.assertIsNone(WatcherHealth.objects.get(name="fx:EUR:CZK").failing_since)
 
     def test_a_jump_keeps_the_refused_answer_for_a_person_and_moves_nothing(self):
-        self.price(Prices(ecb="24.353"))
+        self.price(Prices(ecb="24.353", day=self.days_ago(1)))
         self.refused(Prices(ecb="30.00"), "jump")
         row = rails_models.FxLegRate.objects.get(base="EUR", quote="CZK")
         self.assertEqual((Decimal(row.rate), Decimal(row.pending_rate)), (Decimal("24.353"), Decimal("30.00")))
@@ -737,6 +737,32 @@ class FrankfurterLegTests(UnsealedVaultMixin, TestCase):  # accepting a rate wri
         self.price(Prices(ecb="24.50"))  # back within 10 %: used, and nothing waits for a person
         row = rails_models.FxLegRate.objects.get(pk=row.pk)
         self.assertEqual((Decimal(row.rate), row.pending_rate), (Decimal("24.50"), ""))
+
+    def test_another_rate_for_a_day_already_accepted_waits_for_a_person(self):
+        # Red-team A5: inside the bound every call used to move the reference, so a lying source
+        # walked it to 1.77 times the start in six calls. One ECB day has one rate.
+        self.price(Prices(ecb="24.353"))
+        self.assertIn("a person must check", self.refused(Prices(ecb="26.00"), "changed"))
+        row = rails_models.FxLegRate.objects.get(base="EUR", quote="CZK")
+        self.assertEqual((Decimal(row.rate), Decimal(row.pending_rate)), (Decimal("24.353"), Decimal("26.00")))
+        self.assertIn("never changes a published rate", fx.leg_explanation("fx:EUR:CZK", "changed"))
+        user = get_user_model().objects.create_user("clerk", is_staff=True)
+        self.assertTrue(fx.accept_leg(row, user, "the ECB corrected it"))  # a person may still take it
+        self.assertEqual(Decimal(rails_models.FxLegRate.objects.get(pk=row.pk).rate), Decimal("26.00"))
+        self.assertEqual(self.price(Prices(ecb="26.000")).rate, Decimal("69583") * Decimal("26.00"))  # same rate
+
+    def test_a_walk_inside_the_bound_takes_a_new_ecb_day_per_step(self):
+        self.price(Prices(ecb="24.353", day=self.days_ago(2)))
+        self.price(Prices(ecb="26.70", day=self.days_ago(1)))   # +9.6 % the next day
+        self.refused(Prices(ecb="29.30", day=self.days_ago(1)), "changed")  # again that day: no
+        self.assertEqual(Decimal(rails_models.FxLegRate.objects.get(base="EUR", quote="CZK").rate), Decimal("26.70"))
+
+    def test_an_answer_older_than_the_reference_uses_the_reference(self):
+        self.price(Prices(ecb="24.353"))
+        p = self.price(Prices(ecb="25.00", day=self.days_ago(1)))  # a cache a day behind
+        self.assertEqual(p.rate, Decimal("69583") * Decimal("24.353"))
+        row = rails_models.FxLegRate.objects.get(base="EUR", quote="CZK")
+        self.assertEqual((Decimal(row.rate), row.source_date), (Decimal("24.353"), timezone.now().date()))
 
     def test_the_admin_cannot_change_or_delete_the_reference(self):
         from django.contrib import admin

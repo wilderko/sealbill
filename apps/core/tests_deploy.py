@@ -25,6 +25,12 @@ class ComposeTests(SimpleTestCase):
             if name != "web":
                 self.assertNotIn("ports", service, name)
 
+    def test_the_app_containers_drop_every_capability_and_gain_none(self):
+        for name in ("web", "worker"):
+            with self.subTest(name):
+                self.assertEqual(self.services[name]["cap_drop"], ["ALL"])
+                self.assertIn("no-new-privileges:true", self.services[name]["security_opt"])
+
     def test_web_creates_its_tables_before_serving(self):
         command = self.services["web"]["command"]
         self.assertLess(command.index("migrate"), command.index("createcachetable"))
@@ -103,7 +109,7 @@ class ReadmeTests(SimpleTestCase):
 STUB_ENV = {
     "SECRET_KEY": "x" * 60, "ALLOWED_HOSTS": "pay.example.org", "DATABASE_URL": "postgres://u:p@localhost/db",
     "SITE_URL": "https://pay.example.org", "VAULT_KEY_PATH": "/run/pay-invoicing/vault.key",
-    "DJANGO_ADMIN_PATH": "x7Kq-prod-admin-path-0123456789/",
+    "DJANGO_ADMIN_PATH": "x7Kq-prod-admin-path-0123456789/", "PROXY_SECRET": "stub-proxy-secret-0123456789",
 }
 
 
@@ -147,12 +153,48 @@ class ProductionSettingsTests(SimpleTestCase):
         self.assertEqual(middleware[2], "whitenoise.middleware.WhiteNoiseMiddleware")
         self.assertNotIn("Manifest", settings.STORAGES["staticfiles"]["BACKEND"])  # tests need no collectstatic
 
-    def test_proxy_secret_comes_from_the_environment_and_is_optional(self):
-        # Optional: the Docker path has no Apache in front to send it.
-        done = _production(STUB_ENV, "print(repr(s.PROXY_SECRET))")
-        self.assertEqual((done.returncode, done.stdout.strip()), (0, "''"), done.stderr)
+    def test_proxy_secret_comes_from_the_environment(self):
         done = _production({**STUB_ENV, "PROXY_SECRET": "from-the-env"}, "print(s.PROXY_SECRET)")
         self.assertEqual((done.returncode, done.stdout.strip()), (0, "from-the-env"), done.stderr)
+
+    def test_an_empty_proxy_secret_has_to_be_asked_for_by_name(self):
+        # Red-team A2: empty, every account that reaches the socket picks its rate-limit address.
+        empty = {**STUB_ENV, "PROXY_SECRET": ""}
+        done = _production(empty)
+        self.assertNotEqual(done.returncode, 0)
+        self.assertIn("ALLOW_EMPTY_PROXY_SECRET", done.stderr)
+        done = _production({**empty, "ALLOW_EMPTY_PROXY_SECRET": "true"}, "print(repr(s.PROXY_SECRET))")
+        self.assertEqual((done.returncode, done.stdout.strip()), (0, "''"), done.stderr)
+
+    def test_the_example_placeholders_are_refused_at_start(self):
+        for name in ("SECRET_KEY", "PROXY_SECRET"):
+            with self.subTest(name):
+                done = _production({**STUB_ENV, name: "change-me"})
+                self.assertNotEqual(done.returncode, 0)
+                self.assertIn(f"{name} is still the placeholder", done.stderr)
+
+    def test_chain_and_price_endpoints_must_be_https_off_loopback(self):
+        # Red-team A5: these come from the environment and nothing else checks their scheme.
+        refused = {
+            "FX_FRANKFURTER_URL": "http://api.frankfurter.dev/v1",
+            "TRONGRID_API_URL": "http://api.trongrid.io",
+            "TONCENTER_API_URL": "ftp://toncenter.com/api/v3",
+            "SOLANA_RPC_URLS": "https://api.mainnet-beta.solana.com,http://10.0.0.5:8899",
+            "EVM_RPC_URLS": '{"arbitrum": ["http://rpc.example.org/KEY"]}',
+        }
+        for name, value in refused.items():
+            with self.subTest(name):
+                done = _production({**STUB_ENV, name: value})
+                self.assertNotEqual(done.returncode, 0)
+                self.assertIn(f"{name} must use https", done.stderr)
+        local = {"EVM_RPC_URLS": '{"arbitrum": ["http://127.0.0.1:8545"], "base": ["https://rpc.example/K"]}',
+                 "SOLANA_RPC_URLS": "http://localhost:8899"}
+        done = _production({**STUB_ENV, **local})
+        self.assertEqual(done.returncode, 0, done.stderr)
+
+    def test_the_image_build_step_still_imports_the_settings(self):
+        build = (BASE / "Dockerfile").read_text()
+        self.assertIn("ALLOW_EMPTY_PROXY_SECRET=true", build.split("collectstatic")[0].rsplit("RUN", 1)[1])
 
 
 class PackagingFilesTests(SimpleTestCase):

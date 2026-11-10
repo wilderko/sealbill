@@ -29,7 +29,7 @@ ENV PATH="/app/.venv/bin:$PATH" \
 # Static files are collected at build time, with throw-away values that exist only for this step.
 RUN SECRET_KEY=build-only ALLOWED_HOSTS=build.invalid DATABASE_URL=sqlite:////tmp/build.sqlite3 \
     SITE_URL=https://build.invalid VAULT_KEY_PATH=/tmp/build-vault.key \
-    DJANGO_ADMIN_PATH=build-only-admin-path-unused/ \
+    DJANGO_ADMIN_PATH=build-only-admin-path-unused/ ALLOW_EMPTY_PROXY_SECRET=true \
     python manage.py collectstatic --noinput
 
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "30"]

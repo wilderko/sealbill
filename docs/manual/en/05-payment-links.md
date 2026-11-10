@@ -71,4 +71,4 @@ land on is the ordinary **pay page** of chapter 4.
 - **Limits**: 5 checkout attempts per 10 minutes per address, and 50 completed checkouts per hour per link. No page may
   frame a link.
 - Creating or editing a link through the API is `invoices:write`; the link's URL is handed out on create, on rotate and
-  when one link is read.
+  when one link is read by a token that also holds `invoices:write` (a `read` token alone gets null).

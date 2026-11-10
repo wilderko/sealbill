@@ -17,6 +17,8 @@ import base64
 import datetime
 import email
 import re
+import shutil
+import tempfile
 from email import policy
 from pathlib import Path
 from unittest import mock
@@ -59,6 +61,13 @@ EN_NO_LONGER = "This link has expired. If a key you did not upload is in use, wr
 class Base(UnsealedVaultMixin, TestCase):
     def setUp(self):
         super().setUp()
+        # Every throw-away keyring of these tests in a directory of their own, as DeliveryBase does: a
+        # gpg-agent left over from another test's home must never serve this one (red-team report T1).
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        override = override_settings(GPG_TMP_DIR=tmp)
+        override.enable()
+        self.addCleanup(override.disable)
         self.org = Organization.objects.create(slug="eu", legal_name="Seller s.r.o.",
                                                email_from="billing@seller.example")
         add_bank(self.org)

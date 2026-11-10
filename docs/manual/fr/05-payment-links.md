@@ -48,4 +48,4 @@ L'acheteur saisit une adresse e-mail, un nom si on le lui demande, répond à la
 - **Les commandes impayées sont annulées au bout de 7 jours.** L'argent qui arrive ensuite va en examen, comme pour toute facture annulée.
 - **Traitement.** Avec *Paid orders need fulfilling* activé, les commandes payées sont listées sur la page du lien comme à traiter jusqu'à ce que quelqu'un appuie sur **Mark fulfilled**.
 - **Limites** : 5 tentatives de passage en caisse par 10 minutes et par adresse, et 50 passages en caisse terminés par heure et par lien. Aucune page ne peut encadrer un lien.
-- Créer ou modifier un lien par l'API relève de `invoices:write` ; l'URL du lien est donnée à la création, à la rotation et à la lecture d'un lien seul.
+- Créer ou modifier un lien par l'API relève de `invoices:write` ; l'URL du lien est donnée à la création, à la rotation et à la lecture d'un lien seul par un jeton qui a aussi `invoices:write` (un jeton `read` seul reçoit null).

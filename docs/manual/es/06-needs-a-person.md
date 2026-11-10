@@ -29,7 +29,7 @@ Las colas solo se muestran cuando tienen elementos; **Show N queues** enumera ta
 
 Dos reglas recorren toda la página:
 
-- Un pago que **espera a una persona** solo lo confirma o asigna un miembro del personal con sesión iniciada. Un token, incluso `admin`, recibe `409 needs_person` y no cambia nada. Registrar un pago manual también es tarea de una persona.
+- Un pago que **espera a una persona** solo lo confirma, asigna o rechaza un miembro del personal con sesión iniciada. Un token, incluso `admin`, recibe `409 needs_person` y no cambia nada. Registrar un pago manual también es tarea de una persona.
 - Cada acción pide una nota donde importa, y cada acción queda en el registro de auditoría.
 
 Las mismas colas se pueden atender por la API con `payments:confirm`, salvo las reservadas a personas (capítulo 9). Las dos listas que usará para averiguar *por qué* algo está atascado son **Settings > E-mail outbox** (cada carta, con su estado, intentos y el motivo del fallo; los destinatarios y los contenidos nunca se muestran) y **Settings > Webhook deliveries**.

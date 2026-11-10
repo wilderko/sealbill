@@ -111,7 +111,12 @@ def _leg_failed(name: str, kind: str, message: str) -> RatesUnavailable:
 def _checked_leg(base: str, quote: str, rate: Decimal, day: datetime.date) -> Decimal:
     """`rate` (1 `base` in `quote`, dated `day` by its source) if it is recent and close to the last
     one accepted for the pair, which it then replaces; else RatesUnavailable. A refused answer is
-    never stored, so asking again cannot walk the reference away."""
+    never stored, so asking again cannot walk the reference away.
+
+    The ECB publishes one rate a day and never changes it, so the reference moves only with a newer
+    day (red-team A5): a different rate for the day already accepted waits for a person like a jump,
+    and an answer dated before the reference's day is not used, the reference is. Otherwise a source
+    answering inside the 10 % bound could walk the rate anywhere in a few calls (1.77 times in six)."""
     from apps.rails import health
     from apps.rails.models import FxLegRate
 
@@ -127,6 +132,8 @@ def _checked_leg(base: str, quote: str, rate: Decimal, day: datetime.date) -> De
             previous = _dec(last.rate)
         except RatesUnavailable:
             previous = None  # an unreadable reference is replaced, as if there were none
+        if previous is not None and last.source_date is not None and day < last.source_date:
+            return previous  # an older publication than the one accepted: a lagging cache, not news
         if previous is not None:
             bps = abs(rate - previous) / previous * 10000
             if bps > FX_MAX_LEG_JUMP_BPS:
@@ -135,6 +142,11 @@ def _checked_leg(base: str, quote: str, rate: Decimal, day: datetime.date) -> De
                     pending_rate=format(rate, "f"), pending_source_date=day, pending_seen_at=timezone.now())
                 raise _leg_failed(name, "jump", f"frankfurter {base}/{quote} moved more than 10 % since the "
                                                 f"last accepted rate ({int(bps)} bps): a person must check it")
+            if day == last.source_date and rate != previous:
+                FxLegRate.objects.filter(pk=last.pk).update(
+                    pending_rate=format(rate, "f"), pending_source_date=day, pending_seen_at=timezone.now())
+                raise _leg_failed(name, "changed", f"frankfurter {base}/{quote} gave another rate for a day "
+                                                   "already accepted: a person must check it")
     FxLegRate.objects.update_or_create(base=base, quote=quote, defaults={
         "rate": format(rate, "f"), "source_date": day,
         "pending_rate": "", "pending_source_date": None, "pending_seen_at": None})
@@ -216,6 +228,14 @@ def leg_explanation(watcher_name: str, kind: str) -> str:
         return (f"{refused}: the ECB rate from Frankfurter moved more than 10 % since the last one accepted"
                 f"{moved}. Check the ECB's rate: if the move is real, accept it on Needs a person; if it is "
                 "not, check that FX_FRANKFURTER_URL answers with the ECB's rates.")
+    if kind == "changed":
+        row = FxLegRate.objects.filter(base=base, quote=quote).first()
+        moved = (f" ({row.rate} to {row.pending_rate} {quote} per {base})"
+                 if row is not None and row.pending_rate else "")
+        return (f"{refused}: Frankfurter gave another {base}/{quote} rate for a day whose rate was already "
+                f"accepted{moved}, and the ECB never changes a published rate. Check the ECB's rate: if the "
+                "new one is right, accept it on Needs a person; if not, check that FX_FRANKFURTER_URL answers "
+                "with the ECB's rates.")
     if kind == "stale":
         return (f"{refused}: Frankfurter's newest {base}/{quote} rate is more than {FX_MAX_ECB_AGE_DAYS} days old "
                 "(or dated ahead of today). If the ECB has not published for a while (it does not on TARGET "

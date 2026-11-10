@@ -771,7 +771,10 @@ class PaymentConfirm(PaymentAction):
 
 
 class PaymentReject(PaymentAction):
-    @extend_schema(request=s.NoteSerializer, responses=s.PaymentOutSerializer)
+    @extend_schema(request=s.NoteSerializer, responses={200: s.PaymentOutSerializer, 409: s.ErrorSerializer},
+                   description="detected/needs_review -> rejected. A payment waiting for a person "
+                               "(`needs_staff_confirmation` true) is rejected only by a person on the staff pages: "
+                               "409 `needs_person` for every token, and nothing changes.")
     def post(self, request, pk):
         return super().post(request, pk)
 
@@ -1011,9 +1014,11 @@ class PaymentLinkDetail(ApiView):
         return get_object_or_404(org_links(self.token), pk=pk)
 
     @extend_schema(responses=s.PaymentLinkDetailSerializer, operation_id="payment_links_retrieve",
-                   description="One link, with its `url`: the only place the URL is given out besides create and rotate.")
+                   description="One link, with its `url` for a token that also holds `invoices:write` (null "
+                               "otherwise): the only place the URL is given out besides create and rotate.")
     def get(self, request, pk):
-        return Response(s.PaymentLinkDetailSerializer(self.obj(pk)).data)
+        show_url = self.token.has_scope(INVOICES_WRITE)
+        return Response(s.PaymentLinkDetailSerializer(self.obj(pk), context={"show_url": show_url}).data)
 
     @extend_schema(request=s.PaymentLinkFieldsSerializer, responses=s.PaymentLinkDetailSerializer,
                    operation_id="payment_links_update",

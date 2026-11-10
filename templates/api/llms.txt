@@ -89,7 +89,8 @@ GET  /api/v1/payment-methods?currency=EUR&contact_email=client@example.com   (re
 GET  /api/v1/payments[?invoice=<id>]   one invoice's payments
 GET  /api/v1/payment-links       (read) your organization's payment links, paged; never their URLs
 GET  /api/v1/payment-links/{id}  (read) one link with its "url": the public page anyone can pay through. The URL is a
-                                 capability, handed out here, on create and on rotate only: pass it on to whoever should have it
+                                 capability, handed out here (to a token that also holds invoices:write; null for read
+                                 alone), on create and on rotate only: pass it on to whoever should have it
 POST /api/v1/payment-links       (invoices:write) {"title", "currency", "price_minor" | "customer_chooses": true with optional
                                  "min_minor"/"max_minor", "description", "tax_rate_bps", "max_quantity" (0: any, up to 200),
                                  "name_field"/"billing_field"/"shipping_field"/"phone_field" off|optional|required, "custom_fields":
@@ -109,7 +110,7 @@ GET  /api/v1/exports/payments.csv?from=YYYY-MM-DD&to=YYYY-MM-DD   (read) the pay
                                  network, tx hash and quote rate
 POST /api/v1/payments/{id}/confirm   {"note"}   detected/needs_review -> confirmed (may mark the invoice paid);
                                  409 needs_person when the payment reads "needs_staff_confirmation": true
-POST /api/v1/payments/{id}/reject    {"note"}
+POST /api/v1/payments/{id}/reject    {"note"}   detected/needs_review -> rejected; 409 needs_person likewise
 POST /api/v1/payments/{id}/reverse   {"reason"} confirmed -> reversed (reason required)
 GET  /api/v1/invoices/{id}/quotes, GET /api/v1/quotes/{id}   (read) crypto quotes of an invoice
 POST /api/v1/invoices/{id}/quotes    {"method": "rail:3", "network": "arbitrum", "asset": "USDC", "refresh": false}  (invoices:write)
@@ -140,7 +141,7 @@ no_free_amount, too_many_quotes or rail_unavailable; "rates_unavailable" is 503 
 A crypto payment in GET /api/v1/payments has rail, network, asset, amount_base_units, tx_hash, log_index, "final",
 "quote", and: "state": "needs_review" with a "review_reason" when no invoice matched it or something looks wrong; a person
 or an agent holding payments:confirm moves it on. A payment waiting for a person ("needs_staff_confirmation": true) moves on
-only by a person, on the staff pages: confirm and assign by any token, admin included, answer 409 "needs_person" and change
+only by a person, on the staff pages: confirm, assign and reject by any token, admin included, answer 409 "needs_person" and change
 nothing. Calls that MOVE MONEY STATE (never repeat blindly):
 - POST /api/v1/payments/{id}/assign   attach a needs_review payment to one invoice of your organization and credit
   "amount_minor" (invoice currency). A chain transfer needs "final": true (a gateway payment in review may be assigned while it reads false). Needs a note and an Idempotency-Key. Refused unless your organization

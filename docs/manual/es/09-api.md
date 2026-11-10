@@ -53,7 +53,7 @@ La respuesta lleva el número y, **una sola vez**, `view_url` y `pay_url`. `emai
 | `payments:confirm` | una herramienta de back-office que confirma, rechaza, revierte o asigna pagos. Mueve el estado del dinero. |
 | `admin` | todo lo anterior más los webhooks |
 
-Algunas acciones son **solo para personas** y todo token, incluso `admin`, recibe `409 needs_person`: registrar un pago manual y confirmar o asignar un pago que espera a una persona.
+Algunas acciones son **solo para personas** y todo token, incluso `admin`, recibe `409 needs_person`: registrar un pago manual y confirmar, asignar o rechazar un pago que espera a una persona.
 
 ## Webhooks
 

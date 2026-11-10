@@ -362,6 +362,7 @@ def acknowledge_gateway_invalid(payment: Payment, user, note: str) -> Payment:
 def reject_payment(payment: Payment, user, note: str) -> Payment:
     with transaction.atomic():
         fresh = Payment.objects.select_for_update().get(pk=payment.pk)
+        _check_person(fresh, user, "rejected")  # a rejection is not undone (red-team A3)
         if fresh.state not in ("detected", "needs_review"):
             raise InvoiceError(f"a {fresh.state} payment cannot be rejected")
         fresh.state = "rejected"

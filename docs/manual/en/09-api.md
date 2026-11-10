@@ -65,7 +65,7 @@ invoice (the US rule applied) and the methods it would offer. An invoice shows `
 | `admin` | all of the above plus webhooks |
 
 Some actions are **person-only** and every token, `admin` included, gets `409 needs_person`: recording a manual payment,
-and confirming or assigning a payment that is waiting for a person.
+and confirming, assigning or rejecting a payment that is waiting for a person.
 
 ## Webhooks
 

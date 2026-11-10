@@ -79,6 +79,7 @@ Tieto zmeny vyžadujú **superužívateľa**, ktorý dal druhý faktor **v posle
 - účet platobného kanála a jeho prístupové údaje (a webhook BTCPay, ktorý ukladá tajomstvo);
 - príznak vystavovateľa pre amerických daňových rezidentov a návratové hosty organizácie;
 - bankový účet alebo fiat platobný odkaz organizácie;
+- vytvorenie alebo zmazanie webhooku (kam idú udalosti organizácie);
 - pridanie e-mailovej adresy ku kontaktu alebo jej nastavenie ako primárnej (idú na ňu e-maily, platobné odkazy a PDF);
 - odstránenie druhého faktora iného zamestnanca.
 

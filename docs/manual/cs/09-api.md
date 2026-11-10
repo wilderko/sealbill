@@ -53,7 +53,7 @@ Odpověď nese číslo a **jednou** také `view_url` a `pay_url`. `email_client:
 | `payments:confirm` | back-office nástroj, který potvrzuje, odmítá, ruší nebo přiřazuje platby. Mění stav peněz. |
 | `admin` | vše výše plus webhooky |
 
-Některé akce jsou **jen pro člověka** a každý token, i `admin`, dostane `409 needs_person`: zaznamenání ruční platby a potvrzení nebo přiřazení platby, která čeká na člověka.
+Některé akce jsou **jen pro člověka** a každý token, i `admin`, dostane `409 needs_person`: zaznamenání ruční platby a potvrzení, přiřazení nebo zamítnutí platby, která čeká na člověka.
 
 ## Webhooky
 

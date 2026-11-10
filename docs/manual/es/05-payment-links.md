@@ -48,4 +48,4 @@ El comprador escribe una dirección de correo, un nombre si se le pide, responde
 - **Los pedidos sin pagar se anulan a los 7 días.** El dinero que llegue después va a revisión, como con cualquier factura anulada.
 - **Cumplimiento.** Con *Paid orders need fulfilling* activado, los pedidos pagados figuran en la página del enlace como por cumplir hasta que alguien pulsa **Mark fulfilled**.
 - **Límites**: 5 intentos de checkout cada 10 minutos por dirección y 50 checkouts completados por hora por enlace. Ninguna página puede incrustar un enlace.
-- Crear o editar un enlace por la API requiere `invoices:write`; la URL del enlace se entrega al crearlo, al rotarlo y al leer un enlace concreto.
+- Crear o editar un enlace por la API requiere `invoices:write`; la URL del enlace se entrega al crearlo, al rotarlo y al leer un enlace concreto con un token que también tiene `invoices:write` (un token solo `read` recibe null).

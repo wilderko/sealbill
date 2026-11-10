@@ -29,7 +29,7 @@ Fronty sa ukazujú iba vtedy, keď majú položky; **Show N queues** vypíše aj
 
 Cez celú stránku platia dve pravidlá:
 
-- Platbu, ktorá **čaká na človeka**, potvrdí alebo priradí iba prihlásený zamestnanec. Token, aj `admin`, dostane `409 needs_person` a nič sa nezmení. Aj zaznamenanie ručnej platby je práca pre človeka.
+- Platbu, ktorá **čaká na človeka**, potvrdí, priradí alebo zamietne iba prihlásený zamestnanec. Token, aj `admin`, dostane `409 needs_person` a nič sa nezmení. Aj zaznamenanie ručnej platby je práca pre človeka.
 - Každá akcia žiada poznámku, kde na tom záleží, a každá akcia je v audit logu.
 
 Tie isté fronty možno vybavovať cez API s `payments:confirm`, okrem tých, ktoré sú len pre človeka (kapitola 9). Dva zoznamy, ktoré použijete na zistenie, *prečo* niečo uviazlo, sú **Settings > E-mail outbox** (každý e-mail so stavom, počtom pokusov a dôvodom zlyhania; adresáti ani obsah sa nikdy nezobrazia) a **Settings > Webhook deliveries**.

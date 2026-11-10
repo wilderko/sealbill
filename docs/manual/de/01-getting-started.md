@@ -79,6 +79,7 @@ Diese Änderungen verlangen einen **Superuser**, der **innerhalb der letzten zeh
 - ein Zahlungskanal-Konto und seine Zugangsdaten (und den BTCPay-Webhook, der ein Geheimnis speichert);
 - das Kennzeichen „US-resident issuer" einer Organisation und ihre Rücksprung-Hosts;
 - ein Bankkonto oder ein Fiat-Zahlungslink einer Organisation;
+- einen Webhook-Endpunkt erstellen oder löschen (wohin die Ereignisse einer Organisation gehen);
 - eine E-Mail-Adresse zu einem Kontakt hinzufügen oder zur primären machen (E-Mails, Zahlungslinks und PDFs gehen dorthin);
 - den zweiten Faktor einer anderen Person entfernen.
 

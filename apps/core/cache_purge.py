@@ -59,4 +59,6 @@ def purge_expired() -> int:
             removed += _purge_files(backend)
         elif isinstance(backend, LocMemCache):
             removed += _purge_locmem(backend)
-    return removed
+    from apps.vault import ratelimit
+
+    return removed + ratelimit.purge_expired()  # the rate counters live in their own table

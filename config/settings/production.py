@@ -11,12 +11,48 @@ for _name in ("SECRET_KEY", "ALLOWED_HOSTS", "DATABASE_URL", "SITE_URL", "VAULT_
     if not os.environ.get(_name, "").strip():
         raise ImproperlyConfigured(f"{_name} must be set in the environment for production")
 
+# Chain and price endpoints come from the environment and are not guarded like a URL staff type:
+# they must be https, or plain http on this machine's loopback, where a self-hosted node answers
+# (red-team A5). Plain http anywhere else hands the rates and the chain data to the network.
+def _plain_http_off_loopback(url) -> bool:
+    from urllib.parse import urlsplit
+
+    parts = urlsplit(str(url).strip())
+    if parts.scheme == "https":
+        return False
+    return not (parts.scheme == "http" and parts.hostname in ("127.0.0.1", "::1", "localhost"))
+
+
+_endpoints = {
+    "EVM_RPC_URLS": [u for urls in (EVM_RPC_URLS or {}).values() for u in (urls or [])],  # noqa: F405
+    "SOLANA_RPC_URLS": list(SOLANA_RPC_URLS or []),  # noqa: F405
+    "TRONGRID_API_URL": [TRONGRID_API_URL],  # noqa: F405
+    "TONCENTER_API_URL": [TONCENTER_API_URL],  # noqa: F405
+    "FX_FRANKFURTER_URL": [FX_FRANKFURTER_URL],  # noqa: F405
+}
+for _name, _urls in _endpoints.items():
+    if any(_plain_http_off_loopback(u) for u in _urls if str(u).strip()):
+        raise ImproperlyConfigured(f"{_name} must use https (plain http only on 127.0.0.1, ::1 or localhost)")
+
 # No default in production: the admin path is a deployment secret.
 DJANGO_ADMIN_PATH = env("DJANGO_ADMIN_PATH", default="")  # noqa: F405
 check_admin_path(DJANGO_ADMIN_PATH, CLIENT_ROOTS)
 
 PRODUCTION = True
 SECRET_KEY = env("SECRET_KEY")  # noqa: F405
+PROXY_SECRET = env("PROXY_SECRET", default="")  # noqa: F405
+
+# Refused at start, not only by `check --deploy`, which nothing runs at boot (red-team A2). The
+# placeholders are what the example files ship. An empty PROXY_SECRET lets every account that
+# reaches the socket pick the address the rate limits count, so it has to be asked for by name.
+for _name, _value in (("SECRET_KEY", SECRET_KEY), ("PROXY_SECRET", PROXY_SECRET)):
+    if "change-me" in str(_value or "").strip().lower():
+        raise ImproperlyConfigured(f"{_name} is still the placeholder from the example file")
+if not PROXY_SECRET.strip() and not env.bool("ALLOW_EMPTY_PROXY_SECRET", default=False):  # noqa: F405
+    raise ImproperlyConfigured(
+        "PROXY_SECRET must be set in production, and the reverse proxy must send it (README). "
+        "Set ALLOW_EMPTY_PROXY_SECRET=true instead only where no other account can reach the app."
+    )
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # noqa: F405
 DATABASES = {"default": env.db("DATABASE_URL")}  # noqa: F405
 DEBUG = False

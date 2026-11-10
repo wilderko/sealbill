@@ -16,7 +16,7 @@ ALLOWED_HOSTS = ["testserver", "localhost"]
 VAULT_KEY_PATH = "/tmp/pay-vault-test.key"
 CACHES = {
     "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
-    "ratelimit": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache", "LOCATION": "ratelimit",
+    "ratelimit": {"BACKEND": "apps.vault.tests_app.ratelimit_cache.RateLimitTestCache", "LOCATION": "ratelimit",
                   "OPTIONS": {"MAX_ENTRIES": 100000}},
 }
 INSTALLED_APPS = [*INSTALLED_APPS, "apps.vault.tests_app"]  # noqa: F405

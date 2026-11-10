@@ -40,6 +40,18 @@ class VaultCoreTest(VaultTestCase):
         with self.assertRaises(FileExistsError):
             vault.init(PW)
 
+    def test_a_config_of_the_wrong_shape_stays_sealed(self):
+        # Red-team report 2026-11-10: a JSON list, or a sentinel that is not text, raised instead.
+        import json
+
+        vault.init(PW)
+        good = json.loads(self.cfg_path.read_text())
+        for broken in ([good], {**good, "sentinel": 42}, {**good, "salt": 7}, "a string"):
+            with self.subTest(broken=type(broken).__name__):
+                self.cfg_path.write_text(json.dumps(broken))
+                self.assertFalse(vault.unseal(PW))
+                self.assertFalse(vault.is_unsealed())
+
     def test_wrong_password_stays_sealed(self):
         vault.init(PW)
         self.assertFalse(vault.unseal("nope"))
@@ -101,12 +113,12 @@ class VaultWebTest(VaultTestCase):
             r = self.client.post("/unlock/", {"password": "anything"})
         self.assertEqual(r.status_code, 302)
 
-    def test_rate_limit_counters_live_in_their_own_cache(self):
-        from django.core.cache import caches
+    def test_rate_limit_counters_live_in_their_own_table(self):
+        from apps.vault.models import RateCounter
 
         with self.assertLogs("apps.vault.unlock_attempts", "WARNING"):
             self.client.post("/unlock/", {"password": "x"})
-        self.assertIsNotNone(caches["ratelimit"].get("rl:unlock:127.0.0.1"))
+        self.assertEqual(RateCounter.objects.get(key="rl:unlock:127.0.0.1").count, 1)
         self.assertIsNone(cache.get("rl:unlock:127.0.0.1"))
 
     def test_rate_limit_uses_last_forwarded_entry(self):

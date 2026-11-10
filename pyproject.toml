@@ -32,4 +32,5 @@ mcp = [
 ]
 dev = [
     { include-group = "mcp" },
+    "tblib>=3.2.2",
 ]

@@ -49,6 +49,9 @@ class AllowUrlPrefixTests(SimpleTestCase):
                     "https://liberation.services/payments/webhook/invoicing/../../../server-status",
                     "https://liberation.services/payments/webhook/invoicing/%2e%2e/server-status",
                     "https://liberation.services/payments/webhook/invoicing/%2E%2E%2Fserver-status",
+                    # Red-team report 2026-11-10: encoded twice or more, for a receiver that decodes twice.
+                    "https://liberation.services/payments/webhook/invoicing/%252e%252e/server-status",
+                    "https://liberation.services/payments/webhook/invoicing/%25252E%25252E%25252Fserver-status",
                     "https://liberation.services/payments/webhook/invoicing/./x",
                     "https://liberation.services/payments/webhook/invoicingX",
                     "https://liberation.services/payments/webhook/invoicingX/",

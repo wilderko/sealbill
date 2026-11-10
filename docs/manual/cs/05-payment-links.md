@@ -48,4 +48,4 @@ Kupující napíše e-mailovou adresu, jméno pokud se ptá, odpoví na otázku 
 - **Nezaplacené objednávky se po 7 dnech stornují.** Peníze, které přijdou později, jdou k posouzení, jako u každé stornované faktury.
 - **Vyřízení.** Je-li zapnuto *Paid orders need fulfilling*, zaplacené objednávky jsou na stránce odkazu vedeny jako k vyřízení, dokud někdo nestiskne **Mark fulfilled**.
 - **Limity**: 5 pokusů o checkout za 10 minut na adresu a 50 dokončených checkoutů za hodinu na odkaz. Odkaz nemůže vložit do rámu žádná stránka.
-- Vytvoření nebo úprava odkazu přes API je `invoices:write`; URL odkazu se vydává při vytvoření, při rotaci a když se čte jeden odkaz.
+- Vytvoření nebo úprava odkazu přes API je `invoices:write`; URL odkazu se vydává při vytvoření, při rotaci a když jeden odkaz čte token, který má i `invoices:write` (samotný `read` dostane null).

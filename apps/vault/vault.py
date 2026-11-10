@@ -98,7 +98,7 @@ class Vault:
         try:
             cfg = self._read_config()
             return Fernet(key).decrypt(cfg["sentinel"].encode()) == SENTINEL
-        except (InvalidToken, OSError, ValueError, KeyError):
+        except (InvalidToken, OSError, ValueError, KeyError, TypeError, AttributeError):  # a wrong shape too
             return False
 
     def _load_from_file(self):
@@ -157,7 +157,7 @@ class Vault:
         try:
             cfg = self._read_config()
             salt = base64.b64decode(cfg["salt"])
-        except (OSError, ValueError, KeyError):
+        except (OSError, ValueError, KeyError, TypeError, AttributeError):  # a wrong shape stays sealed
             return False
         key = _derive_key(password, salt)
         if not self._key_opens_sentinel(key):

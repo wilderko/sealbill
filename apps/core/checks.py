@@ -1,10 +1,11 @@
 """What production must not run with (audit WEB-8), said by `check --deploy` and `manage.py healthcheck`.
 
-An empty PROXY_SECRET is allowed (residual R2: the Compose path has no Apache in front to send it),
-but it is never silent: without it every local account that can reach the socket can forge the
+An empty PROXY_SECRET is allowed only when ALLOW_EMPTY_PROXY_SECRET says so, and production settings
+refuse to start otherwise (red-team A2; residual R2 was the Compose path, with no Apache in front to
+send it). It is never silent: without it every local account that can reach the socket can forge the
 address the rate limits are keyed on. The `change-me` placeholder that `deploy/env.example` ships is
-refused for PROXY_SECRET and for SECRET_KEY. Only under production settings; the messages name no
-value.
+refused for PROXY_SECRET and for SECRET_KEY, here and at start. Only under production settings; the
+messages name no value.
 """
 from django.conf import settings
 from django.core import checks

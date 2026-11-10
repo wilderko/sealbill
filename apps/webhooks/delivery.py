@@ -157,7 +157,15 @@ def _url_key(url) -> tuple | None:
         return None
     host = host[:-1] if host.endswith(".") else host
     path = parts.path or "/"
-    if any(segment in (".", "..") for segment in unquote(path).replace("\\", "/").split("/")):
+    decoded = path
+    for _ in range(8):  # decoded until it stops changing: a receiver may decode twice (red-team report)
+        once = unquote(decoded)
+        if once == decoded:
+            break
+        decoded = once
+    else:
+        return None  # still changing after eight rounds: no honest receiver URL looks like that
+    if any(segment in (".", "..") for segment in decoded.replace("\\", "/").split("/")):
         return None
     return host, port, path
 

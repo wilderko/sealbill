@@ -9,6 +9,7 @@
 {% if has_failed %}<form method="post" action="{% url 'staff:webhook_retry' pk=endpoint.pk %}" class="row-form">{% csrf_token %}<button type="submit" class="btn">Retry all failed</button></form>{% endif %}
 <form method="post" action="{% url 'staff:webhook_delete' pk=endpoint.pk %}" class="row-form" data-confirm="Delete this webhook endpoint? Its secret and delivery log are deleted.">{% csrf_token %}<button type="submit" class="btn btn--danger-outline">Delete</button></form></div></header>
 {% include "ui/_messages.html" %}
+{% include "staff/_stepup.html" with action="delete this webhook endpoint" %}
 {% if error %}<div class="error" role="alert"><p>{{ error }}</p></div>{% endif %}
 <h2>Last 50 deliveries</h2>
 {% if deliveries %}<div class="card table-card"><div class="table-wrap"><table class="table--rows">

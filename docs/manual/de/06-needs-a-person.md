@@ -29,7 +29,7 @@ Die Warteschlangen werden nur gezeigt, wenn sie Einträge haben; **Show N queues
 
 Zwei Regeln gelten auf der ganzen Seite:
 
-- Eine Zahlung, die **auf einen Menschen wartet**, wird nur von angemeldeten Mitarbeitenden bestätigt oder zugeordnet. Ein Token, auch ein `admin`-Token, bekommt `409 needs_person`, und nichts ändert sich. Auch eine manuelle Zahlung zu erfassen ist Sache eines Menschen.
+- Eine Zahlung, die **auf einen Menschen wartet**, wird nur von angemeldeten Mitarbeitenden bestätigt, zugeordnet oder abgelehnt. Ein Token, auch ein `admin`-Token, bekommt `409 needs_person`, und nichts ändert sich. Auch eine manuelle Zahlung zu erfassen ist Sache eines Menschen.
 - Jede Aktion verlangt eine Notiz, wo es darauf ankommt, und jede Aktion steht im Audit-Log.
 
 Dieselben Warteschlangen lassen sich über die API mit `payments:confirm` bearbeiten, außer den nur für Menschen bestimmten (Kapitel 9). Die beiden Listen, mit denen Sie herausfinden, *warum* etwas hängt, sind **Settings > E-mail outbox** (jeder Brief mit Status, Versuchen und Fehlergrund; Empfänger und Inhalte werden nie gezeigt) und **Settings > Webhook deliveries**.

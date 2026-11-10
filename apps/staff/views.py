@@ -337,7 +337,7 @@ def _decorate_fx_leg(w) -> None:
     w.currency = quote
     w.explanation = fx.leg_explanation(w.name, w.last_error_kind)
     w.leg = FxLegRate.objects.filter(base=base, quote=quote).first()
-    w.can_accept = w.last_error_kind == "jump" and w.leg is not None and bool(w.leg.pending_rate)
+    w.can_accept = w.last_error_kind in ("jump", "changed") and w.leg is not None and bool(w.leg.pending_rate)
 
 
 def _decorate_key(k) -> None:

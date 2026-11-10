@@ -48,4 +48,4 @@ Der Käufer tippt eine E-Mail-Adresse ein, einen Namen, wenn gefragt, beantworte
 - **Unbezahlte Bestellungen werden nach 7 Tagen storniert.** Geld, das später eintrifft, geht zur Prüfung, wie bei jeder stornierten Rechnung.
 - **Erledigung.** Ist *Paid orders need fulfilling* an, stehen bezahlte Bestellungen auf der Seite des Links als zu erledigen, bis jemand **Mark fulfilled** drückt.
 - **Limits**: 5 Checkout-Versuche pro 10 Minuten und Adresse und 50 abgeschlossene Checkouts pro Stunde und Link. Keine Seite darf einen Link einbetten.
-- Einen Link über die API zu erstellen oder zu ändern erfordert `invoices:write`; die URL des Links wird beim Erstellen, beim Rotieren und beim Lesen eines einzelnen Links ausgegeben.
+- Einen Link über die API zu erstellen oder zu ändern erfordert `invoices:write`; die URL des Links wird beim Erstellen, beim Rotieren und beim Lesen eines einzelnen Links durch einen Token ausgegeben, der auch `invoices:write` hat (ein Token mit nur `read` bekommt null).

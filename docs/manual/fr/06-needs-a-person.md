@@ -29,7 +29,7 @@ Les files ne s'affichent que si elles ont des éléments ; **Show N queues** lis
 
 Deux règles valent pour toute la page :
 
-- Un paiement qui **attend une personne** n'est confirmé ou affecté que par un membre du personnel connecté. Un jeton, même `admin`, reçoit `409 needs_person` et rien ne change. Enregistrer un paiement manuel est aussi l'affaire d'une personne.
+- Un paiement qui **attend une personne** n'est confirmé, affecté ou rejeté que par un membre du personnel connecté. Un jeton, même `admin`, reçoit `409 needs_person` et rien ne change. Enregistrer un paiement manuel est aussi l'affaire d'une personne.
 - Chaque action demande une note là où cela compte, et chaque action figure dans le journal d'audit.
 
 Les mêmes files peuvent être traitées par l'API avec `payments:confirm`, sauf celles réservées aux personnes (chapitre 9). Les deux listes qui servent à comprendre *pourquoi* quelque chose est bloqué sont **Settings > E-mail outbox** (chaque lettre, avec son état, ses tentatives et la raison de l'échec ; les destinataires et les contenus ne sont jamais affichés) et **Settings > Webhook deliveries**.

@@ -79,6 +79,7 @@ Ces changements exigent un **super-utilisateur** qui a donné un second facteur 
 - un compte de canal de paiement et ses identifiants (et le webhook BTCPay, qui stocke un secret) ;
 - l'indicateur d'émetteur pour résidents fiscaux américains d'une organisation et ses hôtes de retour ;
 - un compte bancaire ou un lien de paiement fiat d'une organisation ;
+- créer ou supprimer un webhook (là où partent les événements d'une organisation) ;
 - ajouter une adresse e-mail à un contact ou en faire la principale (les e-mails, les liens de paiement et les PDF y vont) ;
 - supprimer le second facteur d'un autre membre du personnel.
 

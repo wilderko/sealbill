@@ -5,6 +5,7 @@
 <header class="page-head"><div class="page-head__text"><h1>Webhooks</h1>
 <p class="page-head__meta">Where an organization's events are sent. The address must be https on port 443 and public. The secret is shown once.</p></div></header>
 {% include "ui/_messages.html" %}
+{% include "staff/_stepup.html" with action="create or delete a webhook endpoint" %}
 {% if error %}<div class="error" role="alert"><p>{{ error }}</p></div>{% endif %}
 <section class="card form-card narrow"><div class="card-body"><h2 class="card-title">New endpoint</h2>
 <form method="post" action="{% url 'staff:webhook_new' %}" autocomplete="off">{% csrf_token %}<div class="form-grid">

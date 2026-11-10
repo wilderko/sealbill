@@ -82,6 +82,18 @@ class ReadTests(ApiLinkBase):
         self.assertEqual(writer.get(f"/api/v1/payment-links/{link.pk}").status_code, 403)
         self.assertEqual(APIClient().get("/api/v1/payment-links").status_code, 401)
 
+    def test_a_read_only_token_does_not_get_the_links_url(self):
+        # Red-team report 2026-11-10, A4: the URL lets anyone buy, so only a token that may manage
+        # links gets it; reading the link's settings stays `read`.
+        link, _ = self.make()
+        reader = self.client_for(scopes=("read",)).get(f"/api/v1/payment-links/{link.pk}")
+        self.assertEqual(reader.status_code, 200)
+        self.assertIsNone(reader.json()["url"])
+        both = self.client_for(scopes=("read", "invoices:write")).get(f"/api/v1/payment-links/{link.pk}")
+        self.assertEqual(both.json()["url"], link.url_for(link.token))
+        admin = self.client_for(scopes=("admin",)).get(f"/api/v1/payment-links/{link.pk}")
+        self.assertEqual(admin.json()["url"], link.url_for(link.token))
+
     def test_invoices_carry_the_link_and_coupon(self):
         link, _ = self.make()
         links.add_coupon(link, code="SAVE10", percent_bps=1000)

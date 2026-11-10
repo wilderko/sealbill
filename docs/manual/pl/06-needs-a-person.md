@@ -29,7 +29,7 @@ Kolejki są pokazywane tylko wtedy, gdy mają pozycje; **Show N queues** wymieni
 
 Dwie zasady obowiązują na całej stronie:
 
-- Płatność, która **czeka na człowieka**, jest potwierdzana lub przypisywana tylko przez zalogowanego pracownika. Token, nawet `admin`, dostaje `409 needs_person` i nic się nie zmienia. Rejestracja płatności ręcznej to również zadanie człowieka.
+- Płatność, która **czeka na człowieka**, jest potwierdzana, przypisywana lub odrzucana tylko przez zalogowanego pracownika. Token, nawet `admin`, dostaje `409 needs_person` i nic się nie zmienia. Rejestracja płatności ręcznej to również zadanie człowieka.
 - Każda akcja wymaga notatki tam, gdzie ma to znaczenie, i każda akcja jest w dzienniku audytu.
 
 Te same kolejki można obsługiwać przez API z `payments:confirm`, z wyjątkiem tych zarezerwowanych dla człowieka (rozdział 9). Dwie listy, których użyjesz, aby ustalić, *dlaczego* coś utknęło, to **Settings > E-mail outbox** (każdy list ze stanem, próbami i powodem niepowodzenia; odbiorcy i treści nigdy nie są pokazywani) oraz **Settings > Webhook deliveries**.

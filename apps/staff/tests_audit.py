@@ -228,14 +228,15 @@ class FloodOrderTest(LoginBase):
     def test_a_refused_address_charges_no_username_bucket(self):
         for i in range(10):
             self.client.post("/login/", {"username": f"name{i}", "password": "x"}, HTTP_X_FORWARDED_FOR="203.0.113.66")
-        store = caches["ratelimit"]
+        from apps.vault.ratelimit import attempts_so_far
+
         for i in range(10, 40):
             r = self.client.post("/login/", {"username": f"name{i}", "password": "x"},
                                  HTTP_X_FORWARDED_FOR="203.0.113.66")
             self.assertEqual(r.status_code, 429)
-            self.assertIsNone(store.get(f"rl:staff-login-user:name{i}"))
+            self.assertEqual(attempts_so_far("staff-login-user", f"name{i}"), 0)
         # ...and the names of the accepted ten are still counted.
-        self.assertIsNotNone(store.get("rl:staff-login-user:name0"))
+        self.assertEqual(attempts_so_far("staff-login-user", "name0"), 1)
 
 
 DB_CACHES = {

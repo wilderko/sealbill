@@ -1,5 +1,4 @@
 """The production cache configuration: database tables, never the vault-key tmpfs."""
-import datetime
 import errno
 import shutil
 import tempfile
@@ -13,6 +12,7 @@ from django.db import connection
 from django.test import TestCase, override_settings
 
 from apps.core import jobs, worker
+from apps.vault.models import RateCounter
 from apps.vault.ratelimit import rate_limited
 from apps.vault.vault import vault
 from config.settings import base as base_settings
@@ -42,23 +42,19 @@ class ProductionCacheTests(TestCase):
         for _ in range(3):
             self.assertFalse(rate_limited("portal", "1.2.3.4:abcd", 3, 60))
         self.assertTrue(rate_limited("portal", "1.2.3.4:abcd", 3, 60))
-        self.assertEqual(rows("pay_ratelimit"), 1)
-        self.assertEqual(rows("pay_cache"), 0)
+        self.assertEqual(rows("pay_rate_counter"), 1)  # one row, counted in place (red-team A1)
+        self.assertEqual((rows("pay_ratelimit"), rows("pay_cache")), (0, 0))
 
     def test_expired_rate_limit_entries_are_purged_and_live_ones_kept(self):
         for i in range(5):
             rate_limited("portal", f"10.0.0.{i}:abcd", 60, 60)
         cache.set(jobs.SEALED_KEY, True, timeout=None)  # never expires
-        self.assertEqual(rows("pay_ratelimit"), 5)
+        self.assertEqual(rows("pay_rate_counter"), 5)
         rate_limited("portal", "10.0.0.99:abcd", 60, 60)  # still inside its window
         with connection.cursor() as cur:  # the first five windows ended long ago
-            cur.execute(
-                "UPDATE pay_ratelimit SET expires = %s WHERE cache_key NOT LIKE %s",
-                [connection.ops.adapt_datetimefield_value(datetime.datetime(2000, 1, 1, tzinfo=datetime.UTC)),
-                 "%10.0.0.99%"],
-            )
+            cur.execute("UPDATE pay_rate_counter SET window_end = 0 WHERE key NOT LIKE %s", ["%10.0.0.99%"])
         jobs.cache_purge()
-        self.assertEqual(rows("pay_ratelimit"), 1)
+        self.assertEqual(rows("pay_rate_counter"), 1)
         self.assertTrue(cache.get(jobs.SEALED_KEY))
 
     def test_cache_purge_is_an_hourly_worker_job(self):
@@ -109,7 +105,7 @@ class UnsealWithoutCacheTests(TestCase):
 
     def test_unlock_works_when_the_rate_limit_store_fails(self):
         full = OSError(errno.ENOSPC, "No space left on device")
-        with mock.patch.object(caches["ratelimit"], "get", side_effect=full), \
+        with mock.patch.object(RateCounter.objects, "filter", side_effect=full), \
                 self.assertLogs("apps.vault.ratelimit", "ERROR") as logs:
             r = self.client.post("/unlock/", {"password": PW})
         self.assertEqual(r.status_code, 302)
@@ -117,7 +113,7 @@ class UnsealWithoutCacheTests(TestCase):
         self.assertIn("OSError", logs.output[0])
 
     def test_the_fallback_still_limits_guessing(self):
-        with mock.patch.object(caches["ratelimit"], "get", side_effect=OSError("down")), \
+        with mock.patch.object(RateCounter.objects, "filter", side_effect=OSError("down")), \
                 self.assertLogs("apps.vault.ratelimit", "ERROR"), self.assertLogs("apps.vault.unlock_attempts", "WARNING"):
             codes = [self.client.post("/unlock/", {"password": "bad"}).status_code for _ in range(6)]
         self.assertEqual(codes, [401] * 5 + [429])

@@ -537,13 +537,18 @@ class PaymentLinkOutSerializer(serializers.Serializer):
 
 
 class PaymentLinkDetailSerializer(PaymentLinkOutSerializer):
-    """One link. `url` is the only place the link's secret leaves the system: whoever holds it can buy."""
+    """One link. `url` is the only place the link's secret leaves the system: whoever holds it can buy.
+    A token that may only read gets null (context `show_url` false, red-team A4)."""
 
-    url = serializers.SerializerMethodField(help_text="The public page. Null when the stored copy cannot be opened; rotate.")
+    url = serializers.SerializerMethodField(
+        help_text="The public page. Null for a token without `invoices:write`, and when the stored copy "
+                  "cannot be opened (rotate).")
 
     def get_url(self, link) -> str | None:
         from apps.vault.fields import UndecryptableValue
 
+        if not self.context.get("show_url", True):
+            return None
         try:
             return link.url_for(link.token) if link.token else None
         except UndecryptableValue:
