@@ -53,7 +53,7 @@ Počítajú sa iba **potvrdené** platby. Odoslanú faktúru už nemožno upravi
 Platobné okno má až tri záložky, **krypto prvé**:
 
 - **Platba kryptomenou**: klient vyberie sieť a token, napr. „USDC on Arbitrum One".
-- **Bankový prevod**: bankový účet v mene faktúry (príjemca, číslo účtu, banka, suma, každé s tlačidlom kopírovania), **referencia platby** (referencia ISO 11649 napr. `RF3120260001`) a vaše pokyny v jazyku klienta.
+- **Bankový prevod**: bankový účet v mene faktúry (príjemca, číslo účtu, banka, suma, každé s tlačidlom kopírovania), **referencia platby** (referencia ISO 11649 napr. `RF3120260001`) a vaše pokyny v jazyku klienta. Pri EUR na IBAN krajiny SEPA pribudnú tri QR kódy (PAY by square, QR Platba a EPC QR), pri CZK na český IBAN kód QR Platba: klient jeden naskenuje v bankovej aplikácii a účet, zostávajúca suma aj referencia sa vyplnia samy. Rovnaké kódy sú vytlačené aj na PDF faktúre.
 - **Online platba**: fiat odkazy (Revolut, PayPal a pod.).
 
 ![Bankový prevod](../img/pay-bank.png)

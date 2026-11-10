@@ -51,7 +51,7 @@ Al final de una organización hay dos listas. Ambas se **desactivan, nunca se bo
 
 ![Cuentas bancarias y enlaces de pago de una organización](../img/org-accounts.png)
 
-**Add bank account** pide una etiqueta, una moneda, el beneficiario, el IBAN o número de cuenta, el banco, su SWIFT/BIC y, opcionalmente, un banco intermediario. Una cuenta bancaria se ofrece en facturas **de su propia moneda**. Las *instrucciones de pago* existen una vez por idioma: la página de pago muestra la del idioma del lector y recurre al inglés; deje un idioma vacío para omitirlo.
+**Add bank account** pide una etiqueta, una moneda, el beneficiario, el IBAN o número de cuenta, el banco, su SWIFT/BIC y, opcionalmente, un banco intermediario. Una cuenta bancaria se ofrece en facturas **de su propia moneda**. Con un IBAN, la página de pago y la factura en PDF muestran también códigos QR bancarios: en EUR para el IBAN de un país SEPA, en CZK para una cuenta checa (capítulo 4). Las *instrucciones de pago* existen una vez por idioma: la página de pago muestra la del idioma del lector y recurre al inglés; deje un idioma vacío para omitirlo.
 
 ![Una cuenta bancaria nueva](../img/bank-new.png)
 

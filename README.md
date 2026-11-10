@@ -45,7 +45,7 @@ Each organization configures its own; an invoice offers all of them or a chosen 
 
 | Kind | What the client gets |
 |---|---|
-| Bank transfer | The organization's account for the invoice's currency: beneficiary, account number or IBAN, bank, SWIFT, an intermediary bank if any. Stored encrypted. Staff record the payment when it arrives. |
+| Bank transfer | The organization's account for the invoice's currency: beneficiary, account number or IBAN, bank, SWIFT, an intermediary bank if any. Stored encrypted. For EUR to a SEPA IBAN the pay page and the PDF also print PAY by square, QR Platba and EPC QR codes (QR Platba alone for CZK to a Czech IBAN), carrying the amount still due and the reference. Staff record the payment when it arrives. |
 | Fiat payment links | A link to Revolut, N26, PayPal, Wise or any other payment page, with instructions, per currency. |
 | Stablecoins and ETH on EVM chains | Ethereum (ETH, USDT, USDC), Arbitrum One (ETH, USDC, USDT), Optimism (ETH, USDC, USDT), Base (ETH, USDC), Polygon PoS (USDC, USDT), BNB Smart Chain (USDT, USDC as Binance-Peg tokens), Avalanche C-Chain (USDC, USDT). One receiving address per rail account. |
 | Tron | USDT (TRC-20). |

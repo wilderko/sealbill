@@ -166,6 +166,28 @@ Everything comes from environment variables read in `config/settings/base.py`
 (`.env` in development and Compose, a systemd `EnvironmentFile` in production).
 The `.env` file is git-ignored; nothing secret belongs in the repository.
 
+## Bank transfers and their QR codes
+
+A bank account (Settings > Organizations > Add bank account) is offered on invoices in its own currency.
+The pay page and the PDF invoice show its details and the payment reference (ISO 11649, `RF…`). A person
+records the payment when it arrives, because Sealbill does not read the bank.
+
+When the account number is a valid IBAN, the page and the PDF also print QR codes that a banking app reads,
+so the client scans instead of typing (`apps/invoices/bank_qr.py`):
+
+| Invoice | Account | Codes |
+|---|---|---|
+| EUR | IBAN of a SEPA country | PAY by square (Slovakia), QR Platba (Czech Republic), EPC QR / GiroCode (SEPA) |
+| CZK | Czech IBAN | QR Platba |
+| anything else | | none |
+
+Each code carries the IBAN, the BIC when it is valid, the beneficiary, **the amount still due**, the
+currency and the payment reference. PAY by square and QR Platba also carry a variable symbol: the digits
+of the invoice number, when there are at most ten (`2026-0007` gives `20260007`). An IBAN outside SEPA gets
+no code at all, because a Slovak or Czech app would refuse it or turn it into a SWIFT payment with fees.
+PAY by square is written as version 1.1.0 and its encoder is pinned to the bysquare reference library's
+golden string (`apps/invoices/tests_bank_qr.py`). There is no setting to switch the codes off.
+
 ## Crypto rails
 
 An invoice can offer crypto next to bank transfers and card links. A client picks a network and

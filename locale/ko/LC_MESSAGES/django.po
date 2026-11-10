@@ -1167,3 +1167,24 @@ msgstr "이미 결제하셨다면 이 메시지는 무시해 주세요."
 #, python-format
 msgid "Reminder: payment request %(ref)s from %(org)s"
 msgstr "결제 안내: %(org)s의 결제 요청 %(ref)s"
+
+#: apps/invoices/bank_qr.py:36
+msgid "PAY by square (Slovakia)"
+msgstr "PAY by square (슬로바키아)"
+
+#: apps/invoices/bank_qr.py:37
+msgid "QR Platba (Czech Republic)"
+msgstr "QR Platba (체코)"
+
+#: apps/invoices/bank_qr.py:38
+msgid "EPC QR (SEPA)"
+msgstr "EPC QR 코드 (SEPA)"
+
+#: templates/portal/pay.html:62
+#, python-format
+msgid "%(standard)s: QR code with this transfer's details"
+msgstr "%(standard)s: 이 이체 정보가 담긴 QR 코드"
+
+#: templates/portal/pay.html:63
+msgid "Scan one of these codes in your banking app: it fills in the account, the amount and the reference."
+msgstr "은행 앱에서 이 코드 중 하나를 스캔해 주십시오. 계좌, 금액, 결제 참조번호가 자동으로 입력됩니다."

@@ -51,7 +51,7 @@ Dole pri organizácii sú dva zoznamy. Oba sa **deaktivujú, nikdy nemažú**: v
 
 ![Bankové účty a platobné odkazy organizácie](../img/org-accounts.png)
 
-**Add bank account** vyžaduje označenie, menu, príjemcu, IBAN alebo číslo účtu, banku, jej SWIFT/BIC a voliteľne sprostredkujúcu banku. Bankový účet sa ponúka na faktúrach **vo svojej mene**. *Pokyny k platbe* existujú po jednom pre každý jazyk: platobná stránka zobrazí pokyny v jazyku čitateľa a ako záložné anglické; jazyk nechajte prázdny, ak ho chcete vynechať.
+**Add bank account** vyžaduje označenie, menu, príjemcu, IBAN alebo číslo účtu, banku, jej SWIFT/BIC a voliteľne sprostredkujúcu banku. Bankový účet sa ponúka na faktúrach **vo svojej mene**. Ak zadáte IBAN, platobná stránka aj PDF faktúra ukážu bankové QR kódy, pri EUR pre IBAN krajiny SEPA a pri CZK pre český účet (kapitola 4). *Pokyny k platbe* existujú po jednom pre každý jazyk: platobná stránka zobrazí pokyny v jazyku čitateľa a ako záložné anglické; jazyk nechajte prázdny, ak ho chcete vynechať.
 
 ![Nový bankový účet](../img/bank-new.png)
 

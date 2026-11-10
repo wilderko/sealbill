@@ -70,7 +70,9 @@ The payment box has up to three tabs, **crypto first**:
 - **Pay with crypto**: the client picks a network and a token, for example "USDC on Arbitrum One".
 - **Bank transfer**: the bank account of the invoice's currency (beneficiary, account number, bank, amount, each with a
   copy button), the **payment reference** (an ISO 11649 reference such as `RF3120260001`) and your instructions in the
-  client's language.
+  client's language. For EUR to the IBAN of a SEPA country three QR codes are added (PAY by square, QR Platba and EPC
+  QR), for CZK to a Czech IBAN the QR Platba code: the client scans one in their banking app, and the account, the
+  amount still due and the reference are filled in. The PDF invoice prints the same codes.
 - **Online payment**: the fiat links (Revolut, PayPal and so on).
 
 ![Bank transfer](../img/pay-bank.png)

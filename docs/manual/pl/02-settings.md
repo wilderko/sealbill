@@ -51,7 +51,7 @@ Na dole organizacji są dwie listy. Obie są **dezaktywowane, nigdy usuwane**: w
 
 ![Konta bankowe i linki do płatności organizacji](../img/org-accounts.png)
 
-**Add bank account** prosi o etykietę, walutę, beneficjenta, IBAN lub numer konta, bank, jego SWIFT/BIC i opcjonalnie bank pośredniczący. Konto bankowe jest oferowane na fakturach **w swojej walucie**. *Instrukcje płatności* istnieją po jednej na język: strona płatności pokazuje tę w języku czytelnika i wraca do angielskiej; zostaw język pusty, aby go pominąć.
+**Add bank account** prosi o etykietę, walutę, beneficjenta, IBAN lub numer konta, bank, jego SWIFT/BIC i opcjonalnie bank pośredniczący. Konto bankowe jest oferowane na fakturach **w swojej walucie**. Z numerem IBAN strona płatności i faktura PDF pokazują też bankowe kody QR: w EUR dla IBAN kraju SEPA, w CZK dla czeskiego konta (rozdział 4). *Instrukcje płatności* istnieją po jednej na język: strona płatności pokazuje tę w języku czytelnika i wraca do angielskiej; zostaw język pusty, aby go pominąć.
 
 ![Nowe konto bankowe](../img/bank-new.png)
 

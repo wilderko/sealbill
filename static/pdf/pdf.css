@@ -19,3 +19,7 @@ td { padding: 1.5mm 1mm; vertical-align: top; border-bottom: 0.1mm solid #ddd; }
 .method { margin-bottom: 3mm; }
 .paid { display: inline-block; border: 0.8mm solid #1b7a3a; color: #1b7a3a; font-weight: bold; font-size: 18pt; padding: 1mm 5mm; transform: rotate(-6deg); }
 .footer { margin-top: 10mm; color: #555; font-size: 8.5pt; }
+.bank-qr { margin-top: 2mm; }
+.bank-qr__item { display: inline-block; width: 30mm; margin-right: 4mm; text-align: center; vertical-align: top; }
+.bank-qr__item img { width: 28mm; height: 28mm; }
+.bank-qr__label { font-size: 7pt; color: #444; }

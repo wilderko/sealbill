@@ -51,7 +51,7 @@ Unten bei einer Organisation stehen zwei Listen. Beide werden **deaktiviert, nie
 
 ![Bankkonten und Zahlungslinks einer Organisation](../img/org-accounts.png)
 
-**Add bank account** verlangt eine Bezeichnung, eine Währung, den Begünstigten, IBAN oder Kontonummer, die Bank, deren SWIFT/BIC und optional eine zwischengeschaltete Bank. Ein Bankkonto wird auf Rechnungen **in seiner eigenen Währung** angeboten. *Zahlungshinweise* gibt es einmal pro Sprache: Die Zahlungsseite zeigt den in der Sprache des Lesers und fällt auf Englisch zurück; lassen Sie eine Sprache leer, um sie wegzulassen.
+**Add bank account** verlangt eine Bezeichnung, eine Währung, den Begünstigten, IBAN oder Kontonummer, die Bank, deren SWIFT/BIC und optional eine zwischengeschaltete Bank. Ein Bankkonto wird auf Rechnungen **in seiner eigenen Währung** angeboten. Mit einer IBAN zeigen Zahlungsseite und PDF-Rechnung auch Bank-QR-Codes, bei EUR für die IBAN eines SEPA-Landes, bei CZK für ein tschechisches Konto (Kapitel 4). *Zahlungshinweise* gibt es einmal pro Sprache: Die Zahlungsseite zeigt den in der Sprache des Lesers und fällt auf Englisch zurück; lassen Sie eine Sprache leer, um sie wegzulassen.
 
 ![Ein neues Bankkonto](../img/bank-new.png)
 

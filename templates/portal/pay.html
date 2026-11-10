@@ -58,6 +58,8 @@
 {% if m.intermediary_bank_name or m.intermediary_swift or m.intermediary_account %}<div><dt>{% translate "Intermediary bank" %}</dt><dd>{{ m.intermediary_bank_name }}{% if m.intermediary_swift %} · SWIFT <span class="mono">{{ m.intermediary_swift }}</span>{% endif %}{% if m.intermediary_account %} · {% translate "Account" %} <span class="mono">{{ m.intermediary_account }}</span>{% endif %}</dd></div>{% endif %}
 <div><dt>{% translate "Amount" %}</dt><dd class="kv-copy"><span class="strong">{{ amount_due }}</span><button type="button" class="btn btn--sm btn--ghost copy-btn" data-copy="{{ amount_due_plain }}" data-done="{% translate 'Copied' %}"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>{% translate "Copy" %}</span></button></dd></div>
 </dl>
+{% if m.qr_codes %}<div class="bank-qr">{% for c in m.qr_codes %}<figure class="bank-qr__item"><img class="qr" src="{{ c.image }}" width="148" height="148" alt="{% blocktranslate with standard=c.label %}{{ standard }}: QR code with this transfer's details{% endblocktranslate %}"><figcaption>{{ c.label }}</figcaption></figure>{% endfor %}</div>
+<p class="hint">{% translate "Scan one of these codes in your banking app: it fills in the account, the amount and the reference." %}</p>{% endif %}
 <p class="hint">{% translate "When you send the transfer, choose OUR as the bank charges option, so that the full amount arrives." %}</p>
 {% if m.instructions %}<div class="pre method-note">{{ m.instructions }}</div>{% endif %}
 </div>{% endfor %}

@@ -53,7 +53,7 @@ Liczą się tylko płatności **potwierdzone**. Wysłanej faktury nie można ju�
 Pole płatności ma do trzech zakładek, **krypto na pierwszym miejscu**:
 
 - **Płatność kryptowalutą**: klient wybiera sieć i token, np. „USDC on Arbitrum One".
-- **Przelew bankowy**: konto bankowe w walucie faktury (beneficjent, numer konta, bank, kwota, każde z przyciskiem kopiowania), **tytuł płatności** (odnośnik ISO 11649, np. `RF3120260001`) i Twoje instrukcje w języku klienta.
+- **Przelew bankowy**: konto bankowe w walucie faktury (beneficjent, numer konta, bank, kwota, każde z przyciskiem kopiowania), **tytuł płatności** (odnośnik ISO 11649, np. `RF3120260001`) i Twoje instrukcje w języku klienta. Przy EUR na IBAN kraju SEPA dochodzą trzy kody QR (PAY by square, QR Platba i EPC QR), przy CZK na czeski IBAN kod QR Platba: klient skanuje jeden z nich w aplikacji bankowej, a konto, pozostała kwota i tytuł płatności wypełniają się same. Faktura PDF zawiera te same kody.
 - **Płatność online**: fiat linki (Revolut, PayPal i tak dalej).
 
 ![Przelew bankowy](../img/pay-bank.png)

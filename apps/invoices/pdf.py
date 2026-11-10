@@ -96,8 +96,23 @@ def _context(invoice, language):
                   "has_discount": bool(t.discount), "tax": format_money(t.tax, cur),
                   "total": format_money(t.total, cur)},
         "reference": payment_reference(invoice),
-        "methods": snapshot.methods_in(frozen, language),
+        "methods": _with_bank_qr(invoice, snapshot.methods_in(frozen, language)),
     }
+
+
+def _with_bank_qr(invoice, methods: list[dict]) -> list[dict]:
+    """Each bank method with the QR codes a banking app reads (`bank_qr`), for the amount still due."""
+    from apps.invoices import bank_qr
+    from apps.payments.services import remaining_minor
+
+    due = remaining_minor(invoice)
+    number = invoice.number if invoice.kind == "invoice" else ""
+    reference = payment_reference(invoice)
+    for m in methods:
+        if m.get("kind") == "bank":
+            m["qr_codes"] = bank_qr.codes_for(m, amount_minor=due, currency=invoice.currency,
+                                              reference=reference, invoice_number=number)
+    return methods
 
 
 def _render(template, invoice, language) -> bytes:

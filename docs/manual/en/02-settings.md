@@ -62,10 +62,11 @@ showing the account it named.
 
 ![Bank accounts and payment links of an organization](../img/org-accounts.png)
 
-**Add bank account** takes a label, a currency, the beneficiary, the IBAN or account number, the bank, its SWIFT/BIC
-and an optional intermediary bank. A bank account is offered on invoices in **its own currency**. *Payment instructions*
-exist once per language: the pay page shows the one in the reader's language and falls back to English; leave a
-language empty to leave it out.
+**Add bank account** takes a label, a currency, the beneficiary, the IBAN or account number, the bank, its SWIFT/BIC and
+an optional intermediary bank. A bank account is offered on invoices in **its own currency**. With an IBAN, the pay page
+and the PDF invoice also show bank QR codes: in EUR for the IBAN of a SEPA country, in CZK for a Czech account (chapter
+4). *Payment instructions* exist once per language: the pay page shows the one in the reader's language and falls back
+to English; leave a language empty to leave it out.
 
 ![A new bank account](../img/bank-new.png)
 

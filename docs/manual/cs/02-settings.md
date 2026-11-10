@@ -51,7 +51,7 @@ Dole u organizace jsou dva seznamy. Oba se **deaktivují, nikdy nemažou**: vyst
 
 ![Bankovní účty a platební odkazy organizace](../img/org-accounts.png)
 
-**Add bank account** vyžaduje označení, měnu, příjemce, IBAN nebo číslo účtu, banku, její SWIFT/BIC a volitelně zprostředkující banku. Bankovní účet se nabízí na fakturách **ve své měně**. *Pokyny k platbě* existují po jednom pro každý jazyk: platební stránka zobrazí pokyny v jazyce čtenáře a jako záložní anglické; jazyk nechte prázdný, chcete-li jej vynechat.
+**Add bank account** vyžaduje označení, měnu, příjemce, IBAN nebo číslo účtu, banku, její SWIFT/BIC a volitelně zprostředkující banku. Bankovní účet se nabízí na fakturách **ve své měně**. Zadáte-li IBAN, platební stránka i PDF faktura ukážou bankovní QR kódy, u EUR pro IBAN země SEPA a u CZK pro český účet (kapitola 4). *Pokyny k platbě* existují po jednom pro každý jazyk: platební stránka zobrazí pokyny v jazyce čtenáře a jako záložní anglické; jazyk nechte prázdný, chcete-li jej vynechat.
 
 ![Nový bankovní účet](../img/bank-new.png)
 

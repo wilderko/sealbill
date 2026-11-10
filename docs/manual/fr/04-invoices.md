@@ -53,7 +53,7 @@ La **page de facture** `/i/…` montre le document, un PDF à télécharger et *
 Le cadre de paiement a jusqu'à trois onglets, **crypto en premier** :
 
 - **Payer en cryptomonnaie** : le client choisit un réseau et un jeton, par exemple « USDC on Arbitrum One ».
-- **Virement bancaire** : le compte bancaire de la devise de la facture (bénéficiaire, numéro de compte, banque, montant, chacun avec un bouton de copie), la **référence de paiement** (une référence ISO 11649 comme `RF3120260001`) et vos instructions dans la langue du client.
+- **Virement bancaire** : le compte bancaire de la devise de la facture (bénéficiaire, numéro de compte, banque, montant, chacun avec un bouton de copie), la **référence de paiement** (une référence ISO 11649 comme `RF3120260001`) et vos instructions dans la langue du client. En EUR vers l'IBAN d'un pays SEPA s'ajoutent trois codes QR (PAY by square, QR Platba et EPC QR), en CZK vers un IBAN tchèque le code QR Platba : le client en scanne un dans son application bancaire, et le compte, le montant restant dû et la référence se remplissent seuls. La facture PDF imprime les mêmes codes.
 - **Paiement en ligne** : les liens fiat (Revolut, PayPal, etc.).
 
 ![Virement bancaire](../img/pay-bank.png)

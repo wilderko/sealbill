@@ -1203,3 +1203,24 @@ msgstr "Если вы уже оплатили, просто проигнорир
 #, python-format
 msgid "Reminder: payment request %(ref)s from %(org)s"
 msgstr "Напоминание: запрос на оплату %(ref)s от %(org)s"
+
+#: apps/invoices/bank_qr.py:36
+msgid "PAY by square (Slovakia)"
+msgstr "PAY by square (Словакия)"
+
+#: apps/invoices/bank_qr.py:37
+msgid "QR Platba (Czech Republic)"
+msgstr "QR Platba (Чехия)"
+
+#: apps/invoices/bank_qr.py:38
+msgid "EPC QR (SEPA)"
+msgstr "QR-код EPC (SEPA)"
+
+#: templates/portal/pay.html:62
+#, python-format
+msgid "%(standard)s: QR code with this transfer's details"
+msgstr "%(standard)s: QR-код с данными этого перевода"
+
+#: templates/portal/pay.html:63
+msgid "Scan one of these codes in your banking app: it fills in the account, the amount and the reference."
+msgstr "Отсканируйте один из этих кодов в приложении своего банка: оно заполнит счёт, сумму и назначение платежа."

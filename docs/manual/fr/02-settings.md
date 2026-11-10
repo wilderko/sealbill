@@ -51,7 +51,7 @@ En bas d'une organisation figurent deux listes. Les deux sont **désactivées, j
 
 ![Comptes bancaires et liens de paiement d'une organisation](../img/org-accounts.png)
 
-**Add bank account** demande un libellé, une devise, le bénéficiaire, l'IBAN ou le numéro de compte, la banque, son SWIFT/BIC et éventuellement une banque intermédiaire. Un compte bancaire est proposé sur les factures **dans sa propre devise**. Les *instructions de paiement* existent une fois par langue : la page de paiement affiche celle de la langue du lecteur et se rabat sur l'anglais ; laissez une langue vide pour l'omettre.
+**Add bank account** demande un libellé, une devise, le bénéficiaire, l'IBAN ou le numéro de compte, la banque, son SWIFT/BIC et éventuellement une banque intermédiaire. Un compte bancaire est proposé sur les factures **dans sa propre devise**. Avec un IBAN, la page de paiement et la facture PDF affichent aussi des codes QR bancaires : en EUR pour l'IBAN d'un pays SEPA, en CZK pour un compte tchèque (chapitre 4). Les *instructions de paiement* existent une fois par langue : la page de paiement affiche celle de la langue du lecteur et se rabat sur l'anglais ; laissez une langue vide pour l'omettre.
 
 ![Un nouveau compte bancaire](../img/bank-new.png)
 

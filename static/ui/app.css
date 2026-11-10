@@ -698,6 +698,12 @@ form.htmx-request button.choice::after {
 .quote-amount { font-size: var(--fs-2xl); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; white-space: nowrap; }
 .quote-qr { margin: 0; padding: 10px; border-radius: var(--r); background: #ffffff; border: 1px solid var(--line); line-height: 0; }
 .quote-qr .qr { display: block; width: 168px; height: 168px; }
+/* Bank-transfer QR codes (PAY by square, QR Platba, EPC): one row of up to three, white behind each code.
+   On a phone they shrink rather than wrap: the client there saves one, a scan needs another screen. */
+.bank-qr { display: grid; grid-template-columns: repeat(3, minmax(0, 156px)); gap: 8px; margin: 14px 0 10px; }
+.bank-qr__item { min-width: 0; margin: 0; padding: 8px 8px 6px; border-radius: var(--r); background: #ffffff; border: 1px solid var(--line); text-align: center; }
+.bank-qr__item .qr { display: block; width: 100%; height: auto; aspect-ratio: 1; }
+.bank-qr__item figcaption { margin-top: 6px; font-size: 0.75rem; line-height: 1.3; color: #3a4252; overflow-wrap: anywhere; }
 .warning {
   display: flex; gap: var(--s-2); align-items: flex-start; margin: var(--s-4) 0; padding: 10px 12px;
   background: var(--st-attention-bg); color: var(--st-attention-fg); border-radius: var(--r); font-size: var(--fs-md);
