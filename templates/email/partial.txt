@@ -1,0 +1,12 @@
+{% load i18n %}{% autoescape off %}{% if name %}{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}{% else %}{% translate "Hello," %}{% endif %}
+
+{% blocktranslate %}{{ org }} has received a partial payment for {{ ref }}.{% endblocktranslate %}
+
+{% blocktranslate %}Amount received: {{ paid }}{% endblocktranslate %}
+
+{% blocktranslate %}Still outstanding: {{ remaining }}{% endblocktranslate %}
+
+{% if pay_url %}{% translate "You can pay the rest here:" %}
+{{ pay_url }}{% else %}{% translate "To pay the rest, please use the payment link from our original e-mail." %}{% endif %}
+
+{{ org }}{% endautoescape %}

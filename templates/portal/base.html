@@ -1,0 +1,17 @@
+{% extends "ui/base.html" %}{% load i18n static %}
+{% block lang %}{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}{% endblock %}
+{% block meta %}<meta name="referrer" content="same-origin">
+{% endblock %}
+{% block scripts %}<script src="{% static 'portal/quote.js' %}" nonce="{{ csp_nonce }}" defer></script>
+{% endblock %}
+{% block body_class %}client{% endblock %}
+{% block body %}<div class="client-shell{% block shell_class %}{% endblock %}">
+{% if org_name or org_logo %}<header class="client-head">
+<div class="org">{% if org_logo %}<img class="org-logo" src="{{ org_logo }}" alt="">{% endif %}<span class="org-name">{{ org_name }}</span>{% block head_doc %}{% endblock %}</div>
+</header>{% endif %}
+<main>
+{% block content %}{% endblock %}
+</main>
+<footer class="client-foot">{% block foot %}{% include "ui/_theme_switch.html" %}{% endblock %}</footer>
+</div>
+{% endblock %}

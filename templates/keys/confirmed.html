@@ -1,0 +1,10 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "Key confirmed" %}{% endblock %}
+{% block content %}
+<div class="card narrow-card"><div class="card-body">
+<div class="card-icon card-icon--ok" aria-hidden="true"><svg class="icon"><use href="#i-check-circle"/></svg></div>
+<h1>{% translate "Key confirmed" %}</h1>
+<div class="fingerprint"><span class="label">{% translate "Fingerprint" %}</span><span class="mono">{{ fingerprint }}</span></div>
+<p>{% translate "From now on, our e-mails to you are encrypted to this key." %}</p>
+</div></div>
+{% endblock %}

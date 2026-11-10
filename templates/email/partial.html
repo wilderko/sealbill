@@ -1,0 +1,6 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>{% if name %}{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}{% else %}{% translate "Hello," %}{% endif %}</p><p>{% blocktranslate %}{{ org }} has received a partial payment for {{ ref }}.{% endblocktranslate %}</p><p>{% blocktranslate %}Amount received: {{ paid }}{% endblocktranslate %}</p><p>{% blocktranslate %}Still outstanding: {{ remaining }}{% endblocktranslate %}</p>{% if pay_url %}<p>{% translate "You can pay the rest here:" %}<br><a href="{{ pay_url }}">{{ pay_url }}</a></p>{% else %}<p>{% translate "To pay the rest, please use the payment link from our original e-mail." %}</p>{% endif %}
+<p>{{ org }}</p>
+</body></html>

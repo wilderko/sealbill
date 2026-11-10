@@ -1,0 +1,13 @@
+{% load i18n %}{% autoescape off %}{% if name %}{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}{% else %}{% translate "Hello," %}{% endif %}
+
+{% blocktranslate %}Thank you. {{ org }} has received your payment for {{ ref }}.{% endblocktranslate %}
+
+{% blocktranslate %}Amount paid: {{ total }}{% endblocktranslate %}
+
+{% if view_url %}{% translate "View the receipt online:" %}
+{{ view_url }}
+
+{% endif %}{% if pdf_attached %}{% blocktranslate %}Your receipt is attached as a PDF.{% endblocktranslate %}
+{% else %}{% blocktranslate %}The PDF could not be attached to this e-mail. You can download it from the invoice page.{% endblocktranslate %}
+{% endif %}
+{{ org }}{% endautoescape %}

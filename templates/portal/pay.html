@@ -1,0 +1,93 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% if invoice.kind == "payment_request" %}{% translate "Payment request" %}{% else %}{% translate "Invoice" %}{% endif %} {{ invoice.number }}{% endblock %}
+{% block shell_class %} client-shell--wide{% endblock %}
+{% block head_doc %}<h1 class="client-doc">{% if invoice.kind == "payment_request" %}{% translate "Payment request" %}{% else %}{% translate "Invoice" %}{% endif %} {{ invoice.number }}</h1>{% endblock %}
+{% block content %}
+<div class="pay-layout{% if not can_pay %} pay-layout--settled{% endif %}">
+<div class="pay-col pay-col--summary">
+<section class="due-hero">
+{% if can_pay %}<p class="due-hero__label">{% translate "Amount to pay" %}</p>
+<p class="due-hero__amount">{{ amount_due }}</p>{% else %}<p class="due-hero__label">{% translate "Total" %}</p>
+<p class="due-hero__amount">{{ money.total }}</p>{% endif %}
+{% if can_pay %}<p class="due-hero__due">{% translate "Due date" %}: {% if invoice.due_date %}{{ invoice.due_date|date:"DATE_FORMAT" }}{% else %}{% translate "Due on receipt" %}{% endif %}</p>{% endif %}
+<div id="status" class="due-hero__status" hx-get="{% url 'portal:status' token=token %}{{ lang_query }}" hx-trigger="every 10s" hx-swap="innerHTML" aria-live="polite">
+{% include "portal/_status.html" %}
+</div>
+</section>
+{% if is_link_order and can_pay %}<div class="notice keep-page"><svg class="icon" aria-hidden="true"><use href="#i-bookmark"/></svg><p><strong>{% translate "Keep this page." %}</strong> {% translate "Bookmark it or copy its address to come back to it. We e-mail you only once your payment has arrived." %}</p></div>{% endif %}
+{% include "portal/_back.html" %}
+<div class="pay-doc">{% include "portal/_summary.html" %}</div>
+</div>
+{% if can_pay %}<div class="pay-col pay-col--act">
+<section class="payment card" aria-labelledby="payment-title">
+<div class="card-body">
+<h2 id="payment-title" class="card-title">{% translate "Payment" %}</h2>
+<div class="copy-field copy-field--reference"><span class="copy-field__label">{% translate "Payment reference" %}</span>
+<span class="copy-field__value mono reference">{{ reference }}</span>
+<button type="button" class="btn btn--sm copy-btn" data-copy="{{ reference }}" data-done="{% translate 'Copied' %}"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>{% translate "Copy" %}</span></button></div>
+<p class="hint">{% translate "Please quote this reference in the payment." %}</p>
+</div>
+<div class="tabs" data-tabs{% if crypto_options or quote_ctx %} data-tabs-start="panel-crypto"{% endif %}>
+{% if bank_methods and link_methods or bank_methods and crypto_options or link_methods and crypto_options %}<div class="tabs__list" role="tablist" aria-labelledby="payment-title" data-tablist hidden>
+{% if crypto_options %}<button type="button" class="tabs__tab" role="tab" id="tab-crypto" aria-controls="panel-crypto" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-chain"/></svg><span>{% translate "Pay with crypto" %}</span></button>{% endif %}
+{% if bank_methods %}<button type="button" class="tabs__tab" role="tab" id="tab-bank" aria-controls="panel-bank" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-bank"/></svg><span>{% translate "Bank transfer" %}</span></button>{% endif %}
+{% if link_methods %}<button type="button" class="tabs__tab" role="tab" id="tab-online" aria-controls="panel-online" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-card"/></svg><span>{% translate "Online payment" %}</span></button>{% endif %}
+</div>{% endif %}
+{% if crypto_options %}<section class="tabs__panel crypto" id="panel-crypto" role="tabpanel" aria-labelledby="tab-crypto" data-panel>
+<h3 class="method-title">{% translate "Pay with crypto" %}</h3>
+<p class="hint">{% translate "Choose a network and a token. You get the exact amount to send, and it is checked automatically." %}</p>
+<div class="choices">
+{% for o in crypto_options %}
+<form method="post" action="{% url 'portal:quote' token=token %}{{ lang_query }}" hx-post="{% url 'portal:quote' token=token %}{{ lang_query }}" hx-target="#quote" hx-swap="innerHTML">{% csrf_token %}
+<input type="hidden" name="method" value="{{ o.method }}"><input type="hidden" name="network" value="{{ o.network }}"><input type="hidden" name="asset" value="{{ o.asset }}"><input type="hidden" name="refresh" value="0">
+<button type="submit" class="choice">{{ o.label }}</button>
+</form>
+{% endfor %}
+</div>
+<div id="quote" aria-live="polite">{% if quote_ctx %}{% include "portal/_quote.html" with error=quote_ctx.error quote=quote_ctx.quote amount=quote_ctx.amount asset=quote_ctx.asset network_name=quote_ctx.network_name qr=quote_ctx.qr expires_iso=quote_ctx.expires_iso expires_utc=quote_ctx.expires_utc expires_at=quote_ctx.expires_at wallet_link=quote_ctx.wallet_link checkout_link=quote_ctx.checkout_link valid_total_s=quote_ctx.valid_total_s valid_left_s=quote_ctx.valid_left_s %}{% endif %}</div>
+</section>{% endif %}
+{% if bank_methods %}<section class="tabs__panel" id="panel-bank" role="tabpanel" aria-labelledby="tab-bank" data-panel>
+{% for m in bank_methods %}<div class="method">
+<h3 class="method-title">{% translate "Bank transfer" %}: {{ m.label }}</h3>
+<dl class="kv kv--method">
+{% if m.beneficiary_name %}<div><dt>{% translate "Beneficiary" %}</dt><dd>{{ m.beneficiary_name }}</dd></div>{% endif %}
+{% if m.beneficiary_address %}<div><dt>{% translate "Beneficiary address" %}</dt><dd class="pre">{{ m.beneficiary_address }}</dd></div>{% endif %}
+{% if m.account_number %}<div><dt>{% translate "Account" %}</dt><dd class="kv-copy"><span class="mono">{{ m.account_number }}</span><button type="button" class="btn btn--sm btn--ghost copy-btn" data-copy="{{ m.account_number }}" data-done="{% translate 'Copied' %}"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>{% translate "Copy" %}</span></button></dd></div>{% endif %}
+{% if m.bank_name %}<div><dt>{% translate "Bank" %}</dt><dd>{{ m.bank_name }}{% if m.bank_swift %} · SWIFT <span class="mono">{{ m.bank_swift }}</span>{% endif %}</dd></div>{% elif m.bank_swift %}<div><dt>SWIFT</dt><dd class="mono">{{ m.bank_swift }}</dd></div>{% endif %}
+{% if m.bank_address %}<div><dt>{% translate "Bank address" %}</dt><dd class="pre">{{ m.bank_address }}</dd></div>{% endif %}
+{% if m.intermediary_bank_name or m.intermediary_swift or m.intermediary_account %}<div><dt>{% translate "Intermediary bank" %}</dt><dd>{{ m.intermediary_bank_name }}{% if m.intermediary_swift %} · SWIFT <span class="mono">{{ m.intermediary_swift }}</span>{% endif %}{% if m.intermediary_account %} · {% translate "Account" %} <span class="mono">{{ m.intermediary_account }}</span>{% endif %}</dd></div>{% endif %}
+<div><dt>{% translate "Amount" %}</dt><dd class="kv-copy"><span class="strong">{{ amount_due }}</span><button type="button" class="btn btn--sm btn--ghost copy-btn" data-copy="{{ amount_due_plain }}" data-done="{% translate 'Copied' %}"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>{% translate "Copy" %}</span></button></dd></div>
+</dl>
+<p class="hint">{% translate "When you send the transfer, choose OUR as the bank charges option, so that the full amount arrives." %}</p>
+{% if m.instructions %}<div class="pre method-note">{{ m.instructions }}</div>{% endif %}
+</div>{% endfor %}
+</section>{% endif %}
+{% if link_methods %}<section class="tabs__panel" id="panel-online" role="tabpanel" aria-labelledby="tab-online" data-panel>
+{% for m in link_methods %}<div class="method">
+<h3 class="method-title">{% translate "Online payment" %}: {{ m.label }}</h3>
+<dl class="kv kv--method"><div><dt>{% translate "Amount" %}</dt><dd class="strong">{{ amount_due }}</dd></div></dl>
+{% if m.safe_url %}<p><a class="btn btn--primary" href="{{ m.safe_url }}" rel="noopener noreferrer">{% translate "Open payment link" %}<svg class="icon" aria-hidden="true"><use href="#i-external"/></svg></a></p>{% endif %}
+{% if m.instructions %}<div class="pre method-note">{{ m.instructions }}</div>{% endif %}
+</div>{% endfor %}
+</section>{% endif %}
+</div>
+</section>
+{% if can_declare %}
+<section class="declare card" aria-labelledby="declare-title">
+<div class="card-body">
+<h2 id="declare-title" class="card-title">{% translate "I have paid" %}</h2>
+<p class="hint">{% translate "Once you have paid, let us know. You may add the transaction number and a note." %}</p>
+{% if declare_error %}<p class="error" role="alert">{{ declare_error }}</p>{% endif %}
+{% if form.errors %}<p class="error" role="alert">{% translate "Please correct the errors below." %}</p>{% endif %}
+<form method="post" action="{% url 'portal:declare' token=token %}{{ lang_query }}" class="form-stack">{% csrf_token %}
+{% for field in form %}
+<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for e in field.errors %}<span class="error">{{ e }}</span>{% endfor %}</div>
+{% endfor %}
+<div class="form-actions"><button type="submit" class="btn">{% translate "I have paid" %}</button></div>
+</form>
+</div>
+</section>
+{% endif %}
+</div>{% endif %}
+</div>
+{% endblock %}

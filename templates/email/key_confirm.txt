@@ -1,0 +1,14 @@
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}
+
+{% blocktranslate %}A key was uploaded for your e-mail address so that {{ org }} can send you encrypted e-mail:{% endblocktranslate %}
+
+{% blocktranslate %}Fingerprint: {{ fingerprint }}{% endblocktranslate %}
+
+{% translate "To start using it, open this link and press Confirm:" %}
+{{ confirm_url }}
+
+{% translate "The link works for 7 days. Until you confirm, our e-mails to you stay as they are." %}
+
+{% translate "If you did not upload this key, ignore this e-mail: nothing changes." %}
+
+{{ org }}{% endautoescape %}

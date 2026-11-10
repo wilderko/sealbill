@@ -1,0 +1,14 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% if invoice.kind == "payment_request" %}{% translate "Payment request" %}{% else %}{% translate "Invoice" %}{% endif %} {{ invoice.number }}{% endblock %}
+{% block head_doc %}<h1 class="client-doc">{% if invoice.kind == "payment_request" %}{% translate "Payment request" %}{% else %}{% translate "Invoice" %}{% endif %} {{ invoice.number }}</h1>{% endblock %}
+{% block content %}
+<div class="view-head">
+{% include "portal/_status.html" %}
+</div>
+{% include "portal/_summary.html" %}
+{% include "portal/_back.html" %}
+<div class="view-actions">
+<a class="btn btn--primary" href="{% url 'portal:pdf' token=token %}{{ lang_query }}"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>{% translate "Download PDF" %}</a>
+<a class="btn btn--ghost" href="{% url 'keys:upload' token=token %}{{ lang_query }}"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg>{% translate "Receive encrypted e-mail" %}</a>
+</div>
+{% endblock %}

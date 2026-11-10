@@ -1,0 +1,26 @@
+{% extends "staff/base.html" %}
+{% block title %}Encryption keys of contact #{{ contact.pk }}{% endblock %}
+{% block content %}
+<header class="page-head"><div class="page-head__text"><h1>Encryption keys</h1>
+<p class="page-head__meta">Contact #{{ contact.pk }} · {{ contact.display_name|default:contact.legal_name }} · {{ org_name }}</p></div></header>
+<p class="hint">Addresses: {{ addresses|join:", "|default:"none" }}</p>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+<p class="hint measure">Only the active key is used. A pending key waits until the client confirms it through a letter encrypted to it. While a key that failed while active is listed as failed, e-mail to this contact is refused rather than sent unencrypted: upload a working key, or revoke the failed one (e-mail then goes unencrypted).</p>
+{% if keys %}<div class="card table-card"><div class="table-wrap">{% include "staff/_key_rows.html" with rows=keys %}</div></div>{% include "staff/_capped.html" with section=keys %}
+{% else %}<p class="empty-line">No keys in use or waiting: e-mail to this contact goes unencrypted.</p>{% endif %}
+{% if expired_pending %}<div class="quiet-fold"><details><summary>{{ expired_pending.total }} pending key{{ expired_pending.total|pluralize }} whose confirmation link expired</summary>
+<p class="hint">Never confirmed and never used. The client can upload the key again to get a new link.</p>
+<div class="card table-card"><div class="table-wrap">{% include "staff/_key_rows.html" with rows=expired_pending %}</div></div>{% include "staff/_capped.html" with section=expired_pending %}
+</details></div>{% endif %}
+<section class="block narrow">
+<h2>Upload a key</h2>
+<p class="hint">A PGP public key (armored or binary) or an S/MIME certificate (PEM or DER) that names one of the addresses above. It becomes the active key at once and replaces the current one; the client is not asked to confirm it.</p>
+<form method="post" enctype="multipart/form-data" action="{% url 'staff:contact_keys' pk=contact.pk %}" class="card"><div class="card-body form-stack">{% csrf_token %}
+<div class="field"><label for="key">Paste the key</label>
+<textarea id="key" name="key" rows="8" spellcheck="false" autocomplete="off" class="mono"></textarea></div>
+<div class="field"><label for="key_file">or choose a file</label>
+{% include "ui/_file_pick.html" with input_id="key_file" input_name="key_file" accept="" choose_label="Choose a file" empty_label="No file chosen" %}</div>
+<div class="form-actions"><button type="submit" class="btn btn--primary">Upload key</button></div>
+</div></form>
+</section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "staff/auth.html" %}{% load static %}
+{% block title %}Verify{% endblock %}
+{% block scripts %}{% if has_passkey %}<script src="{% static 'ui/passkeys.js' %}" nonce="{{ csp_nonce }}" defer></script>
+{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if again %}Verify again{% else %}Second factor{% endif %}</h1>
+<p class="hint">{% if again %}You are signed in. Verify again for a change that needs a second factor from the last ten minutes: a passkey or an authenticator, an API token, a rail account, a bank account or payment link, an organization's issuer flag or return hosts, a contact's e-mail address, or another person's second factor.{% elif has_passkey and show_code %}Use a passkey, or enter the code your authenticator app shows.{% elif has_passkey %}Use a passkey registered to this account.{% else %}Enter the code your authenticator app shows for this account.{% endif %}</p>
+{% include "ui/_messages.html" %}
+{% if limited %}<p class="error" role="alert">Too many attempts. Try again in a few minutes.</p>{% endif %}
+{% if passkey_error %}<p class="error" role="alert">{{ passkey_error }}</p>{% endif %}
+{% if form.non_field_errors %}<div class="error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% if has_passkey %}
+<form method="post" action="{% url 'staff:passkey_login' %}" class="form-stack passkey-form" data-passkey="login" data-options-url="{% url 'staff:passkey_login_options' %}" hidden>{% csrf_token %}
+<input type="hidden" name="next" value="{{ next }}">
+<input type="hidden" name="credential" value="">
+<button type="submit" class="btn btn--primary btn--block"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg>Use a passkey</button>
+<p class="passkey-status" data-passkey-status role="status" aria-live="polite"></p>
+</form>
+<p class="hint" data-passkey-unsupported hidden>This browser cannot use passkeys.{% if show_code %} Enter a code from your authenticator app instead.{% endif %}</p>
+<noscript><p class="hint">A passkey needs JavaScript in this browser.{% if show_code %} Enter a code from your authenticator app instead.{% endif %}</p></noscript>
+{% if show_code %}<p class="or-rule" data-passkey-or hidden><span>or enter a code</span></p>{% endif %}
+{% endif %}
+{% if show_code %}<form method="post" action="{% url 'staff:verify' %}" class="form-stack">{% csrf_token %}
+<input type="hidden" name="next" value="{{ next }}">
+<div class="field{% if form.token.errors %} field--error{% endif %}"><label for="{{ form.token.id_for_label }}">Code</label>{{ form.token }}{{ form.token.errors }}</div>
+<button type="submit" class="btn{% if not has_passkey %} btn--primary{% endif %} btn--block">Verify{% if has_passkey %} code{% endif %}</button>
+</form>{% endif %}
+{% endblock %}

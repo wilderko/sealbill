@@ -1,0 +1,811 @@
+[
+ {
+  "id": "od_inv1",
+  "orgId": "org1",
+  "orderType": "invoice",
+  "totalAmount": 143700,
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-04-10T10:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_inv1",
+  "receiptPdfUrl": null,
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": {
+   "id": "in_449",
+   "number": "449",
+   "title": "Residency fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": "Thanks, Fixture footer",
+   "daysToPay": 14,
+   "date": "2025-04-01",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/inv1",
+   "lineItems": [
+    {
+     "id": "l1",
+     "name": "Service A",
+     "description": "Desc A",
+     "unitPrice": 133700,
+     "quantity": 1,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    },
+    {
+     "id": "l2",
+     "name": "Service B",
+     "description": null,
+     "unitPrice": 5000,
+     "quantity": 2,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    }
+   ]
+  },
+  "paymentLink": null,
+  "transactions": [
+   {
+    "id": "t1",
+    "date": "2025-04-10T10:00:00.000Z",
+    "amount": 143700,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [],
+  "promo": null
+ },
+ {
+  "id": "od_api1",
+  "orgId": "org1",
+  "orderType": "apiInvoice",
+  "totalAmount": 3000,
+  "currency": "USD",
+  "status": "PROCESSING",
+  "paidAt": null,
+  "checkoutUrl": "https://pay.zaprite.test/order/od_api1",
+  "receiptPdfUrl": null,
+  "contact": {
+   "id": "ct_2",
+   "legalName": "",
+   "contactName": "Nomail Person",
+   "displayName": null,
+   "email": null
+  },
+  "invoice": {
+   "id": "in_450",
+   "number": "450",
+   "title": "API fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": null,
+   "daysToPay": null,
+   "date": "2025-05-01",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/api1",
+   "lineItems": [
+    {
+     "id": "l3",
+     "name": "Item",
+     "description": null,
+     "unitPrice": 1000,
+     "quantity": 3,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    }
+   ]
+  },
+  "paymentLink": null,
+  "transactions": [
+   {
+    "id": "t2",
+    "date": "2025-05-02T08:00:00.000Z",
+    "amount": 3000,
+    "currency": "EUR",
+    "status": "PENDING",
+    "method": "BTC"
+   },
+   {
+    "id": "t3",
+    "date": "2025-05-03T08:00:00.000Z",
+    "amount": 3000,
+    "currency": "EUR",
+    "status": "CANCELED",
+    "method": "BTC"
+   },
+   {
+    "id": "t4",
+    "date": "2025-05-04T08:00:00.000Z",
+    "amount": 3000,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   },
+   {
+    "id": "t5",
+    "date": "2025-05-06T08:00:00.000Z",
+    "amount": 0,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [],
+  "promo": null
+ },
+ {
+  "id": "od_pl1",
+  "orgId": "org1",
+  "orderType": "paymentLink",
+  "totalAmount": 99900,
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-06-01T12:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_pl1",
+  "receiptPdfUrl": null,
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": null,
+  "paymentLink": {
+   "id": "pl_1",
+   "title": "Link fixture"
+  },
+  "transactions": [
+   {
+    "id": "t6",
+    "date": "2025-06-01T12:00:00.000Z",
+    "amount": 99900,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [
+   {
+    "id": "oi1",
+    "label": "Hotel fixture",
+    "quantity": 1,
+    "paymentLinkItem": {
+     "id": "pli1",
+     "title": "Hotel item"
+    }
+   }
+  ],
+  "promo": null
+ },
+ {
+  "id": "od_disc",
+  "orgId": "org1",
+  "orderType": "invoice",
+  "totalAmount": 8500,
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-07-01T00:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_disc",
+  "receiptPdfUrl": null,
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": {
+   "id": "in_451",
+   "number": "451",
+   "title": "Discount fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": "",
+   "daysToPay": 7,
+   "date": "2025-06-20",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/disc",
+   "lineItems": [
+    {
+     "id": "l4",
+     "name": "Thing",
+     "description": null,
+     "unitPrice": 10000,
+     "quantity": 1,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 1500
+    }
+   ]
+  },
+  "paymentLink": null,
+  "transactions": [
+   {
+    "id": "t7",
+    "date": "2025-07-01T00:00:00.000Z",
+    "amount": 8500,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [],
+  "promo": null
+ },
+ {
+  "id": "od_tax",
+  "orgId": "org1",
+  "orderType": "invoice",
+  "totalAmount": 12000,
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-07-02T00:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_tax",
+  "receiptPdfUrl": null,
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": {
+   "id": "in_452",
+   "number": "452",
+   "title": "Tax fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": "",
+   "daysToPay": 7,
+   "date": "2025-06-21",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/tax",
+   "lineItems": [
+    {
+     "id": "l5",
+     "name": "Taxed",
+     "description": null,
+     "unitPrice": 10000,
+     "quantity": 1,
+     "taxRateBips": 2000,
+     "taxAmount": 2000,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    }
+   ]
+  },
+  "paymentLink": null,
+  "transactions": [
+   {
+    "id": "t8",
+    "date": "2025-07-02T00:00:00.000Z",
+    "amount": 12000,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [],
+  "promo": null
+ },
+ {
+  "id": "od_promo",
+  "orgId": "org1",
+  "orderType": "invoice",
+  "totalAmount": 9000,
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-07-03T00:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_promo",
+  "receiptPdfUrl": null,
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": {
+   "id": "in_453",
+   "number": "453",
+   "title": "Promo fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": "",
+   "daysToPay": 7,
+   "date": "2025-06-22",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/promo",
+   "lineItems": [
+    {
+     "id": "l6",
+     "name": "Promoted",
+     "description": null,
+     "unitPrice": 10000,
+     "quantity": 1,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    }
+   ]
+  },
+  "paymentLink": null,
+  "transactions": [
+   {
+    "id": "t9",
+    "date": "2025-07-03T00:00:00.000Z",
+    "amount": 9000,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [],
+  "promo": {
+   "code": "SAVE",
+   "amountOff": 1000,
+   "rateBipsOff": 0,
+   "label": "Promo label"
+  }
+ },
+ {
+  "id": "od_rate",
+  "orgId": "org1",
+  "orderType": "invoice",
+  "totalAmount": 9000,
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-07-01T00:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_disc",
+  "receiptPdfUrl": null,
+  "contact": {
+   "id": "ct_3",
+   "legalName": "Embedded Only Ltd",
+   "contactName": null,
+   "displayName": null,
+   "email": "embedded@example.test"
+  },
+  "invoice": {
+   "id": "in_454",
+   "number": "454",
+   "title": "Discount fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": "",
+   "daysToPay": 7,
+   "date": "2025-06-20",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/disc",
+   "lineItems": [
+    {
+     "id": "l7",
+     "name": "Thing",
+     "description": null,
+     "unitPrice": 10000,
+     "quantity": 1,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 1000,
+     "discountAmount": 1000
+    }
+   ]
+  },
+  "paymentLink": null,
+  "transactions": [
+   {
+    "id": "t7",
+    "date": "2025-07-01T00:00:00.000Z",
+    "amount": 8500,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [],
+  "promo": null
+ },
+ {
+  "id": "od_pos",
+  "orgId": "org1",
+  "orderType": "pos",
+  "totalAmount": 500,
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-07-04T00:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_pos",
+  "receiptPdfUrl": null,
+  "contact": null,
+  "invoice": null,
+  "paymentLink": null,
+  "transactions": [],
+  "orderItems": [],
+  "promo": null
+ },
+ {
+  "id": "od_dt",
+  "orgId": "org1",
+  "orderType": "invoice",
+  "totalAmount": 10805,
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-04-10T10:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_inv1",
+  "receiptPdfUrl": null,
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": {
+   "id": "in_455",
+   "number": "455",
+   "title": "Residency fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": "Thanks, Fixture footer",
+   "daysToPay": 14,
+   "date": "2025-04-01",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/inv1",
+   "lineItems": [
+    {
+     "id": "l8",
+     "name": "Disc and tax",
+     "description": null,
+     "unitPrice": 10005,
+     "quantity": 1,
+     "taxRateBips": 2000,
+     "taxAmount": 1801,
+     "discountRateBips": 1000,
+     "discountAmount": 1001
+    }
+   ]
+  },
+  "paymentLink": null,
+  "transactions": [
+   {
+    "id": "t1",
+    "date": "2025-04-10T10:00:00.000Z",
+    "amount": 143700,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [],
+  "promo": null
+ },
+ {
+  "id": "od_nocontact",
+  "orgId": "org1",
+  "orderType": "invoice",
+  "totalAmount": 143700,
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-04-10T10:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_inv1",
+  "receiptPdfUrl": null,
+  "contact": null,
+  "invoice": {
+   "id": "in_449",
+   "number": "456",
+   "title": "Residency fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": "Thanks, Fixture footer",
+   "daysToPay": 14,
+   "date": "2025-04-01",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/inv1",
+   "lineItems": [
+    {
+     "id": "l1",
+     "name": "Service A",
+     "description": "Desc A",
+     "unitPrice": 133700,
+     "quantity": 1,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    },
+    {
+     "id": "l2",
+     "name": "Service B",
+     "description": null,
+     "unitPrice": 5000,
+     "quantity": 2,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    }
+   ]
+  },
+  "paymentLink": null,
+  "transactions": [
+   {
+    "id": "t1",
+    "date": "2025-04-10T10:00:00.000Z",
+    "amount": 143700,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [],
+  "promo": null
+ },
+ {
+  "id": "od_nototal",
+  "orgId": "org1",
+  "orderType": "invoice",
+  "currency": "EUR",
+  "status": "COMPLETE",
+  "paidAt": "2025-04-10T10:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_inv1",
+  "receiptPdfUrl": null,
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": {
+   "id": "in_449",
+   "number": "457",
+   "title": "Residency fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": "Thanks, Fixture footer",
+   "daysToPay": 14,
+   "date": "2025-04-01",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/inv1",
+   "lineItems": [
+    {
+     "id": "l1",
+     "name": "Service A",
+     "description": "Desc A",
+     "unitPrice": 133700,
+     "quantity": 1,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    },
+    {
+     "id": "l2",
+     "name": "Service B",
+     "description": null,
+     "unitPrice": 5000,
+     "quantity": 2,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    }
+   ]
+  },
+  "paymentLink": null,
+  "transactions": [
+   {
+    "id": "t1",
+    "date": "2025-04-10T10:00:00.000Z",
+    "amount": 143700,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "orderItems": [],
+  "promo": null
+ },
+ {
+  "orgId": "org1",
+  "currency": "EUR",
+  "receiptPdfUrl": null,
+  "paymentLink": null,
+  "orderItems": [],
+  "promo": null,
+  "id": "od_cust",
+  "orderType": "invoice",
+  "totalAmount": 5000,
+  "status": "COMPLETE",
+  "paidAt": "2025-08-02T00:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_cust",
+  "contact": null,
+  "transactions": [
+   {
+    "id": "tx",
+    "date": "2025-08-02T00:00:00.000Z",
+    "amount": 1,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "invoice": {
+   "id": "in_460",
+   "number": "460",
+   "title": "Customer fixture",
+   "orgId": "org1",
+   "status": "SENT",
+   "footerNote": null,
+   "daysToPay": 7,
+   "date": "2025-08-01",
+   "sentAt": null,
+   "voidedAt": null,
+   "publicUrl": "https://pay.zaprite.test/invoice/cust",
+   "customer": {
+    "id": "ct_9",
+    "legalName": "Cust Fixture Ltd",
+    "contactName": "Cust Person",
+    "displayName": null,
+    "email": "Cust@Example.test",
+    "taxId": "CZ999",
+    "billingAddress": {
+     "line1": "Order Street 5",
+     "line2": "Floor 2",
+     "zipCode": "11000",
+     "city": "Praha",
+     "state": null,
+     "countryCode": "cz"
+    }
+   },
+   "lineItems": [
+    {
+     "id": "l9",
+     "name": "Thing",
+     "description": null,
+     "unitPrice": 5000,
+     "quantity": 1,
+     "taxRateBips": 0,
+     "taxAmount": 0,
+     "discountRateBips": 0,
+     "discountAmount": 0
+    }
+   ]
+  }
+ },
+ {
+  "orgId": "org1",
+  "currency": "EUR",
+  "receiptPdfUrl": null,
+  "paymentLink": null,
+  "orderItems": [],
+  "promo": null,
+  "id": "od_apiorder",
+  "orderType": "apiOrder",
+  "totalAmount": 7000,
+  "status": "COMPLETE",
+  "paidAt": "2025-09-01T10:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_apiorder",
+  "label": "Plain link",
+  "contact": null,
+  "invoice": null,
+  "transactions": [
+   {
+    "id": "tx",
+    "date": "2025-09-01T10:00:00.000Z",
+    "amount": 1,
+    "currency": "EUR",
+    "status": "CONFIRMED",
+    "method": "BTC"
+   }
+  ],
+  "customerData": {
+   "email": "Link.Buyer@Example.test",
+   "name": "Link Buyer",
+   "phone": null,
+   "address": {
+    "line1": "Order Street 5",
+    "line2": "Floor 2",
+    "zipCode": "11000",
+    "city": "Praha",
+    "state": null,
+    "countryCode": "cz"
+   },
+   "note": null,
+   "company": null
+  }
+ },
+ {
+  "orgId": "org1",
+  "currency": "EUR",
+  "receiptPdfUrl": null,
+  "paymentLink": null,
+  "orderItems": [],
+  "promo": null,
+  "id": "od_nolabel",
+  "orderType": "apiOrder",
+  "totalAmount": 1234,
+  "status": "COMPLETE",
+  "paidAt": "2025-09-02T10:00:00.000Z",
+  "checkoutUrl": "https://pay.zaprite.test/order/od_nolabel",
+  "label": null,
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": null,
+  "transactions": []
+ },
+ {
+  "orgId": "org1",
+  "currency": "EUR",
+  "receiptPdfUrl": null,
+  "paymentLink": null,
+  "orderItems": [],
+  "promo": null,
+  "id": "od_nodate",
+  "orderType": "paymentLink",
+  "totalAmount": 900,
+  "status": "COMPLETE",
+  "paidAt": null,
+  "checkoutUrl": "https://pay.zaprite.test/order/od_nodate",
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": null,
+  "transactions": []
+ },
+ {
+  "orgId": "org1",
+  "currency": "EUR",
+  "receiptPdfUrl": null,
+  "paymentLink": null,
+  "orderItems": [],
+  "promo": null,
+  "id": "od_pending",
+  "orderType": "apiOrder",
+  "totalAmount": 900,
+  "status": "PENDING",
+  "paidAt": null,
+  "checkoutUrl": "https://pay.zaprite.test/order/od_pending",
+  "contact": {
+   "id": "ct_1",
+   "legalName": "Fixture Jan s.r.o.",
+   "contactName": "Jan Fixture",
+   "displayName": "Jan Fixture",
+   "email": "Jan.Fixture@Example.test"
+  },
+  "invoice": null,
+  "transactions": []
+ }
+]

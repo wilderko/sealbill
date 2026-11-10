@@ -1,0 +1,47 @@
+{% extends "staff/base.html" %}{% load static %}
+{% block title %}Security{% endblock %}
+{% block scripts %}<script src="{% static 'ui/passkeys.js' %}" nonce="{{ csp_nonce }}" defer></script>
+{% endblock %}
+{% block content %}
+<header class="page-head"><div class="page-head__text"><h1>Security</h1>
+<p class="page-head__meta">How {{ user.get_username }} signs in: the password, then one of the second factors below.</p></div></header>
+{% include "ui/_messages.html" %}
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+{% if not fresh %}<div class="notice reverify"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><p>Adding or removing a second factor needs one given in the last ten minutes.</p><a class="btn btn--sm" href="{{ reverify_url }}">Verify again</a></div>{% endif %}
+
+<section class="block">
+<h2>Passkeys</h2>
+<p class="hint measure">A passkey signs you in with the fingerprint, face or PIN of the device that holds it, in place of a code. It answers this site only, so a look-alike page cannot use it.</p>
+{% if passkeys %}<div class="card table-card"><div class="table-wrap"><table class="factor-table">
+<thead><tr><th>Name</th><th>Added</th><th>Last used</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for p in passkeys %}<tr><td class="factor-name"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg>{{ p.name }}</td><td class="nowrap" data-label="Added">{{ p.created_at|date:"Y-m-d H:i" }}</td><td class="nowrap" data-label="Last used">{{ p.last_used_at|date:"Y-m-d H:i"|default:"never" }}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:passkey_remove' pk=p.pk %}" class="row-form" data-confirm="Remove the passkey {{ p.name }}? It will no longer sign you in.">{% csrf_token %}<button type="submit" class="btn btn--sm btn--danger-outline">Remove</button></form></td></tr>
+{% endfor %}</tbody></table></div></div>
+{% else %}<p class="empty-line">No passkeys yet.</p>{% endif %}
+</section>
+
+<section class="block narrow">
+<h2>Add a passkey</h2>
+{% if fresh %}<form method="post" action="{% url 'staff:passkey_register' %}" class="card" data-passkey="register" data-options-url="{% url 'staff:passkey_register_options' %}"><div class="card-body form-stack">{% csrf_token %}
+<input type="hidden" name="credential" value="">
+{% include "ui/_field.html" with field=form.name %}
+<div class="form-actions"><button type="submit" class="btn btn--primary" data-passkey-start disabled><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg>Add a passkey</button></div>
+<p class="passkey-status" data-passkey-status role="status" aria-live="polite"></p>
+<p class="hint" data-passkey-unsupported hidden>This browser cannot create passkeys.</p>
+<noscript><p class="hint">Adding a passkey needs JavaScript in this browser.</p></noscript>
+</div></form>
+{% else %}<p class="empty-line">Verify again (above) to add a passkey.</p>{% endif %}
+</section>
+
+<section class="block">
+<h2>Authenticator apps</h2>
+<p class="hint measure">A six-digit code from an app such as Aegis, 2FAS or Google Authenticator. A new one is set up on the server: <span class="mono">payinv-manage create_staff_totp {{ user.get_username }}</span>.</p>
+{% if authenticators %}<div class="card table-card"><div class="table-wrap"><table class="factor-table">
+<thead><tr><th>Name</th><th>Added</th><th>Last used</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for d in authenticators %}<tr><td class="factor-name"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>{{ d.name }}</td><td class="nowrap" data-label="Added">{{ d.created_at|date:"Y-m-d H:i"|default:"-" }}</td><td class="nowrap" data-label="Last used">{{ d.last_used_at|date:"Y-m-d H:i"|default:"never" }}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:totp_remove' pk=d.pk %}" class="row-form" data-confirm="Remove the authenticator {{ d.name }}? Its codes will no longer sign you in.">{% csrf_token %}<button type="submit" class="btn btn--sm btn--danger-outline">Remove</button></form></td></tr>
+{% endfor %}</tbody></table></div></div>
+{% else %}<p class="empty-line">No authenticator app.</p>{% endif %}
+</section>
+<p class="hint measure block">The last second factor of an account cannot be removed. Removing the one this session signed in with asks for another before anything else. Every addition and removal is recorded in the audit log.</p>
+{% endblock %}

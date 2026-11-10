@@ -1,0 +1,35 @@
+[project]
+name = "sealbill"
+version = "0.1.0"
+description = "Privacy aware self-hosted crypto-friendly invoice system"
+requires-python = ">=3.12"
+dependencies = [
+    "cryptography>=50.0.2",
+    "django~=5.1",
+    "django-environ>=0.14.0",
+    "django-otp>=1.7.5",
+    "djangorestframework>=3.18.3",
+    "drf-spectacular>=0.30.0",
+    "drf-spectacular-sidecar>=2026.10.1",
+    "gunicorn>=26.2.0",
+    "nostr-sdk==0.45.1",
+    "pillow>=13.0.0",
+    "psycopg[binary]>=3.3.6",
+    "pypdf>=6.21.4",
+    "python-gnupg>=0.5.7",
+    "qrcode>=8.2",
+    "requests>=2.34.2",
+    "weasyprint>=70.0",
+    "webauthn>=3.0.1",
+    "whitenoise>=6.12.0",
+]
+
+[dependency-groups]
+# The MCP server (mcp_server/) only; the Django service never imports it. Run it after
+# `uv sync --group mcp`. Development installs it through the dev group, so its tests run.
+mcp = [
+    "mcp>=2.3.0",
+]
+dev = [
+    { include-group = "mcp" },
+]

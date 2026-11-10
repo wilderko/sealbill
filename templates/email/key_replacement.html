@@ -1,0 +1,6 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}</p><p>{% blocktranslate %}Someone uploaded a new encryption key for your e-mail address. Once it is confirmed, {{ org }} will encrypt its e-mails to you with that key instead of your current one, the key this message is encrypted to.{% endblocktranslate %}</p><p style="font-family:monospace">{% blocktranslate %}Fingerprint of the new key: {{ fingerprint }}{% endblocktranslate %}</p><p>{% translate "If you uploaded it yourself, there is nothing to do here." %}</p><p>{% translate "If you did not, open this link and cancel the new key there. It is refused, and your current key stays in use:" %}<br><a href="{{ cancel_url }}">{{ cancel_url }}</a></p><p>{% translate "The link works for 7 days." %}</p>
+<p>{{ org }}</p>
+</body></html>

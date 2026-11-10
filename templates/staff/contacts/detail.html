@@ -1,0 +1,36 @@
+{% extends "staff/base.html" %}{% load ui %}
+{% block title %}Contact #{{ contact.pk }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:contact_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Contacts</a>
+<header class="page-head"><div class="page-head__text"><h1>{{ name }}</h1>
+<p class="page-head__meta">Contact #{{ contact.pk }} · {{ org_name }}</p></div>
+<div class="page-head__actions"><a class="btn" href="{% url 'staff:contact_keys' pk=contact.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg>Encryption keys</a>
+<a class="btn btn--primary" href="{% url 'staff:contact_edit' pk=contact.pk %}">Edit</a></div></header>
+{% include "ui/_messages.html" %}
+{% include "staff/_stepup.html" with action="add an e-mail address to a contact or make one primary" %}
+{% if not contact.of_record %}<p class="notice notice--warn" role="status"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><span>Link buyer: made by a payment-link checkout from what the visitor typed. It is not a client of record: e-mail and name lookups, the API and new invoices do not use it, and paying its order does not change that, since anyone can pay a link under any name.{% if not contact.copy_for_org_id %} Make it a client of record once you have checked the name and address with the person.{% endif %}</span></p>
+{% if not contact.copy_for_org_id %}<form method="post" action="{% url 'staff:contact_promote' pk=contact.pk %}" class="row-form" data-confirm="Make this link buyer a client of record? Lookups, the API and new invoices will then use the name and address a visitor typed.">{% csrf_token %}<button type="submit" class="btn btn--sm">Make a client of record</button></form>{% endif %}{% endif %}
+<section class="card form-card"><div class="card-body"><h2 class="card-title">Details</h2>
+<dl class="kv">
+<dt>Legal name</dt><dd>{{ fields.legal_name|default:"-" }}</dd>
+<dt>Display name</dt><dd>{{ fields.display_name|default:"-" }}</dd>
+<dt>Phone</dt><dd>{{ fields.phone|default:"-" }}</dd>
+<dt>Address</dt><dd>{% for k, v in address.items %}{{ v }}{% if not forloop.last %}, {% endif %}{% empty %}-{% endfor %}</dd>
+<dt>Tax IDs</dt><dd>{{ fields.tax_ids|default:"-" }}</dd>
+<dt>Preferred language</dt><dd>{{ contact.preferred_language|default:"Organization default" }}</dd>
+<dt>US tax resident</dt><dd>{{ contact.get_us_tax_resident_display }}</dd>
+<dt>Notes</dt><dd>{{ fields.notes|default:"-"|linebreaksbr }}</dd>
+</dl></div></section>
+{% if related %}<p class="notice notice--warn" role="status"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><span>{% if contact.copy_for_org_id %}This is the issuer's copy of{% else %}The issuer keeps a copy of this contact:{% endif %}{% for r in related %} <a class="strong-link" href="{% url 'staff:contact_detail' pk=r.pk %}">contact #{{ r.pk }}</a>{% endfor %}. E-mail changes made here do not reach {% if contact.copy_for_org_id %}the original{% else %}the copy{% endif %}; change it there too.</span></p>{% endif %}
+<section class="card table-card"><div class="card-body"><h2 class="card-title">E-mail addresses</h2></div>
+{% if emails %}<div class="table-wrap"><table class="table--rows"><thead><tr><th>Address</th><th></th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>
+{% for e in emails %}<tr><td>{{ e.address }}</td><td class="muted">{% if e.primary %}Primary{% endif %}</td>
+<td class="actions-cell">{% if not e.primary %}<form method="post" action="{% url 'staff:contact_email_primary' pk=contact.pk email_pk=e.pk %}" class="row-form">{% csrf_token %}<button type="submit" class="btn btn--sm">Make primary</button></form>
+<form method="post" action="{% url 'staff:contact_email_remove' pk=contact.pk email_pk=e.pk %}" class="row-form" data-confirm="Remove this e-mail address from the contact? Letters will no longer go to it.">{% csrf_token %}<button type="submit" class="btn btn--sm btn--danger-outline">Remove</button></form>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div>{% else %}<div class="card-body"><p class="muted">No addresses.</p></div>{% endif %}
+<div class="card-body"><form method="post" action="{% url 'staff:contact_email_add' pk=contact.pk %}" class="row-form">{% csrf_token %}<input type="email" name="address" required maxlength="320" aria-label="New e-mail address" placeholder="name@example.com"> <button type="submit" class="btn btn--sm">Add address</button></form></div></section>
+<section class="card table-card"><div class="card-body"><h2 class="card-title">Invoices</h2></div>
+{% if invoices %}<div class="table-wrap"><table class="table--rows"><thead><tr><th>Number</th><th>Status</th><th class="num">Total</th><th>Issued</th></tr></thead><tbody>
+{% for i in invoices %}<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:invoice' pk=i.pk %}">{% invoice_ref i.number i.pk %}</a></td><td class="cell-status">{% pill i.status %}</td><td class="num cell-amount" data-label="Total">{{ i.total_text }}</td><td class="nowrap muted" data-label="Issued">{{ i.issue_date|date:"Y-m-d" }}</td></tr>{% endfor %}
+</tbody></table></div>{% else %}<div class="card-body"><p class="muted">No invoices.</p></div>{% endif %}</section>
+{% endblock %}

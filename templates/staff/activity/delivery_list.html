@@ -1,0 +1,23 @@
+{% extends "staff/base.html" %}{% load ui %}
+{% block title %}Webhook deliveries{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:settings' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Settings</a>
+<header class="page-head"><div class="page-head__text"><h1>Webhook deliveries</h1>
+<p class="page-head__meta">Newest first. An endpoint is shown by its host only.</p></div></header>
+{% include "ui/_messages.html" %}
+<nav class="status-tabs" aria-label="State"><a href="{% url 'staff:delivery_list' %}"{% if not state %} aria-current="page"{% endif %}>All</a>{% for s in states %}<a href="?state={{ s }}"{% if s == state %} aria-current="page"{% endif %}>{{ s|capfirst }}</a>{% endfor %}</nav>
+{% if page.object_list %}<div class="card table-card"><div class="table-wrap table-wrap--long"><table>
+<thead><tr><th>Delivery</th><th>State</th><th>Event</th><th>Endpoint</th><th>Organization</th><th class="num">Attempts</th><th>Why</th><th class="num">Status</th><th>Queued</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for w in page.object_list %}<tr><td>#{{ w.pk }}</td><td class="cell-status">{% pill w.state %}</td><td data-label="Event">{{ w.event.type }}</td><td data-label="Endpoint">#{{ w.endpoint_id }} {{ w.host }}</td><td data-label="Organization">{{ w.org_name }}</td><td class="num" data-label="Attempts">{{ w.attempts }}</td><td data-label="Why">{{ w.last_error_kind|default:"-" }}</td><td class="num" data-label="Status">{{ w.last_status_code|default:"-" }}</td><td class="nowrap" data-label="Queued">{{ w.created_at|date:"Y-m-d H:i" }}</td>
+<td class="actions-cell">{% if w.state == "failed" or w.state == "queued" %}<form method="post" action="{% url 'staff:retry_webhook' pk=w.pk %}" class="row-form">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button type="submit" class="btn btn--sm btn--primary">Retry now</button></form>{% endif %}
+{% if w.state == "failed" %}<details class="row-menu"><summary class="row-menu__toggle">Dismiss<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+<form method="post" action="{% url 'staff:dismiss_webhook' pk=w.pk %}" class="row-menu__panel">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><input name="reason" placeholder="Why it will not be retried" aria-label="Why it will not be retried" required maxlength="2000"> <button type="submit" class="btn btn--sm btn--danger-outline">Dismiss for good</button></form>
+</details>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% if page.paginator.num_pages > 1 %}<nav class="status-tabs" aria-label="Pages">
+{% if page.has_previous %}<a href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.previous_page_number }}">Previous</a>{% endif %}
+<span class="muted">Page {{ page.number }} of {{ page.paginator.num_pages }} ({{ page.paginator.count }} rows)</span>
+{% if page.has_next %}<a href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>{% endif %}
+{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-link"/></svg><p>No deliveries.</p></div>{% endif %}
+{% endblock %}

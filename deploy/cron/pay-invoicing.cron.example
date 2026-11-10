@@ -1,0 +1,12 @@
+# /etc/cron.d/pay-invoicing  (install as root; the jobs run as payinv)
+# The environment file holds DATABASE_URL, VAULT_CONFIG_PATH and the rest; cron does not read
+# it, so each job sources it. BACKUP_* are set here, not in the env file.
+SHELL=/bin/bash
+MAILTO=ops@example.org
+
+# Nightly encrypted backup (database + vault.json), 14 days kept.
+30 3 * * * payinv set -a; . /etc/sealbill/env; set +a; BACKUP_DIR=/srv/sealbill/backups BACKUP_PASSPHRASE_FILE=/etc/sealbill/backup-passphrase /srv/sealbill/app/deploy/backup/backup-db.sh
+
+# Health check every 10 minutes; it prints one line per problem and exits non-zero, so cron mails MAILTO
+# only when something is wrong.
+*/10 * * * * payinv set -a; . /etc/sealbill/env; set +a; cd /srv/sealbill/app && DJANGO_SETTINGS_MODULE=config.settings.production .venv/bin/python manage.py healthcheck

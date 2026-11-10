@@ -1,0 +1,5 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>{% blocktranslate %}The vault is sealed, so {{ count }} e-mails cannot be sent.{% endblocktranslate %}</p><p>{% translate "Unlock it here:" %}<br><a href="{{ unlock_url }}">{{ unlock_url }}</a></p>
+</body></html>

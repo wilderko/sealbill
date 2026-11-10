@@ -1,0 +1,18 @@
+{% extends "staff/base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<header class="page-head"><div class="page-head__text"><h1>Settings</h1>
+<p class="page-head__meta">Who issues invoices, and how they are set up. Every change is recorded in the audit log without its values.</p></div></header>
+{% include "ui/_messages.html" %}
+<div class="card table-card"><div class="table-wrap"><table class="table--rows">
+<tbody>
+<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:org_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-bank"/></svg> Organizations</a></td><td class="muted">Legal name, address, logo, numbering, allowances and accounting currency.</td></tr>
+<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:rail_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-bank"/></svg> Rail accounts</a></td><td class="muted">Crypto and Lightning receiving accounts, per organization.</td></tr>
+<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:token_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg> API tokens</a></td><td class="muted">Bearer tokens for the API, per organization. Shown once when created.</td></tr>
+<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:webhook_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-link"/></svg> Webhooks</a></td><td class="muted">Endpoints that receive an organization's events, and their deliveries.</td></tr>
+<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:audit_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg> Audit log</a></td><td class="muted">Who did what to which record. The details open one entry at a time.</td></tr>
+<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:outbox_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-invoice"/></svg> E-mail outbox</a></td><td class="muted">Every letter queued, sent, failed or cancelled.</td></tr>
+<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:delivery_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-link"/></svg> Webhook deliveries</a></td><td class="muted">Every event sent to an endpoint, and how it went.</td></tr>
+<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:team' %}"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg> Team</a></td><td class="muted">Who can sign in, their second factors, and removing a lost one.</td></tr>
+</tbody></table></div></div>
+{% endblock %}

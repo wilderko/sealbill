@@ -1,0 +1,21 @@
+@page { size: A4; margin: 18mm 16mm; }
+body { font-family: "Noto Sans", "Noto Sans CJK KR", "Noto Sans CJK SC", sans-serif; font-size: 10pt; color: #1a1a1a; }
+h1 { font-size: 20pt; margin: 0 0 4mm; }
+h2 { font-size: 11pt; margin: 8mm 0 2mm; border-bottom: 0.3mm solid #999; padding-bottom: 1mm; }
+.head { display: flex; justify-content: space-between; align-items: flex-start; }
+.logo { max-height: 18mm; max-width: 50mm; }
+.parties { display: flex; gap: 10mm; margin-top: 6mm; }
+.parties > div { flex: 1; }
+.label { color: #666; font-size: 8pt; text-transform: uppercase; }
+.pre { white-space: pre-line; }
+table { width: 100%; border-collapse: collapse; margin-top: 4mm; }
+th { text-align: left; font-size: 8pt; color: #666; border-bottom: 0.3mm solid #999; padding: 1mm; }
+td { padding: 1.5mm 1mm; vertical-align: top; border-bottom: 0.1mm solid #ddd; }
+.num { text-align: right; white-space: nowrap; }
+.totals { margin-left: auto; width: 55%; }
+.totals td { border: 0; }
+.grand td { font-weight: bold; border-top: 0.4mm solid #333; }
+.reference { font-size: 13pt; font-weight: bold; letter-spacing: 0.3mm; }
+.method { margin-bottom: 3mm; }
+.paid { display: inline-block; border: 0.8mm solid #1b7a3a; color: #1b7a3a; font-weight: bold; font-size: 18pt; padding: 1mm 5mm; transform: rotate(-6deg); }
+.footer { margin-top: 10mm; color: #555; font-size: 8.5pt; }

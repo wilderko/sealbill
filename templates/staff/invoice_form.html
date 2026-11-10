@@ -1,0 +1,78 @@
+{% extends "staff/base.html" %}
+{% block title %}{% if invoice %}Edit draft{% else %}New invoice{% endif %}{% endblock %}
+{% block content %}
+{% if invoice %}<a class="back-link" href="{% url 'staff:invoice' pk=invoice.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Draft {{ invoice.pk }}</a>{% endif %}
+<header class="page-head">
+<div class="page-head__text"><h1>{% if invoice %}Edit draft {{ invoice.pk }}{% else %}New invoice{% endif %}</h1>
+<p class="page-head__meta">Saved as a draft. Nothing is sent until you press Send on the draft.</p></div>
+<div class="page-head__actions"><button type="submit" form="invoice-form" class="btn btn--primary">{% if invoice %}Save draft{% else %}Create draft{% endif %}</button></div>
+</header>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+{{ form.non_field_errors }}
+<form method="post" id="invoice-form" class="invoice-form">{% csrf_token %}
+{{ form.form_token }}
+<section class="card form-card">
+<div class="card-body">
+<h2 class="card-title">Issuer and client</h2>
+<div class="form-grid" hx-get="{% url 'staff:invoice_methods' %}" hx-trigger="change" hx-target="#methods" hx-swap="outerHTML"
+ hx-include="[name='organization'],[name='currency'],[name='us_tax_resident'],[name='email']">
+{% include "ui/_field.html" with field=form.organization %}
+{% include "ui/_field.html" with field=form.kind %}
+{% include "ui/_field.html" with field=form.email wide=True %}
+{% include "ui/_field.html" with field=form.us_tax_resident %}
+{% include "ui/_field.html" with field=form.currency %}
+</div>
+</div>
+</section>
+<section class="card form-card">
+<div class="card-body">
+<h2 class="card-title">Contact</h2>
+<div class="form-grid">
+{% include "ui/_field.html" with field=form.legal_name %}
+{% include "ui/_field.html" with field=form.display_name %}
+{% include "ui/_field.html" with field=form.tax_ids wide=True %}
+{% include "ui/_field.html" with field=form.address_line1 %}
+{% include "ui/_field.html" with field=form.address_line2 %}
+{% include "ui/_field.html" with field=form.address_city %}
+{% include "ui/_field.html" with field=form.address_zip %}
+{% include "ui/_field.html" with field=form.address_state %}
+{% include "ui/_field.html" with field=form.address_country %}
+{% include "ui/_field.html" with field=form.preferred_language %}
+</div>
+</div>
+</section>
+<section class="card form-card">
+<div class="card-body">
+<h2 class="card-title">Invoice</h2>
+<div class="form-grid">
+{% include "ui/_field.html" with field=form.issue_date %}
+{% include "ui/_field.html" with field=form.due_days %}
+{% include "ui/_field.html" with field=form.title wide=True %}
+{% include "ui/_field.html" with field=form.notes wide=True %}
+</div>
+</div>
+</section>
+<section class="card form-card">
+<div class="card-body">
+<h2 class="card-title">Lines</h2>
+<p class="hint">Prices are in major units of the currency (12.34 for EUR). Rows left empty are ignored.</p>
+{{ formset.management_form }}
+{{ formset.non_form_errors }}
+</div>
+<div class="table-wrap"><table class="lines-table">
+<thead><tr><th>Name</th><th>Description</th><th>Quantity</th><th>Unit price</th><th>Tax %</th><th>Discount %</th></tr></thead><tbody>
+{% for line in formset %}<tr>
+<td class="lines-table__name" data-label="Name">{{ line.name }}{{ line.name.errors }}</td><td class="lines-table__desc" data-label="Description">{{ line.description }}</td><td class="lines-table__num" data-label="Quantity">{{ line.quantity }}{{ line.quantity.errors }}</td>
+<td class="lines-table__price" data-label="Unit price">{{ line.unit_price }}{{ line.unit_price.errors }}</td><td class="lines-table__num" data-label="Tax %">{{ line.tax_percent }}{{ line.tax_percent.errors }}</td><td class="lines-table__num" data-label="Discount %">{{ line.discount_percent }}{{ line.discount_percent.errors }}</td>
+</tr>{% endfor %}
+</tbody></table></div>
+</section>
+<section class="card form-card">
+<div class="card-body">
+<h2 class="card-title">Payment methods</h2>
+{% include "staff/_methods.html" %}
+</div>
+</section>
+<div class="form-actions form-actions--end"><button type="submit" class="btn btn--primary">{% if invoice %}Save draft{% else %}Create draft{% endif %}</button></div>
+</form>
+{% endblock %}

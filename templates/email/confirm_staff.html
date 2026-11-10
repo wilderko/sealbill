@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>A payment is waiting for your confirmation.</p>
+<p>The gateway reports it settled, but {{ asset }} is never confirmed automatically. Check that the money reached the wallet, then confirm or reject the payment.</p>
+<p>Payment: #{{ payment_id }}<br>Network: {{ network_name }}<br>Amount: {{ amount }}{% if invoice_ref %}<br>Invoice: {{ invoice_ref }}{% endif %}</p>
+<p><a href="{{ admin_url }}">{{ admin_url }}</a></p>
+</body></html>

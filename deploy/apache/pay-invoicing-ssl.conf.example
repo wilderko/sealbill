@@ -1,0 +1,72 @@
+# Apache 2.4 front for pay-invoicing, part 2 of 2: the :443 vhost. Install it once the certificate
+# exists (part 1, pay-invoicing.conf.example, serves the ACME webroot; see the README). Replace
+# ${PAY_HOST} with the real host name (or define it: Define PAY_HOST pay.example.org).
+#
+# gunicorn listens on the Unix socket /run/pay-invoicing-web/gunicorn.sock, which systemd creates
+# payinv:www-data 0660 (deploy/systemd/pay-web.socket): only payinv and Apache's group may connect. Not
+# a loopback port: every account on a shared host can reach 127.0.0.1 and would bypass this proxy,
+# sending its own X-Forwarded-For (the address the rate limits are keyed on) and X-Forwarded-Proto.
+
+<VirtualHost *:443>
+    ServerName ${PAY_HOST}
+
+    # --- TLS: the certificate from certbot certonly --webroot (renewed in place, then a reload) ---
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/${PAY_HOST}/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/${PAY_HOST}/privkey.pem
+    # Written only by certbot's Apache plugin, not by certonly --webroot. Without it, set SSLProtocol and
+    # SSLCipherSuite here instead (the README gives the values).
+    IncludeOptional /etc/letsencrypt/options-ssl-apache.conf
+
+    # --- ACME challenges are never proxied: served from the webroot should one arrive over https ---
+    Alias /.well-known/acme-challenge/ /var/www/letsencrypt/.well-known/acme-challenge/
+    <Directory "/var/www/letsencrypt/.well-known/acme-challenge/">
+        Options None
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    # --- Proxy to gunicorn's Unix socket (mod_proxy appends the client to X-Forwarded-For) ---
+    ProxyPreserveHost On
+    RequestHeader set X-Forwarded-Proto "https"
+    # The proxy secret (PROXY_SECRET in /etc/sealbill/env). The socket is open to group www-data,
+    # and on a shared host PHP (php-fpm) runs as www-data too: it could connect and send its own
+    # X-Forwarded-For. The app refuses every request without this header. The file holds one line,
+    #     RequestHeader set X-Pay-Proxy-Secret "<value>"
+    # (set replaces whatever a client sent) and is 0600 root:root: Apache reads its configuration as root,
+    # before it starts its www-data children. Include, not IncludeOptional: no file, no Apache.
+    Include /etc/apache2/pay-invoicing-proxy-secret.conf
+    ProxyPass /.well-known/acme-challenge/ !
+    ProxyPass / unix:/run/pay-invoicing-web/gunicorn.sock|http://pay-invoicing/
+    ProxyPassReverse / http://pay-invoicing/
+    ProxyTimeout 60
+
+    # --- Request bodies: 2 MiB overall, 128 KiB for a public-key upload, refused before Django sees them ---
+    LimitRequestBody 2097152
+    <LocationMatch "^/i/[^/]+/key/">
+        LimitRequestBody 131072
+    </LocationMatch>
+
+    # --- Access logs: no query string, no Referer, and no capability token ---
+    # Every other request: method, path without the query string, protocol. Requests under /i/, /p/,
+    # /k/ and /l/ (the path is the token): method, status, size and time only.
+    # %U logs the decoded, slash-merged path, so the capability paths are recognised on that same path:
+    # <LocationMatch> matches it (//i/<token>/ and /%69/<token>/ included, which a SetEnvIf on the raw
+    # Request_URI misses). mod_env applies SetEnv in the fixups phase, before the request is proxied,
+    # and mod_log_config tests env= on the same request afterwards, so the mark is there when it logs.
+    <LocationMatch "^/(i|p|k|l)/">
+        SetEnv capability 1
+    </LocationMatch>
+    # A request refused before fixups (a malformed path: 400; an encoded slash: 404) is never marked by
+    # the block above; this catches those written in the plain /i/, /p/, /k/, /l/ form.
+    SetEnvIf Request_URI "^/(i|p|k|l)/" capability
+    # Gunicorn's own access log stays off; Django logs to journald via the console handler.
+    LogFormat "%h %l %u %t \"%m %U %H\" %>s %b %D \"%{User-Agent}i\"" pay_access
+    LogFormat "%h %l %u %t \"%m\" %>s %b %D" pay_capability
+    CustomLog ${APACHE_LOG_DIR}/pay-invoicing-access.log pay_access env=!capability
+    CustomLog ${APACHE_LOG_DIR}/pay-invoicing-capability.log pay_capability env=capability
+    # mod_proxy errors (AH00898 ...) print the request path; keep only critical ones. Failures on the
+    # gunicorn side stay visible in journald through Django's own logging.
+    LogLevel warn proxy:crit proxy_http:crit
+    ErrorLog ${APACHE_LOG_DIR}/pay-invoicing-error.log
+</VirtualHost>

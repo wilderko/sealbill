@@ -1,0 +1,27 @@
+[
+ {
+  "id": "ct_1",
+  "legalName": "Fixture Jan s.r.o.",
+  "contactName": "Jan Fixture",
+  "displayName": "Jan Fixture",
+  "email": "Jan.Fixture@Example.test",
+  "taxId": "SK123",
+  "billingAddress": {
+   "line1": "Fixture Street 1",
+   "line2": null,
+   "zipCode": "81101",
+   "city": "Bratislava",
+   "state": null,
+   "countryCode": "sk"
+  }
+ },
+ {
+  "id": "ct_2",
+  "legalName": "",
+  "contactName": "Nomail Person",
+  "displayName": null,
+  "email": null,
+  "taxId": null,
+  "billingAddress": null
+ }
+]

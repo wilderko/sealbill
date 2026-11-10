@@ -1,0 +1,9 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "Too many requests" %}{% endblock %}
+{% block content %}
+<div class="message-page">
+<svg class="icon message-page__icon" aria-hidden="true"><use href="#i-clock"/></svg>
+<h1>{% translate "Too many requests" %}</h1>
+<p>{% if message %}{{ message }}{% else %}{% translate "Please wait a minute and try again." %}{% endif %}</p>
+</div>
+{% endblock %}

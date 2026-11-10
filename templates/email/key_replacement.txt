@@ -1,0 +1,14 @@
+{% load i18n %}{% autoescape off %}{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}
+
+{% blocktranslate %}Someone uploaded a new encryption key for your e-mail address. Once it is confirmed, {{ org }} will encrypt its e-mails to you with that key instead of your current one, the key this message is encrypted to.{% endblocktranslate %}
+
+{% blocktranslate %}Fingerprint of the new key: {{ fingerprint }}{% endblocktranslate %}
+
+{% translate "If you uploaded it yourself, there is nothing to do here." %}
+
+{% translate "If you did not, open this link and cancel the new key there. It is refused, and your current key stays in use:" %}
+{{ cancel_url }}
+
+{% translate "The link works for 7 days." %}
+
+{{ org }}{% endautoescape %}

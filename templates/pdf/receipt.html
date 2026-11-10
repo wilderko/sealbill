@@ -1,0 +1,9 @@
+{% extends "pdf/_base.html" %}{% load i18n %}
+{% block heading %}{% translate "Receipt" %}{% endblock %}
+{% block dates %}
+<div class="paid">{% translate "PAID" %}</div>
+{% if invoice.paid_at %}<div><span class="label">{% translate "Paid on" %}</span> {{ invoice.paid_at|date:"DATE_FORMAT" }}</div>{% endif %}
+{% endblock %}
+{% block payment %}
+<div style="margin-top:6mm"><span class="label">{% translate "Payment reference" %}</span> {{ reference }}</div>
+{% endblock %}

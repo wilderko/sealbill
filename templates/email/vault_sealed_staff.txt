@@ -1,0 +1,5 @@
+{% load i18n %}{% autoescape off %}{% blocktranslate %}The vault is sealed, so {{ count }} e-mails cannot be sent.{% endblocktranslate %}
+
+{% translate "Unlock it here:" %}
+{{ unlock_url }}
+{% endautoescape %}

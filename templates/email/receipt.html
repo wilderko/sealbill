@@ -1,0 +1,6 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>{% if name %}{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}{% else %}{% translate "Hello," %}{% endif %}</p><p>{% blocktranslate %}Thank you. {{ org }} has received your payment for {{ ref }}.{% endblocktranslate %}</p><p>{% blocktranslate %}Amount paid: {{ total }}{% endblocktranslate %}</p>{% if view_url %}<p>{% translate "View the receipt online:" %}<br><a href="{{ view_url }}">{{ view_url }}</a></p>{% endif %}{% if pdf_attached %}<p>{% blocktranslate %}Your receipt is attached as a PDF.{% endblocktranslate %}</p>{% else %}<p>{% blocktranslate %}The PDF could not be attached to this e-mail. You can download it from the invoice page.{% endblocktranslate %}</p>{% endif %}
+<p>{{ org }}</p>
+</body></html>

@@ -1,0 +1,10 @@
+{% extends "staff/base.html" %}
+{% block title %}Webhook created{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:webhook_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Webhooks</a>
+<header class="page-head"><div class="page-head__text"><h1>Webhook created</h1>
+<p class="page-head__meta">{{ endpoint.org.slug }} &middot; {{ host }}</p></div></header>
+<div class="notice notice--ok" role="status"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg><p>Copy the signing secret now. It is shown only on this page and cannot be shown again; if it is lost, delete the endpoint and make a new one.</p></div>
+<section class="card form-card narrow"><div class="card-body"><div class="copy-field"><span class="copy-field__label">Signing secret</span><span class="copy-field__value mono">{{ plain }}</span><button type="button" class="btn btn--sm copy-btn" data-copy="{{ plain }}" data-done="Copied"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>Copy</span></button></div></div></section>
+<p><a class="btn" href="{% url 'staff:webhook_detail' pk=endpoint.pk %}">Done</a></p>
+{% endblock %}

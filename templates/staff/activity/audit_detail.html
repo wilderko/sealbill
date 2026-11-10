@@ -1,0 +1,12 @@
+{% extends "staff/base.html" %}
+{% block title %}Audit entry {{ entry.pk }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:audit_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Audit log</a>
+<header class="page-head"><div class="page-head__text"><h1>{{ entry.action }}</h1>
+<p class="page-head__meta">{{ entry.created_at|date:"Y-m-d H:i:s" }} · {{ entry.actor_username|default:"-" }}</p></div></header>
+<section class="card detail-facts"><div class="card-body"><dl class="kv">
+<div><dt>Model</dt><dd>{{ entry.model_label }}</dd></div>
+<div><dt>Object</dt><dd>{{ entry.object_pk }}</dd></div>
+<div><dt>Detail</dt><dd>{% if sealed %}[sealed]{% elif detail_items %}<dl class="kv">{% for k, v in detail_items %}<div><dt>{{ k }}</dt><dd>{{ v }}</dd></div>{% endfor %}</dl>{% elif detail %}{{ detail }}{% else %}<span class="muted">None</span>{% endif %}</dd></div>
+</dl></div></section>
+{% endblock %}

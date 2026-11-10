@@ -1,0 +1,29 @@
+{% extends "staff/base.html" %}
+{% block title %}Edit contact #{{ contact.pk }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:contact_detail' pk=contact.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>{{ name }}</a>
+<header class="page-head"><div class="page-head__text"><h1>Edit contact</h1>
+<p class="page-head__meta">Contact #{{ contact.pk }} · {{ org_name }}</p></div>
+<div class="page-head__actions"><button type="submit" form="contact-form" class="btn btn--primary">Save</button></div></header>
+{{ form.non_field_errors }}
+<form method="post" id="contact-form" class="narrow">{% csrf_token %}
+<section class="card form-card"><div class="card-body"><h2 class="card-title">Identity</h2><div class="form-grid">
+{% include "ui/_field.html" with field=form.legal_name %}
+{% include "ui/_field.html" with field=form.display_name %}
+{% include "ui/_field.html" with field=form.phone %}
+{% include "ui/_field.html" with field=form.preferred_language %}
+{% include "ui/_field.html" with field=form.us_tax_resident %}
+{% include "ui/_field.html" with field=form.tax_ids wide=True %}
+{% include "ui/_field.html" with field=form.notes wide=True %}
+</div></div></section>
+<section class="card form-card"><div class="card-body"><h2 class="card-title">Address</h2><div class="form-grid">
+{% include "ui/_field.html" with field=form.address_line1 wide=True %}
+{% include "ui/_field.html" with field=form.address_line2 wide=True %}
+{% include "ui/_field.html" with field=form.address_city %}
+{% include "ui/_field.html" with field=form.address_zip %}
+{% include "ui/_field.html" with field=form.address_state %}
+{% include "ui/_field.html" with field=form.address_country %}
+</div></div></section>
+</form>
+<p class="helptext">The organization cannot be changed. E-mail addresses are managed on the contact page. Lowering a stored US tax resident answer is recorded in the audit log.</p>
+{% endblock %}

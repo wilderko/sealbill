@@ -1,0 +1,6 @@
+{% load i18n %}<div class="field{% if wide or field.wide %} field--wide{% endif %}{% if short %} field--short{% endif %}{% if field.errors %} field--error{% endif %}">
+<label for="{{ field.id_for_label }}">{{ field.label }}{% if not field.field.required and field.marked is not False %} <span class="optional">{% translate "optional" %}</span>{% endif %}</label>
+{{ field }}
+{% if field.help_text %}<p class="helptext">{{ field.help_text }}</p>{% endif %}
+{{ field.errors }}
+</div>

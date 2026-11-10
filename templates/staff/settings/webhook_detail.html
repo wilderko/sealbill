@@ -1,0 +1,22 @@
+{% extends "staff/base.html" %}
+{% block title %}Webhook {{ host }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:webhook_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Webhooks</a>
+<header class="page-head"><div class="page-head__text"><h1>{{ host }}</h1>
+<p class="page-head__meta">{{ endpoint.org.slug }} &middot; {% if endpoint.active %}Active{% else %}Inactive{% endif %} &middot; events: {{ endpoint.events|join:", " }}{% if endpoint.description %} &middot; {{ endpoint.description }}{% endif %}. The full address and the secret are never shown.</p></div>
+<div class="page-head__actions">
+<form method="post" action="{% url 'staff:webhook_ping' pk=endpoint.pk %}" class="row-form">{% csrf_token %}<button type="submit" class="btn">Send a ping</button></form>
+{% if has_failed %}<form method="post" action="{% url 'staff:webhook_retry' pk=endpoint.pk %}" class="row-form">{% csrf_token %}<button type="submit" class="btn">Retry all failed</button></form>{% endif %}
+<form method="post" action="{% url 'staff:webhook_delete' pk=endpoint.pk %}" class="row-form" data-confirm="Delete this webhook endpoint? Its secret and delivery log are deleted.">{% csrf_token %}<button type="submit" class="btn btn--danger-outline">Delete</button></form></div></header>
+{% include "ui/_messages.html" %}
+{% if error %}<div class="error" role="alert"><p>{{ error }}</p></div>{% endif %}
+<h2>Last 50 deliveries</h2>
+{% if deliveries %}<div class="card table-card"><div class="table-wrap"><table class="table--rows">
+<thead><tr><th>Event</th><th>State</th><th class="num">Attempts</th><th>Last result</th><th>Created</th><th></th></tr></thead><tbody>
+{% for d in deliveries %}<tr><td data-label="Event">{{ d.event.type }}</td><td data-label="State">{{ d.state }}</td><td class="num" data-label="Attempts">{{ d.attempts }}</td>
+<td class="muted" data-label="Last result">{% if d.last_status_code %}HTTP {{ d.last_status_code }}{% endif %} {{ d.last_error_kind }}</td>
+<td class="muted" data-label="Created">{{ d.created_at|date:"Y-m-d H:i" }}</td>
+<td class="actions-cell">{% if d.state == "failed" %}<form method="post" action="{% url 'staff:webhook_retry' pk=endpoint.pk %}" class="row-form">{% csrf_token %}<input type="hidden" name="delivery" value="{{ d.pk }}"><button type="submit" class="btn btn--sm">Retry</button></form>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% else %}<div class="empty"><p>Nothing has been sent to this endpoint yet.</p></div>{% endif %}
+{% endblock %}

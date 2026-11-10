@@ -1,0 +1,9 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "This payment link is no longer available." %}{% endblock %}
+{% block content %}
+<div class="message-page">
+<svg class="icon message-page__icon" aria-hidden="true"><use href="#i-link"/></svg>
+<h1>{% translate "This payment link is no longer available." %}</h1>
+<p>{% translate "Contact the seller if you have any questions." %}</p>
+</div>
+{% endblock %}

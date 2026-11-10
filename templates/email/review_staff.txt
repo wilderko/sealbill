@@ -1,0 +1,12 @@
+{% autoescape off %}A payment needs a person to look at it.
+
+Why: {{ reason_text }}
+Payment: #{{ payment_id }}
+Network: {{ network_name }}
+Amount: {{ amount }}
+{% if invoice_ref %}Invoice: {{ invoice_ref }}
+{% endif %}
+{% if confirmed %}It was confirmed and the invoice counts it as paid: nothing was undone. Check it in the
+gateway, then reverse it on its invoice or keep it here:{% else %}Assign it to an invoice or reject it here:{% endif %}
+{{ admin_url }}
+{% endautoescape %}

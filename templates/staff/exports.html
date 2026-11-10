@@ -1,0 +1,21 @@
+{% extends "staff/base.html" %}
+{% block title %}Exports{% endblock %}
+{% block content %}
+<header class="page-head"><div class="page-head__text"><h1>Exports</h1>
+<p class="page-head__meta">CSV for the books. Accounting amounts use the rate cached for the day (issue date for invoices, confirmation date for payments); a day with no cached rate leaves those cells empty.</p></div></header>
+<div class="narrow">
+<form method="get" class="card"><div class="card-body form-stack">
+<fieldset class="check-list"><legend>Organizations (none ticked means all)</legend>
+{% for pk, name in organizations %}<label class="check"><input type="checkbox" name="organization" value="{{ pk }}"> <span>{{ name }}</span></label>
+{% endfor %}</fieldset>
+<div class="form-grid">
+<div class="field"><label for="export-from">From</label><input id="export-from" type="date" name="from" value="{{ date_from }}" required></div>
+<div class="field"><label for="export-to">To</label><input id="export-to" type="date" name="to" value="{{ date_to }}" required></div>
+</div>
+<div class="form-actions">
+<button type="submit" formaction="{% url 'staff:export_invoices' %}" class="btn btn--primary"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download invoices.csv</button>
+<button type="submit" formaction="{% url 'staff:export_payments' %}" class="btn"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download payments.csv</button>
+</div>
+</div></form>
+</div>
+{% endblock %}

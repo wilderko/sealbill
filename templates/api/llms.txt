@@ -1,0 +1,250 @@
+{% autoescape off %}# Sealbill API
+
+Invoicing service for organizations. JSON over HTTPS. Base URL: {{ site_url }}/api/v1
+OpenAPI 3.1 schema: {{ site_url }}/api/v1/schema   Human docs: {{ site_url }}/api/v1/docs
+
+## Authentication
+Send `Authorization: Bearer <token>` on every request. A token belongs to one organization and
+sees only that organization's contacts and invoices (invoices it requested, or that it issues).
+Tokens are created by an operator: `manage.py create_api_token --org <slug> --name <n> --scopes read,invoices:write`.
+Wrong, missing or revoked token: 401. Missing scope: 403. Over 120 requests a minute per token: 429.
+While the service is sealed (after a restart, until an operator unlocks it) every call answers
+503 {"error": "vault_sealed"}; retry later.
+
+## Scopes
+- read: every GET.
+- invoices:write: create/update contacts and their encryption keys, create/send/void invoices, reissue links, create/update/deactivate/rotate payment links.
+- payments:confirm: confirm/reject/reverse/assign payments, acknowledge refunds, dismiss declarations. THIS MOVES MONEY STATE.
+  It does not record manual payments: only a person records a manual payment, on the staff pages.
+- admin: implies all of the above, and manages webhooks (/api/v1/webhooks).
+
+## Errors
+Every error is {"error": "<code>", "detail": ...}. 400 validation_error / invalid_request (fix the request),
+409 invoice_error (the object is in the wrong state, e.g. sending twice, voiding a paid invoice), 409 needs_person (only a
+person on the staff pages may do this; no token can). Never retry a 409 blindly.
+
+## Lists
+GET list endpoints (contacts, invoices, payments, declarations, payment-links) are paginated: {"count": N, "next": url|null,
+"previous": url|null, "results": [...]}. Use ?limit= (default 50, max 200) and ?offset=. A row whose stored value
+cannot be decrypted appears as {"id": N, "error": "undecryptable"} instead of failing the page.
+Error 503 vault_sealed means the service is locked; 500 undecryptable means one stored value is unreadable (staff are alerted).
+
+## Money
+All amounts are integers in minor units (cents). Quantities are decimal strings with at most 2 places. Rates are basis points (2000 = 20%).
+
+## Endpoints
+GET  /api/v1/me                  (read) {"organization", "token", "scopes": [...]}: who this token is
+GET  /api/v1/contacts[?email=<exact address, case-insensitive>: zero or one contact], GET /api/v1/contacts/{id}
+                                 Every contact carries "has_paid_invoice" (boolean): true when an invoice that staff or the
+                                 API issued to it (or to the copy the US-resident organization keeps of it) is paid or
+                                 overpaid, never a payment-link order, whatever it cost. Offer only such contacts as
+                                 evidence of a client.
+GET  /api/v1/contacts?name=<text>   (read) 2-100 characters; every word must be a whole word of the legal or display name
+                                 (case and accents folded; a hyphen separates words, so "jean" and "luc" both match "Jean-Luc"). At most 20 results,
+                                 30 searches per minute per token (429 throttled), your token's own organization only, never
+                                 the copies kept for another organization. Not combinable with email (400)
+POST /api/v1/contacts            {"email", "legal_name", ...}  201 new, 200 existing e-mail
+PATCH /api/v1/contacts/{id}      the fields given; they reach the copy the US-resident organization keeps of this contact
+                                 for your organization too (never its own client, never another organization's copy)
+GET  /api/v1/contacts/{id}/keys  (read) the contact's encryption keys: {"id", "kind": "pgp|smime", "fingerprint",
+                                 "state": "pending|active|replaced|revoked|failed", "expires_at", "source"}; never the key itself
+POST /api/v1/contacts/{id}/keys  {"key": "<ASCII-armored PGP public key or PEM certificate>"}  (invoices:write)
+                                 active at once, replaces the previous key; e-mail to the contact is then encrypted to it.
+                                 400 key_rejected with the reason in "detail" (expired, email_mismatch, secret_key, ...);
+                                 503 key_check_unavailable: nothing was stored, retry shortly
+POST /api/v1/keys/{id}/revoke    (invoices:write) the key is never used again
+GET  /api/v1/invoices?external_reference=&status=&limit=&offset=
+GET  /api/v1/invoices/{id}       totals, lines, status, "amount_paid_minor" and "balance_due_minor" (total less confirmed
+                                 payments, floored at 0; the balance means nothing when status is "void"; an excess is "amount_paid_minor" less
+                                 "totals.total"). An ordinary crypto overpayment shows as
+                                 "paid" with "refund_due_base_units" set on the payment, not as "overpaid"; never contains the client links
+POST /api/v1/invoices            create a DRAFT (no money moves, nothing is sent). Optional "return_url": an https address on a
+                                 host in the organization setting "return_url_hosts" (else 400 return_url_not_allowed); the client's
+                                 page then shows a Back link to it. The page never redirects there by itself.
+                                 Optional "method_kinds": ["bank", "fiat_link", "rail"], resolved against the issuing
+                                 organization (the US rule applied) into the offered methods; send it OR "offered_methods", not both
+                                 (400 methods_conflict); nothing resolving is 409 no_methods
+POST /api/v1/invoices/{id}/send  {"email_client": true, "client_letters": true}  draft -> sent; numbers it; returns view_url and
+                                 pay_url ONCE. "email_client": false only skips the invoice letter. "client_letters": false means
+                                 NO letter about this invoice ever goes to the client from this system (invoice, receipt, partial
+                                 receipt, new links), for a caller that writes to the client itself. It is per invoice, fixed at send, not a
+                                 mute on the contact; encryption-key e-mails are unaffected; staff alerts still go out.
+                                 Combining "client_letters": false with "email_client": true is 400.
+                                 With "client_letters": true (the default) the system also sends ONE reminder letter about an unpaid
+                                 invoice (sent, overdue or partially paid) INVOICE_REMINDER_DAYS (30) days after sending, to a
+                                 client of record with an e-mail address. The reminder REPLACES both links, so links you gave the client
+                                 by other means stop working, and it emits invoice.links_reissued. Send with "client_letters": false
+                                 to be left out
+POST /api/v1/invoices/{id}/reissue-links   replaces both links (old ones stop working, and e-mails not yet sent with
+                                 them are cancelled); returns them ONCE
+POST /api/v1/invoices/{id}/void  {"reason": "..."}  refused when confirmed money exists, and while a payment is detected
+                                 (409 "invoice_error" either way)
+GET  /api/v1/invoices/{id}/pdf   application/pdf. Once sent, the PDF and the client's pages keep the seller, buyer and
+                                 payment details the invoice was sent with; later edits of those records do not change it
+POST /api/v1/invoices/{id}/payments  {"amount_minor", "rail": "bank|fiat_link|manual", "note"}  refused for every token: 409
+                                 needs_person, nothing is written (only a person records a manual payment, on the staff pages)
+GET  /api/v1/payment-methods?currency=EUR&contact_email=client@example.com   (read) which organization would issue
+                                 the invoice (US rule applied to the contact, if known) and the methods it would offer:
+                                 {"currency", "issuer_org", "issued_by_rule", "methods": [{"id": "bank:3", "kind", "label", "currencies"}]}
+GET  /api/v1/payments[?invoice=<id>]   one invoice's payments
+GET  /api/v1/payment-links       (read) your organization's payment links, paged; never their URLs
+GET  /api/v1/payment-links/{id}  (read) one link with its "url": the public page anyone can pay through. The URL is a
+                                 capability, handed out here, on create and on rotate only: pass it on to whoever should have it
+POST /api/v1/payment-links       (invoices:write) {"title", "currency", "price_minor" | "customer_chooses": true with optional
+                                 "min_minor"/"max_minor", "description", "tax_rate_bps", "max_quantity" (0: any, up to 200),
+                                 "name_field"/"billing_field"/"shipping_field"/"phone_field" off|optional|required, "custom_fields":
+                                 [{"label", "required"}] (up to 5), "kind": invoice|payment_request, "methods": default|custom with
+                                 "method_types", "fulfillment", "notify_staff", "active", "valid_until", "max_uses"}.
+                                 201 with the link and its "url"; 400 with the reason when a rule is broken
+PATCH /api/v1/payment-links/{id} (invoices:write) the fields given. {"active": false} deactivates: the page then says the link is
+                                 no longer available; orders already made are untouched. The URL does not change
+POST /api/v1/payment-links/{id}/rotate   (invoices:write) a new URL; the old one stops working at once; returns the link with it
+                                 Another organization's link is 404. Every change is recorded in the audit log, as made through the API.
+                                 Invoices made from a link carry "payment_link_id" and "coupon_code" (null otherwise).
+GET  /api/v1/exports/invoices.csv?from=YYYY-MM-DD&to=YYYY-MM-DD   (read) CSV for the books: the invoices your
+                                 organization requested, including those the US-resident organization issued on its behalf
+                                 (the US tax resident rule), and those it issued itself; at most 400 days (else 400 bad_range)
+GET  /api/v1/exports/payments.csv?from=YYYY-MM-DD&to=YYYY-MM-DD   (read) the payments on those invoices (an admin token
+                                 also gets those no invoice holds yet that your organization may be credited with), with
+                                 network, tx hash and quote rate
+POST /api/v1/payments/{id}/confirm   {"note"}   detected/needs_review -> confirmed (may mark the invoice paid);
+                                 409 needs_person when the payment reads "needs_staff_confirmation": true
+POST /api/v1/payments/{id}/reject    {"note"}
+POST /api/v1/payments/{id}/reverse   {"reason"} confirmed -> reversed (reason required)
+GET  /api/v1/invoices/{id}/quotes, GET /api/v1/quotes/{id}   (read) crypto quotes of an invoice
+POST /api/v1/invoices/{id}/quotes    {"method": "rail:3", "network": "arbitrum", "asset": "USDC", "refresh": false}  (invoices:write)
+POST /api/v1/payments/{id}/assign    {"invoice_id", "amount_minor", "note"}  (payments:confirm, Idempotency-Key REQUIRED)
+POST /api/v1/payments/{id}/acknowledge-refund   {"note"}  (payments:confirm)
+GET  /api/v1/declarations            clients' "I have paid" claims. A declaration is a claim, not money.
+POST /api/v1/declarations/{id}/dismiss {"reason"}
+
+## Crypto payments and quotes
+An invoice offers crypto through "rail:<id>" methods (GET /api/v1/payment-methods lists each rail with its "options":
+[{"network", "asset"}] pairs). A client does not pay "the invoice amount" in crypto: they pay a QUOTE. POST
+/api/v1/invoices/{id}/quotes {"method", "network", "asset"} fixes the exchange rate and returns the exact amount to send:
+"amount_base_units" (integer, the asset's smallest unit) and "amount" (the same in whole units), "address", "payment_uri",
+or for BTCPay/Lightning a "checkout_url" / "bolt11". A quote lives about 30 minutes ("expires_at"). "money_may_be_coming" (read-only boolean) is true for a BTCPay/Lightning quote whose money the
+gateway has seen but not settled, or that nobody has read successfully since it expired; and for a chain quote while it still
+holds its amount (until it is released, about a day after it closes), while the watcher of its account and network is failing
+or has not read since it expired, or while skipped blocks of its address wait for a person: never void the invoice while any quote says so.
+"money_may_be_coming_reason" says which, or is "" when the flag is false: "quote_held" (a chain quote still holds its amount;
+it ends by itself about a day after the quote closes), "watcher_failing", "watcher_behind" (the chain scan has not read since
+the quote expired), "blocks_not_scanned" (skipped blocks wait for a person) or "gateway" (a BTCPay/Lightning quote). The watcher
+reasons last as long as the outage. On a shared address the
+amount is UNIQUE per quote (it is how the payment is matched): send exactly that amount, never a rounded one. An open quote
+for the same method, network and asset is returned again (200) until it nears expiry; "refresh": true cancels it and issues a
+new one. Do not create quotes speculatively: each holds its amount for about a day, and one invoice holds at most 20 that
+are not yet released (a further one is refused with too_many_quotes until one is released).
+Quote errors are 409 {"error": <code>} with not_payable, method_not_offered, asset_not_enabled, nothing_due, rates_diverge,
+no_free_amount, too_many_quotes or rail_unavailable; "rates_unavailable" is 503 (retry in a minute). Nothing was created in either case.
+A crypto payment in GET /api/v1/payments has rail, network, asset, amount_base_units, tx_hash, log_index, "final",
+"quote", and: "state": "needs_review" with a "review_reason" when no invoice matched it or something looks wrong; a person
+or an agent holding payments:confirm moves it on. A payment waiting for a person ("needs_staff_confirmation": true) moves on
+only by a person, on the staff pages: confirm and assign by any token, admin included, answer 409 "needs_person" and change
+nothing. Calls that MOVE MONEY STATE (never repeat blindly):
+- POST /api/v1/payments/{id}/assign   attach a needs_review payment to one invoice of your organization and credit
+  "amount_minor" (invoice currency). A chain transfer needs "final": true (a gateway payment in review may be assigned while it reads false). Needs a note and an Idempotency-Key. Refused unless your organization
+  owns the account the money reached (accepted even if that account is now inactive) or holds another active account with
+  that address on that network.
+- POST /api/v1/payments/{id}/acknowledge-refund   record that "refund_due_base_units" (paid beyond the quote) was refunded
+  or will not be. Once only.
+- POST /api/v1/payments/{id}/confirm, /reject, /reverse   as above; confirm refuses a chain transfer that is not yet deep
+  enough in the chain. A payment that is confirmed reads "final": true whatever its rail (one a person confirmed after it waited
+  for them, a manual payment, one assigned from review); "final": false means not confirmed yet: a chain transfer below finality, or a gateway payment not settled or waiting for a person.
+A payment with no invoice yet is visible to admin tokens only.
+
+## Webhooks (admin scope)
+Signed notifications of what happens to your organization's invoices and payments. Manage them with an admin token:
+GET  /api/v1/webhooks             your endpoints; never the secret, and a URL's query string shows as "?..."
+POST /api/v1/webhooks             {"url": "https://...", "events": ["invoice.paid", "payment.confirmed"], "description": "..."}
+                                  201 with "secret" ONCE: store it, it is never shown again. "events" defaults to ["*"] (all).
+                                  400 webhook_refused, "detail": scheme | private_address | unresolvable | bad_url | port (only 443) | endpoint_limit. https only, and
+                                  the host must resolve to public addresses only (no loopback, private, link-local, multicast).
+GET  /api/v1/webhooks/{id}, DELETE /api/v1/webhooks/{id}   (delete: the endpoint, its secret and its delivery log go)
+GET  /api/v1/webhooks/{id}/deliveries   the delivery log: "state" queued|sent|failed|cancelled, "attempts", "last_status_code",
+                                  "last_error_kind" (http_503, redirect, timeout, tls, connection, refused:<code>), timestamps
+POST /api/v1/webhooks/{id}/ping   queues a "ping" event for that endpoint alone (202); the worker sends it within about 15 s
+
+Events: invoice.created, invoice.sent, invoice.voided, invoice.declared (a client says they paid: a claim, not money),
+invoice.partially_paid, invoice.paid, invoice.overpaid (the invoice reached that status),
+invoice.links_reissued (staff made new links in the staff pages, or the 30-day reminder did, so the pay and view URLs you stored are dead; "data" has
+invoice_id and status. The API's reissue-links call does not emit it: its caller has the new links), payment.detected (seen, not final
+yet), payment.confirmed, payment.needs_review (a person must decide), payment.rejected, payment.reversed, staff.alert
+("data.kind": watcher = a payment watcher cannot see its chain, vault_unlock_failures = repeated failed vault unlock attempts,
+payment_invalid_after_confirmation = the gateway now calls a payment it had settled invalid (a person must look), outbox_failed = e-mail could not be delivered, key_failed = a
+client's encryption key stopped working, key_cancel = the holder of a client's previous key cancelled a newly uploaded one,
+or was refused: data.reason cancelled | replaced_key_withdrawn | cannot_restore), ping. An invoice you requested that another organization issued (the US tax resident
+rule) is reported to both organizations.
+
+Each delivery is one POST, Content-Type: application/json, with the body
+{"created_at": "2026-11-03T10:00:00.000Z", "data": {"invoice_id": 42, "status": "paid"}, "id": "<event uuid>", "org": "<slug>", "type": "invoice.paid"}
+("org" is null for a staff.alert about the service itself). "data" is thin: ids, statuses and kinds only, never names,
+e-mails, amounts or addresses. Every key it may carry:
+  invoice_id, payment_id, declaration_id, endpoint_id (ping), key_id (staff.alert key_failed, key_cancel): ids
+  status (the invoice's, or the payment's on payment.*), invoice_status (payment.reversed), kind (invoice.created: invoice |
+  payment_request; staff.alert: watcher | vault_unlock_failures | payment_invalid_after_confirmation | outbox_failed | key_failed | key_cancel), rail (payment.*), reason (a review or
+  refusal code)
+  count, watchers (watcher names), networks (staff.alert: how many, and which)
+Read the invoice or payment through the API for the rest; that is also its current state.
+Headers: X-Pay-Event (the type), X-Pay-Event-Id (the event id, the same on every retry), X-Pay-Signature: sha256=<hex>.
+
+Verify every delivery before trusting it: HMAC-SHA256 with your secret over the RAW request body, exactly the bytes received
+(never parse and re-serialize first), compared in constant time:
+    import hashlib, hmac
+    expected = "sha256=" + hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, request.headers.get("X-Pay-Signature", "")):
+        return 401  # not from us, or altered on the way
+(Node: compare equal-length Buffers with crypto.timingSafeEqual; never with == or ===.)
+Answer 2xx within 10 seconds and do the work afterwards. Anything else, a redirect included (redirects are never followed), is
+retried after 2, 5, 15, 30, 60, 120, 240 and 480 minutes (about 16 hours); then the delivery is failed and staff are told.
+Delivery is at least once and not necessarily in order: deduplicate on X-Pay-Event-Id and re-read the object for its state.
+"created_at" is inside the signed body, so you may refuse an event older than you are willing to accept.
+An event that happens while the service is sealed is recorded and delivered once an operator unlocks it.
+
+## Idempotency
+POST /api/v1/invoices accepts an `Idempotency-Key` header and/or an `external_reference` body field, both scoped
+to your organization. Repeating the call returns the same invoice with 200 instead of 201, so it is safe to retry.
+Always send one of them. The request is fingerprinted (the inline contact with all its fields, currency, kind,
+lines, due_days, offered_methods, return_url, method_kinds, title, notes): reusing a key or reference with a DIFFERENT body is 409 "idempotency_mismatch",
+never a silent return of the old invoice. Keys are at most 200 characters. (Invoices created before November 2026 carry
+no fingerprint: a repeat returns them whatever the body.)
+POST /api/v1/invoices/{id}/payments records nothing for a token (409 needs_person); a key a person already used there
+returns that payment with 200, a different body 409 idempotency_mismatch. Send and void calls are NOT idempotent: a second
+send is a 409, so check GET /api/v1/invoices/{id} before repeating after a timeout.
+
+## US tax residents
+If the contact has "us_tax_resident": "yes", the invoice is issued by the US-resident organization whatever you asked for.
+The response then has "issued_by_rule": true and "issuer_org" differs from "requested_by_org".
+A draft made before the contact became a US tax resident is refused at send (409 invoice_error, "contact is a US
+tax resident: delete this draft and create it again"): void it and create the invoice again; nothing is re-issued silently.
+
+## Contacts made by payment links
+A payment-link checkout whose e-mail matches no contact makes a contact of its own from what the visitor typed (a link
+buyer). It is not a client of record, and paying does not change that: anyone can pay a link under any name. No list,
+e-mail or name lookup returns it, GET/PATCH by its id is 404, "contact_id" naming it is 400, and an inline "contact" with
+its e-mail makes a new contact from your fields, so a visitor's data never reaches your invoice. Only a person on the staff
+pages makes a link buyer a client of record. A checkout whose e-mail matches a contact books the order to it and changes
+nothing on it.
+
+## Contacts inside an invoice request
+"contact": {"email": ...} finds the contact by e-mail or creates it. For an EXISTING contact the other fields are ignored,
+except "us_tax_resident": "yes" is applied (upgrade; the issuer rule then switches the issuer). Sending a different value
+for a contact stored as "yes" is 409 "contact_conflict": PATCH /api/v1/contacts/{id} first.
+"offered_methods" items are "bank:<id>", "fiat:<id>" or "rail:<id>" (a crypto rail) of an active account of the issuing organization,
+else 400 "invalid_offered_method"; a bank account must be in the invoice currency, a crypto rail takes any currency. Omit
+"offered_methods" to offer the issuer's defaults: its active bank accounts in the invoice currency, its active fiat links that
+accept it and its active crypto rails (GET /api/v1/payment-methods shows them beforehand). An invoice that
+offers nothing ("offered_methods": [] or no matching account) is refused at send: 409 invoice_error "no payment method offered".
+Limits: quantity at most 10 integer and 2 decimal digits; amounts, and the invoice total, at most 10^12 minor units
+(a larger total is 400 invoice_error); due_days 0..3650; at most 200 lines; title at most 2000, notes 5000, a line's name
+500 and its description 2000 characters; issue_date from 2000-01-01 to 365 days from today (else 400 validation_error). Unknown /api/v1 paths answer 404 {"error": "not_found"}.
+
+## Example
+curl -X POST {{ site_url }}/api/v1/invoices \
+  -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: order-1042" -H "Content-Type: application/json" \
+  -d '{"contact": {"email": "client@example.com", "legal_name": "Client Ltd"}, "currency": "EUR",
+       "due_days": 14, "lines": [{"name": "Consulting", "quantity": "1", "unit_price_minor": 10000, "tax_rate_bps": 2000}]}'
+curl -X POST {{ site_url }}/api/v1/invoices/ID/send -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" -d '{"email_client": true}'
+curl -H "Authorization: Bearer $TOKEN" {{ site_url }}/api/v1/invoices?external_reference=order-1042
+{% endautoescape %}

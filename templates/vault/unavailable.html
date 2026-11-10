@@ -1,0 +1,10 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "Temporarily unavailable" %}{% endblock %}
+{% block content %}
+<div class="message-page">
+<svg class="icon message-page__icon" aria-hidden="true"><use href="#i-clock"/></svg>
+<h1>{% translate "Temporarily unavailable" %}</h1>
+<p>{% translate "Please try again in a few minutes." %}</p>
+</div>
+{% endblock %}
+{% block foot %}{% endblock %}

@@ -1,0 +1,8 @@
+{% autoescape off %}An order made through a payment link was paid.
+
+Order: {{ ref }}
+{{ invoice_url }}
+
+The payment link and its orders:
+{{ link_url }}
+{% endautoescape %}

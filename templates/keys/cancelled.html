@@ -1,0 +1,9 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "The new key was cancelled" %}{% endblock %}
+{% block content %}
+<div class="card narrow-card"><div class="card-body">
+<div class="card-icon card-icon--ok" aria-hidden="true"><svg class="icon"><use href="#i-check-circle"/></svg></div>
+<h1>{% translate "The new key was cancelled" %}</h1>
+<p>{% translate "The new key was refused and will not be used." %}{% if still_encrypted %} {% translate "Our e-mails to you stay encrypted to your current key." %}{% endif %}</p>
+</div></div>
+{% endblock %}

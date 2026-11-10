@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>{{ title }}</title>
+<link rel="stylesheet" href="pdf.css">
+<style>
+.sheet { text-align: center; padding-top: 22mm; }
+.sheet h1 { font-size: 26pt; line-height: 1.2; margin: 0 0 12mm; overflow-wrap: anywhere; }
+.sheet .qr { width: 120mm; height: 120mm; image-rendering: pixelated; }
+.sheet .scan { margin: 8mm 0 3mm; font-size: 13pt; color: #444; }
+.sheet .url { font-size: 11pt; overflow-wrap: anywhere; word-break: break-all; padding: 0 12mm; }
+</style></head>
+<body><div class="sheet">
+<h1>{{ title }}</h1>
+<img class="qr" src="{{ qr }}" alt="">
+<p class="scan">Scan to pay</p>
+<p class="url">{{ url }}</p>
+</div></body></html>

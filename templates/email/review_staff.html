@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>A payment needs a person to look at it.</p>
+<p>Why: {{ reason_text }}<br>Payment: #{{ payment_id }}<br>Network: {{ network_name }}<br>Amount: {{ amount }}{% if invoice_ref %}<br>Invoice: {{ invoice_ref }}{% endif %}</p>
+<p>{% if confirmed %}It was confirmed and the invoice counts it as paid: nothing was undone. Check it in the gateway, then reverse it on its invoice or keep it here:{% else %}Assign it to an invoice or reject it here:{% endif %}<br><a href="{{ admin_url }}">{{ admin_url }}</a></p>
+</body></html>

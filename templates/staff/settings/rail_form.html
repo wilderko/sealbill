@@ -1,0 +1,39 @@
+{% extends "staff/base.html" %}
+{% block title %}{% if acct %}Edit rail account{% else %}New rail account{% endif %}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:rail_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Rail accounts</a>
+{% if chooser %}
+<header class="page-head"><div class="page-head__text"><h1>New rail account</h1><p class="page-head__meta">Choose the organization and the kind first.</p></div></header>
+<section class="card form-card narrow"><div class="card-body">
+{% for o in orgs %}<h2 class="card-title">{{ o.slug }}</h2><p>{% for value, label in kinds %}<a class="btn btn--sm" href="{% url 'staff:rail_new' %}?kind={{ value }}&amp;org={{ o.pk }}">{{ label }}</a> {% endfor %}</p>
+{% empty %}<p class="muted">Create an organization first.</p>{% endfor %}
+</div></section>
+{% else %}
+<header class="page-head"><div class="page-head__text"><h1>{% if acct %}Edit rail account{% else %}New rail account{% endif %}</h1></div>
+<div class="page-head__actions"><button type="submit" form="rail-form" class="btn btn--primary">Save</button></div></header>
+{% include "ui/_messages.html" %}
+{% include "staff/_stepup.html" with action="create, change, activate or deactivate a rail account" %}
+{{ form.non_field_errors }}
+<form method="post" id="rail-form" class="narrow">{% csrf_token %}
+<section class="card form-card"><div class="card-body"><div class="form-grid">
+<div class="field"><label>Organization</label><p>{{ org.slug }}</p></div>
+<div class="field"><label>Kind</label><p>{{ kind }}</p></div>
+{% include "ui/_field.html" with field=form.label %}
+{% if form.address %}{% include "ui/_field.html" with field=form.address wide=True %}{% endif %}
+{% if form.networks %}{% include "ui/_field.html" with field=form.networks wide=True %}
+{% elif kind != "btcpay" and kind != "lightning" %}<div class="field"><label>Networks</label><p>{{ form.instance.networks|join:", " }}</p><p class="helptext">Fixed for this kind.</p></div>{% endif %}
+{% if form.assets %}{% include "ui/_field.html" with field=form.assets wide=True %}{% elif kind == "lightning" %}<div class="field"><label>Assets</label><p>BTC</p></div>{% endif %}
+{% if form.url %}{% include "ui/_field.html" with field=form.url wide=True %}{% endif %}
+{% if form.store_id %}{% include "ui/_field.html" with field=form.store_id %}{% endif %}
+{% if form.speed_policy %}{% include "ui/_field.html" with field=form.speed_policy %}{% endif %}
+{% if form.backend %}{% include "ui/_field.html" with field=form.backend %}{% endif %}
+{% include "ui/_field.html" with field=form.active wide=True %}
+</div><p class="helptext">Credentials are never shown here.{% if acct and has_credentials_page %} <a href="{% url 'staff:rail_credentials' pk=acct.pk %}">Set credentials</a>{% endif %}</p></div></section>
+</form>
+{% if acct %}
+<section class="card form-card narrow"><div class="card-body"><h2 class="card-title">Activation</h2>
+<p class="helptext">Quotes a client may still pay keep being watched until they are released.</p>
+<form method="post" action="{% url 'staff:rail_toggle' pk=acct.pk %}" class="row-form">{% csrf_token %}<button type="submit" class="btn">{% if acct.active %}Deactivate{% else %}Activate{% endif %}</button></form></div></section>
+{% endif %}
+{% endif %}
+{% endblock %}

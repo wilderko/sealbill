@@ -1,0 +1,9 @@
+{% load i18n %}{% autoescape off %}{% translate "A change that needs a superuser and a recent second factor was made on the staff pages." %}
+
+{% translate "Who:" %} {{ who }}
+{% translate "What:" %} {{ what }}
+{% translate "When:" %} {{ when }}
+
+{% translate "If you did not expect it, check it on the staff page and in the audit log:" %}
+{{ admin_url }}
+{% endautoescape %}

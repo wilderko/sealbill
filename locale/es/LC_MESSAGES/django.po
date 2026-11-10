@@ -1,0 +1,1207 @@
+# Translations (es) of the invoicing service.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Sealbill contributors
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-03 06:49+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+
+#: apps/core/tests_i18n.py:196 templates/vault/unlock.html:5
+msgid "Unlock the vault"
+msgstr "Desbloquear la bóveda"
+
+#: apps/keys/views.py:30
+msgid "The file is too large to be a public key."
+msgstr "El archivo es demasiado grande para ser una clave pública."
+
+#: apps/keys/views.py:31
+msgid ""
+"This is a .p12/.pfx file, which holds a private key. Upload only the "
+"certificate."
+msgstr ""
+"Es un archivo .p12/.pfx, que contiene una clave privada. Suba solo el "
+"certificado."
+
+#: apps/keys/views.py:32
+msgid ""
+"This contains a private key. Keep it to yourself and upload only the public "
+"key."
+msgstr ""
+"Contiene una clave privada. Guárdela para usted y suba solo la clave pública."
+
+#: apps/keys/views.py:33
+msgid "This is not a PGP public key or an S/MIME certificate."
+msgstr "No es una clave pública PGP ni un certificado S/MIME."
+
+#: apps/keys/views.py:34
+msgid "This contains more than one key. Upload one key only."
+msgstr "Contiene más de una clave. Suba solo una."
+
+#: apps/keys/views.py:35
+msgid "This key cannot be used to encrypt e-mail."
+msgstr "Esta clave no sirve para cifrar correo."
+
+#: apps/keys/views.py:36
+msgid "This key has expired."
+msgstr "Esta clave ha caducado."
+
+#: apps/keys/views.py:37
+msgid "This key is not valid yet."
+msgstr "Esta clave todavía no es válida."
+
+#: apps/keys/views.py:38
+msgid "This key has been revoked."
+msgstr "Esta clave ha sido revocada."
+
+#: apps/keys/views.py:39
+msgid "This key does not name the e-mail address we write to you at."
+msgstr "Esta clave no incluye la dirección de correo a la que le escribimos."
+
+#: apps/keys/views.py:40
+msgid "This type or size of key is not supported."
+msgstr "No admitimos este tipo o tamaño de clave."
+
+#: apps/keys/views.py:75
+msgid ""
+"Too many keys were uploaded through this link. Please try again in an hour."
+msgstr ""
+"Se han subido demasiadas claves a través de este enlace. Vuelva a intentarlo "
+"dentro de una hora."
+
+#: apps/keys/views.py:79
+msgid "Paste the key or choose a file."
+msgstr "Pegue la clave o elija un archivo."
+
+#: apps/keys/views.py:87 apps/keys/views.py:140
+msgid ""
+"We could not check the key right now. Please try again in a few minutes."
+msgstr ""
+"No hemos podido comprobar la clave en este momento. Vuelva a intentarlo "
+"dentro de unos minutos."
+
+#: apps/notify/services.py:32
+#, python-format
+msgid "Invoice %(ref)s from %(org)s"
+msgstr "Factura %(ref)s de %(org)s"
+
+#: apps/notify/services.py:33
+#, python-format
+msgid "Payment request %(ref)s from %(org)s"
+msgstr "Solicitud de pago %(ref)s de %(org)s"
+
+#: apps/notify/services.py:34
+#, python-format
+msgid "Receipt for %(ref)s from %(org)s"
+msgstr "Recibo de %(ref)s de %(org)s"
+
+#: apps/notify/services.py:35
+#, python-format
+msgid "Partial payment received for %(ref)s"
+msgstr "Pago parcial recibido para %(ref)s"
+
+#: apps/notify/services.py:36
+#, python-format
+msgid "Confirm your encryption key for %(org)s"
+msgstr "Confirme su clave de cifrado para %(org)s"
+
+#: apps/notify/services.py:37
+#, python-format
+msgid "Payment declared for %(ref)s"
+msgstr "Pago declarado para %(ref)s"
+
+#: apps/notify/services.py:38
+#, python-format
+msgid "The vault is sealed: %(count)s e-mails are waiting"
+msgstr "La caja fuerte está sellada: hay %(count)s correos en espera"
+
+#: apps/notify/services.py:39
+#, python-format
+msgid "Payment #%(ref)s needs review"
+msgstr "El pago n.º %(ref)s necesita revisión"
+
+#: apps/notify/services.py:40
+#, python-format
+msgid "Payment #%(ref)s is waiting for your confirmation"
+msgstr "El pago n.º %(ref)s espera su confirmación"
+
+#: apps/notify/services.py:44
+#, python-format
+msgid "Message from %(org)s"
+msgstr "Mensaje de %(org)s"
+
+#: apps/payments/models.py:36
+msgid "The token is not one this invoice accepts."
+msgstr "La factura no acepta este token."
+
+#: apps/payments/models.py:37
+msgid "No open invoice matches this payment."
+msgstr "Ninguna factura abierta coincide con este pago."
+
+#: apps/payments/models.py:38
+msgid "More than one open invoice could match this payment."
+msgstr "Más de una factura abierta podría corresponder a este pago."
+
+#: apps/payments/models.py:39
+msgid "The payment arrived after the quote expired."
+msgstr "El pago llegó después de que venciera la cotización."
+
+#: apps/payments/models.py:40
+msgid "This looks like a duplicate of another payment."
+msgstr "Parece un duplicado de otro pago."
+
+#: apps/payments/models.py:41
+msgid "The payment is far above what was owed."
+msgstr "El pago supera con creces lo adeudado."
+
+#: apps/payments/models.py:42
+msgid "The invoice was already closed when the payment arrived."
+msgstr "La factura ya estaba cerrada cuando llegó el pago."
+
+#: apps/payments/models.py:43
+msgid "The payment was made before the quote was issued."
+msgstr "El pago se hizo antes de emitirse la cotización."
+
+#: apps/payments/models.py:44
+msgid "A very small transfer, probably address-poisoning spam."
+msgstr ""
+"Una transferencia muy pequeña, probablemente spam de envenenamiento de "
+"direcciones."
+
+#: apps/payments/models.py:45
+msgid "The transaction was dropped from the chain."
+msgstr "La transacción desapareció de la cadena."
+
+#: apps/payments/models.py:46
+msgid "BTCPay reports a partial payment."
+msgstr "BTCPay informa de un pago parcial."
+
+#: apps/payments/models.py:47
+msgid "BTCPay invoice was marked as paid by hand."
+msgstr "La factura de BTCPay se marcó como pagada a mano."
+
+#: apps/payments/models.py:48
+msgid "BTCPay reports the invoice as invalid."
+msgstr "BTCPay informa de que la factura no es válida."
+
+#: apps/payments/models.py:49
+msgid "BTCPay reports a late payment."
+msgstr "BTCPay informa de un pago tardío."
+
+#: apps/portal/crypto.py:69
+#, python-format
+msgid "%(asset)s on %(network)s"
+msgstr "%(asset)s en %(network)s"
+
+#: apps/portal/forms.py:6
+msgid "Network (optional)"
+msgstr "Red (opcional)"
+
+#: apps/portal/forms.py:7
+msgid "Transaction number or hash (optional)"
+msgstr "Número de transacción o hash (opcional)"
+
+#: apps/portal/forms.py:8
+msgid "Note (optional)"
+msgstr "Nota (opcional)"
+
+#: apps/portal/forms.py:13
+msgid "Other"
+msgstr "Otra"
+
+#: apps/portal/views.py:181
+msgid "This invoice can no longer be paid online."
+msgstr "Esta factura ya no se puede pagar en línea."
+
+#: apps/portal/views.py:182
+msgid "This payment method is not available for this invoice."
+msgstr "Este método de pago no está disponible para esta factura."
+
+#: apps/portal/views.py:183
+msgid "That network or token is not available for this invoice."
+msgstr "Esta red o este token no está disponible para esta factura."
+
+#: apps/portal/views.py:184
+msgid "Nothing is left to pay on this invoice."
+msgstr "No queda nada por pagar en esta factura."
+
+#: apps/portal/views.py:185
+msgid "Exchange rates are unavailable right now. Try again in a minute."
+msgstr ""
+"Los tipos de cambio no están disponibles en este momento. Inténtelo de nuevo "
+"en un minuto."
+
+#: apps/portal/views.py:186
+msgid ""
+"The exchange rate cannot be fixed reliably right now. Try again in a minute."
+msgstr ""
+"El tipo de cambio no se puede fijar con fiabilidad en este momento. "
+"Inténtelo de nuevo en un minuto."
+
+#: apps/portal/views.py:213
+msgid ""
+"Too many payments are open right now. Please try again in a few minutes."
+msgstr ""
+"Hay demasiados pagos abiertos en este momento. Inténtelo de nuevo dentro de "
+"unos minutos."
+
+#: apps/portal/views.py
+msgid "There have been too many payment attempts on this invoice today. Please try again tomorrow, or contact us."
+msgstr "Hoy ha habido demasiados intentos de pago en esta factura. Inténtelo de nuevo mañana o póngase en contacto con nosotros."
+
+#: apps/portal/views.py:188
+msgid ""
+"This payment method is temporarily unavailable. Try another one, or try "
+"again shortly."
+msgstr ""
+"Este método de pago no está disponible temporalmente. Pruebe con otro o "
+"inténtelo de nuevo en breve."
+
+#: apps/portal/views.py:214
+msgid "Too many attempts. Wait a few minutes and try again."
+msgstr "Demasiados intentos. Espere unos minutos e inténtelo de nuevo."
+
+#: apps/vault/views.py:17
+msgid "Too many attempts. Try again later."
+msgstr "Demasiados intentos. Inténtelo de nuevo más tarde."
+
+#: templates/email/declared_staff.html:4 templates/email/declared_staff.txt:1
+#, python-format
+msgid "A client has declared a payment for %(ref)s. It needs your review."
+msgstr "Un cliente ha declarado un pago para %(ref)s. Requiere su revisión."
+
+#: templates/email/declared_staff.html:4 templates/email/declared_staff.txt:7
+msgid "Open the invoice on the staff page:"
+msgstr "Abra la factura en la página del personal:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:1
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:1
+#: templates/email/partial.html:4 templates/email/partial.txt:1
+#: templates/email/receipt.html:4 templates/email/receipt.txt:1
+#, python-format
+msgid "Dear %(name)s,"
+msgstr "Estimado/a %(name)s:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:3
+#, python-format
+msgid "%(org)s has sent you a payment request (%(ref)s)."
+msgstr "%(org)s le ha enviado una solicitud de pago (%(ref)s)."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:4
+#, python-format
+msgid "%(org)s has sent you invoice %(ref)s."
+msgstr "%(org)s le ha enviado la factura %(ref)s."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:8
+#, python-format
+msgid "Amount due: %(total)s"
+msgstr "Importe a pagar: %(total)s"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:10
+#, python-format
+msgid "Due date: %(due)s"
+msgstr "Fecha de vencimiento: %(due)s"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:12
+msgid "Pay online:"
+msgstr "Pagar en línea:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:15
+msgid "View the invoice online:"
+msgstr "Ver la factura en línea:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:18
+msgid "The payment request is attached as a PDF."
+msgstr "La solicitud de pago se adjunta en PDF."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:18
+msgid "The invoice is attached as a PDF."
+msgstr "La factura se adjunta en PDF."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:19
+#: templates/email/receipt.html:4 templates/email/receipt.txt:11
+msgid ""
+"The PDF could not be attached to this e-mail. You can download it from the "
+"invoice page."
+msgstr ""
+"No se pudo adjuntar el PDF a este correo. Puede descargarlo desde la página "
+"de la factura."
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:3
+#, python-format
+msgid ""
+"A key was uploaded for your e-mail address so that %(org)s can send you "
+"encrypted e-mail:"
+msgstr ""
+"Se ha subido una clave para su dirección de correo para que %(org)s pueda "
+"enviarle correo cifrado:"
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:5
+#, python-format
+msgid "Fingerprint: %(fingerprint)s"
+msgstr "Huella digital: %(fingerprint)s"
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:7
+msgid "To start using it, open this link and press Confirm:"
+msgstr "Para empezar a usarla, abra este enlace y pulse Confirmar:"
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:10
+msgid ""
+"The link works for 7 days. Until you confirm, our e-mails to you stay as "
+"they are."
+msgstr ""
+"El enlace es válido durante 7 días. Hasta que confirme, nuestros correos le "
+"seguirán llegando como hasta ahora."
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:12
+msgid "If you did not upload this key, ignore this e-mail: nothing changes."
+msgstr "Si no ha subido esta clave, ignore este correo: no cambia nada."
+
+#: templates/email/partial.html:4 templates/email/partial.txt:3
+#, python-format
+msgid "%(org)s has received a partial payment for %(ref)s."
+msgstr "%(org)s ha recibido un pago parcial de %(ref)s."
+
+#: templates/email/partial.html:4 templates/email/partial.txt:5
+#, python-format
+msgid "Amount received: %(paid)s"
+msgstr "Importe recibido: %(paid)s"
+
+#: templates/email/partial.html:4 templates/email/partial.txt:7
+#, python-format
+msgid "Still outstanding: %(remaining)s"
+msgstr "Pendiente de pago: %(remaining)s"
+
+#: templates/email/partial.html:4 templates/email/partial.txt:9
+msgid "You can pay the rest here:"
+msgstr "Puede pagar el resto aquí:"
+
+#: templates/email/partial.html:4 templates/email/partial.txt:10
+msgid "To pay the rest, please use the payment link from our original e-mail."
+msgstr ""
+"Para pagar el resto, utilice el enlace de pago de nuestro correo original."
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:3
+#, python-format
+msgid "Thank you. %(org)s has received your payment for %(ref)s."
+msgstr "Gracias. %(org)s ha recibido su pago de %(ref)s."
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:5
+#, python-format
+msgid "Amount paid: %(total)s"
+msgstr "Importe pagado: %(total)s"
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:7
+msgid "View the receipt online:"
+msgstr "Ver el recibo en línea:"
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:10
+msgid "Your receipt is attached as a PDF."
+msgstr "Su recibo se adjunta en PDF."
+
+#: templates/email/vault_sealed_staff.html:4
+#: templates/email/vault_sealed_staff.txt:1
+#, python-format
+msgid "The vault is sealed, so %(count)s e-mails cannot be sent."
+msgstr ""
+"La caja fuerte está sellada, por lo que no se pueden enviar %(count)s "
+"correos."
+
+#: templates/email/vault_sealed_staff.html:4
+#: templates/email/vault_sealed_staff.txt:3
+msgid "Unlock it here:"
+msgstr "Desbloquéela aquí:"
+
+#: templates/keys/confirm.html:2 templates/keys/confirm.html:4
+msgid "Confirm your encryption key"
+msgstr "Confirme su clave de cifrado"
+
+#: templates/keys/confirm.html:5 templates/keys/confirmed.html:5
+#: templates/keys/upload.html:7
+msgid "Fingerprint"
+msgstr "Huella digital"
+
+#: templates/keys/confirm.html:7
+msgid ""
+"Press Confirm and our e-mails to you will be encrypted to this key from now "
+"on."
+msgstr ""
+"Pulse Confirmar y, a partir de ahora, nuestros correos se cifrarán con esta "
+"clave."
+
+#: templates/keys/confirm.html:10
+msgid "Confirm"
+msgstr "Confirmar"
+
+#: templates/keys/confirm.html:12
+msgid "If you did not ask for this, close this page: nothing changes."
+msgstr "Si no lo ha solicitado, cierre esta página: no cambia nada."
+
+#: templates/keys/confirmed.html:2 templates/keys/confirmed.html:4
+msgid "Key confirmed"
+msgstr "Clave confirmada"
+
+#: templates/keys/confirmed.html:7
+msgid "From now on, our e-mails to you are encrypted to this key."
+msgstr "A partir de ahora, nuestros correos se cifran con esta clave."
+
+#: templates/keys/expired.html:2 templates/keys/expired.html:4
+msgid "This key cannot be used"
+msgstr "Esta clave no se puede usar"
+
+#: templates/keys/expired.html:2 templates/keys/expired.html:4
+msgid "This link does not work"
+msgstr "Este enlace no funciona"
+
+#: templates/keys/expired.html:6
+msgid "Upload a working key from your invoice page."
+msgstr "Suba una clave que funcione desde la página de su factura."
+
+#: templates/keys/expired.html:7
+msgid ""
+"This link has expired. Upload the key again from your invoice page and we "
+"will send you a new one."
+msgstr ""
+"Este enlace ha caducado. Vuelva a subir la clave desde la página de su "
+"factura y le enviaremos uno nuevo."
+
+#: templates/keys/expired.html:8
+msgid "This link has already been used, or the key it confirms was withdrawn."
+msgstr "Este enlace ya se ha usado, o la clave que confirma ha sido retirada."
+
+#: templates/keys/expired.html:9
+msgid "This link is not valid. Check that you copied all of it."
+msgstr "Este enlace no es válido. Compruebe que lo ha copiado entero."
+
+#: templates/keys/upload.html:2 templates/keys/upload.html:4
+#: templates/portal/invoice.html:7
+msgid "Receive encrypted e-mail"
+msgstr "Recibir correo cifrado"
+
+#: templates/keys/upload.html:6
+msgid "Check your e-mail"
+msgstr "Revise su correo"
+
+#: templates/keys/upload.html:9
+msgid ""
+"We sent a confirmation e-mail, encrypted to this key, to your address. Open "
+"it and follow the link inside to start using the key. Until then nothing "
+"changes. The link works for 7 days."
+msgstr ""
+"Hemos enviado a su dirección un correo de confirmación cifrado con esta "
+"clave. Ábralo y siga el enlace que contiene para empezar a usar la clave. "
+"Hasta entonces no cambia nada. El enlace es válido durante 7 días."
+
+#: templates/keys/upload.html:11
+msgid ""
+"Upload your PGP public key or S/MIME certificate. Our e-mails to you, "
+"invoices and receipts included, will then be encrypted to it."
+msgstr ""
+"Suba su clave pública PGP o su certificado S/MIME. A partir de entonces, "
+"nuestros correos, incluidas las facturas y los recibos, se cifrarán con ella."
+
+#: templates/keys/upload.html:12
+msgid ""
+"Upload only a public key or a certificate, never a private key or a .p12/."
+"pfx file."
+msgstr ""
+"Suba solo una clave pública o un certificado, nunca una clave privada ni un "
+"archivo .p12/.pfx."
+
+#: templates/keys/upload.html:15
+msgid "Paste the key"
+msgstr "Pegue la clave"
+
+#: templates/keys/upload.html:17
+msgid "Or choose a file"
+msgstr "O elija un archivo"
+
+#: templates/keys/upload.html:19
+msgid "Upload the key"
+msgstr "Subir la clave"
+
+#: templates/keys/upload.html:22
+msgid "Back to the invoice"
+msgstr "Volver a la factura"
+
+#: templates/pdf/_base.html:8 templates/portal/_summary.html:5
+msgid "Number"
+msgstr "Número"
+
+#: templates/pdf/_base.html:9 templates/portal/_summary.html:6
+msgid "Issue date"
+msgstr "Fecha de emisión"
+
+#: templates/pdf/_base.html:11 templates/portal/_summary.html:7
+msgid "Due date"
+msgstr "Fecha de vencimiento"
+
+#: templates/pdf/_base.html:12 templates/portal/_summary.html:8
+msgid "Due on receipt"
+msgstr "Pagadero a la recepción"
+
+#: templates/pdf/_base.html:18 templates/portal/_summary.html:13
+msgid "From"
+msgstr "Emisor"
+
+#: templates/pdf/_base.html:22 templates/portal/_summary.html:17
+msgid "Bill to"
+msgstr "Facturar a"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+msgid "Description"
+msgstr "Descripción"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+msgid "Qty"
+msgstr "Cant."
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+msgid "Unit price"
+msgstr "Precio unitario"
+
+#: templates/pdf/_base.html:29 templates/pdf/_base.html:37
+#: templates/portal/_summary.html:25 templates/portal/_summary.html:34
+msgid "Tax"
+msgstr "Impuesto"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+#: templates/portal/pay.html:26 templates/portal/pay.html:31
+msgid "Amount"
+msgstr "Importe"
+
+#: templates/pdf/_base.html:35 templates/portal/_summary.html:32
+msgid "Subtotal"
+msgstr "Subtotal"
+
+#: templates/pdf/_base.html:36 templates/portal/_summary.html:33
+msgid "Discount"
+msgstr "Descuento"
+
+#: templates/pdf/_base.html:38 templates/portal/_summary.html:35
+msgid "Total"
+msgstr "Total"
+
+#: templates/pdf/_base.html:40 templates/portal/_summary.html:37
+msgid "Notes"
+msgstr "Notas"
+
+#: templates/pdf/invoice.html:2 templates/portal/_summary.html:4
+#: templates/portal/invoice.html:2 templates/portal/pay.html:2
+msgid "Payment request"
+msgstr "Solicitud de pago"
+
+#: templates/pdf/invoice.html:2 templates/portal/_summary.html:4
+#: templates/portal/invoice.html:2 templates/portal/pay.html:2
+msgid "Invoice"
+msgstr "Factura"
+
+#: templates/pdf/invoice.html:4 templates/portal/pay.html:10
+msgid "Payment"
+msgstr "Pago"
+
+#: templates/pdf/invoice.html:5 templates/pdf/receipt.html:8
+#: templates/portal/pay.html:12
+msgid "Payment reference"
+msgstr "Referencia de pago"
+
+#: templates/pdf/invoice.html:10 templates/portal/pay.html:18
+msgid "Beneficiary"
+msgstr "Beneficiario"
+
+#: templates/pdf/invoice.html:11 templates/portal/pay.html:19
+msgid "Beneficiary address"
+msgstr "Dirección del beneficiario"
+
+#: templates/pdf/invoice.html:12 templates/pdf/invoice.html:16
+#: templates/portal/pay.html:20 templates/portal/pay.html:24
+msgid "Account"
+msgstr "Cuenta"
+
+#: templates/pdf/invoice.html:13 templates/portal/pay.html:21
+msgid "Bank"
+msgstr "Banco"
+
+#: templates/pdf/invoice.html:14 templates/portal/pay.html:22
+msgid "Bank address"
+msgstr "Dirección del banco"
+
+#: templates/pdf/invoice.html:16 templates/portal/pay.html:24
+msgid "Intermediary bank"
+msgstr "Banco intermediario"
+
+#: templates/pdf/receipt.html:2
+msgid "Receipt"
+msgstr "Recibo"
+
+#: templates/pdf/receipt.html:4
+msgid "PAID"
+msgstr "PAGADO"
+
+#: templates/pdf/receipt.html:5
+msgid "Paid on"
+msgstr "Pagado el"
+
+#: templates/portal/_quote.html:3
+#, python-format
+msgid "Pay %(asset)s on %(network_name)s"
+msgstr "Pagar %(asset)s en %(network_name)s"
+
+#: templates/portal/_quote.html:4
+msgid "Amount to send"
+msgstr "Importe a enviar"
+
+#: templates/portal/_quote.html:6 templates/portal/_quote.html:9
+#: templates/portal/_quote.html:12
+msgid "Copied"
+msgstr "Copiado"
+
+#: templates/portal/_quote.html:6 templates/portal/_quote.html:9
+#: templates/portal/_quote.html:12
+msgid "Copy"
+msgstr "Copiar"
+
+#: templates/portal/_quote.html:7
+msgid "Address"
+msgstr "Dirección"
+
+#: templates/portal/_quote.html:10
+msgid "Lightning invoice"
+msgstr "Factura Lightning"
+
+#: templates/portal/_quote.html:13
+msgid "Open the payment page"
+msgstr "Abrir la página de pago"
+
+#: templates/portal/_quote.html:14
+msgid "QR code with the payment details"
+msgstr "Código QR con los datos del pago"
+
+#: templates/portal/_quote.html:16
+#, python-format
+msgid ""
+"Send exactly this amount of %(asset)s on %(network_name)s. Another token or "
+"network cannot be matched automatically."
+msgstr ""
+"Envíe exactamente este importe en %(asset)s en %(network_name)s. Otro token "
+"u otra red no puede asociarse automáticamente."
+
+#: templates/portal/_quote.html:17
+msgid "Valid until"
+msgstr "Válido hasta"
+
+#: templates/portal/_quote.html:17
+msgid "This amount has expired. Get a new one."
+msgstr "Este importe ha caducado. Solicite uno nuevo."
+
+#: templates/portal/_quote.html:21
+msgid "Get a new amount"
+msgstr "Obtener un nuevo importe"
+
+#: templates/portal/_quote.html:23
+msgid ""
+"After you have sent it, this page updates by itself. If it does not, use “I "
+"have paid” below."
+msgstr ""
+"Cuando lo haya enviado, esta página se actualizará sola. Si no es así, use "
+"abajo «He pagado»."
+
+#: templates/portal/_status.html:1 templates/portal/void.html:2
+#: templates/portal/void.html:4
+msgid "This payment request has been voided"
+msgstr "Esta solicitud de pago ha sido anulada"
+
+#: templates/portal/_status.html:1 templates/portal/void.html:2
+#: templates/portal/void.html:4
+msgid "This invoice has been voided"
+msgstr "Esta factura ha sido anulada"
+
+#: templates/portal/_status.html:2
+msgid "Payment received, our staff are checking it"
+msgstr "Pago recibido, nuestro equipo lo está revisando"
+
+#: templates/portal/_status.html:3
+msgid "Payment seen, waiting for confirmation"
+msgstr "Pago detectado, a la espera de confirmación"
+
+#: templates/portal/_status.html:4
+msgid "We have been told that you have paid. We are checking the payment."
+msgstr "Nos han informado de que ha pagado. Estamos comprobando el pago."
+
+#: templates/portal/_status.html:5
+msgid "Partially paid. Please pay the remaining amount."
+msgstr "Pagada parcialmente. Por favor, abone el importe restante."
+
+#: templates/portal/_status.html:6
+msgid "Paid. Thank you."
+msgstr "Pagada. Gracias."
+
+#: templates/portal/_status.html:7
+msgid "Overdue. Please pay as soon as possible."
+msgstr "Vencida. Por favor, pague lo antes posible."
+
+#: templates/portal/_status.html:8
+msgid "Awaiting payment"
+msgstr "Pendiente de pago"
+
+#: templates/portal/invoice.html:6
+msgid "Download PDF"
+msgstr "Descargar PDF"
+
+#: templates/portal/pay.html:11
+msgid "Amount to pay"
+msgstr "Importe a pagar"
+
+#: templates/portal/pay.html:13
+msgid "Please quote this reference in the payment."
+msgstr "Por favor, indique esta referencia en el pago."
+
+#: templates/portal/pay.html:17
+msgid "Bank transfer"
+msgstr "Transferencia bancaria"
+
+#: templates/portal/pay.html:27
+msgid ""
+"When you send the transfer, choose OUR as the bank charges option, so that "
+"the full amount arrives."
+msgstr ""
+"Al enviar la transferencia, elija la opción de gastos OUR para que llegue el "
+"importe completo."
+
+#: templates/portal/pay.html:30
+msgid "Online payment"
+msgstr "Pago en línea"
+
+#: templates/portal/pay.html:32
+msgid "Open payment link"
+msgstr "Abrir el enlace de pago"
+
+#: templates/portal/pay.html:40
+msgid "Pay with crypto"
+msgstr "Pagar con criptomonedas"
+
+#: templates/portal/pay.html:41
+msgid ""
+"Choose a network and a token. You get the exact amount to send, and it is "
+"checked automatically."
+msgstr ""
+"Elija una red y un token. Recibirá el importe exacto que debe enviar y el "
+"pago se comprueba automáticamente."
+
+#: templates/portal/pay.html:55 templates/portal/pay.html:62
+msgid "I have paid"
+msgstr "He pagado"
+
+#: templates/portal/pay.html:56
+msgid ""
+"Once you have paid, let us know. You may add the transaction number and a "
+"note."
+msgstr ""
+"Cuando haya pagado, avísenos. Puede añadir el número de transacción y una "
+"nota."
+
+#: templates/portal/pay.html:57
+msgid "Please correct the errors below."
+msgstr "Por favor, corrija los errores indicados a continuación."
+
+#: templates/portal/too_many.html:2 templates/portal/too_many.html:4
+msgid "Too many requests"
+msgstr "Demasiadas solicitudes"
+
+#: templates/portal/too_many.html:5
+msgid "Please wait a minute and try again."
+msgstr "Por favor, espere un minuto e inténtelo de nuevo."
+
+#: templates/portal/void.html:5
+msgid "Please do not pay it. Contact the sender if you have any questions."
+msgstr ""
+"Por favor, no la pague. Si tiene preguntas, póngase en contacto con el "
+"remitente."
+
+#: templates/vault/unavailable.html:3 templates/vault/unavailable.html:5
+msgid "Temporarily unavailable"
+msgstr "Temporalmente no disponible"
+
+#: templates/vault/unavailable.html:6
+msgid "Please try again in a few minutes."
+msgstr "Inténtelo de nuevo en unos minutos."
+
+#: templates/vault/unlock.html:3 templates/vault/unlock.html:10
+msgid "Unlock"
+msgstr "Desbloquear"
+
+#: templates/vault/unlock.html:6
+msgid "The vault is unsealed."
+msgstr "La bóveda está desbloqueada."
+
+#: templates/vault/unlock.html:7
+msgid "Wrong password."
+msgstr "Contraseña incorrecta."
+
+#: templates/vault/unlock.html:9
+msgid "Password"
+msgstr "Contraseña"
+
+#: apps/portal/views.py:277
+msgid ""
+"We already have your notice of payment and are checking it. You do not need "
+"to send it again."
+msgstr ""
+"Ya hemos recibido su aviso de pago y lo estamos comprobando. No hace falta "
+"que lo envíe de nuevo."
+
+#: apps/notify/services.py:37
+#, python-format
+msgid "New encryption key for your e-mail from %(org)s"
+msgstr "Nueva clave de cifrado para su correo de %(org)s"
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:3
+#, python-format
+msgid "Someone uploaded a new encryption key for your e-mail address. Once it is confirmed, %(org)s will encrypt its e-mails to you with that key instead of your current one, the key this message is encrypted to."
+msgstr "Alguien ha subido una nueva clave de cifrado para su dirección de correo. Una vez confirmada, %(org)s cifrará los correos que le envíe con esa clave en lugar de con la actual, la clave con la que está cifrado este mensaje."
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:5
+#, python-format
+msgid "Fingerprint of the new key: %(fingerprint)s"
+msgstr "Huella digital de la nueva clave: %(fingerprint)s"
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:7
+msgid "If you uploaded it yourself, there is nothing to do here."
+msgstr "Si la ha subido usted, no tiene que hacer nada."
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:9
+msgid "If you did not, open this link and cancel the new key there. It is refused, and your current key stays in use:"
+msgstr "Si no, abra este enlace y cancele allí la nueva clave. Se rechazará y su clave actual se seguirá usando:"
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:12
+msgid "The link works for 7 days."
+msgstr "El enlace es válido durante 7 días."
+
+#: templates/keys/cancel.html:2 templates/keys/cancel.html:4
+msgid "Cancel the new encryption key"
+msgstr "Cancelar la nueva clave de cifrado"
+
+#: templates/keys/cancel.html:7
+msgid "Someone uploaded this key for your e-mail address. If it was not you, cancel it here: it is refused, and our e-mails to you stay encrypted to your current key."
+msgstr "Alguien ha subido esta clave para su dirección de correo. Si no ha sido usted, cancélela aquí: se rechazará y nuestros correos le seguirán llegando cifrados con su clave actual."
+
+#: templates/keys/cancel.html:9
+msgid "Cancel the new key"
+msgstr "Cancelar la nueva clave"
+
+#: templates/keys/cancel.html:11
+msgid "If you uploaded this key yourself, close this page: nothing changes."
+msgstr "Si ha subido esta clave usted mismo, cierre esta página: no cambia nada."
+
+#: templates/keys/cancelled.html:2 templates/keys/cancelled.html:4
+msgid "The new key was cancelled"
+msgstr "La nueva clave se ha cancelado"
+
+#: templates/keys/cancelled.html:5
+msgid "The new key was refused and will not be used."
+msgstr "La nueva clave se ha rechazado y no se usará."
+
+#: templates/keys/cancelled.html:5
+msgid "Our e-mails to you stay encrypted to your current key."
+msgstr "Nuestros correos le seguirán llegando cifrados con su clave actual."
+
+#: templates/keys/cancel_unusable.html:5
+msgid "This link has expired. If a key you did not upload is in use, write to us and we will remove it."
+msgstr "Este enlace ha caducado. Si se está usando una clave que usted no ha subido, escríbanos y la eliminaremos."
+
+#: templates/keys/cancel_unusable.html:6
+msgid "This link has already been used: the new key was cancelled."
+msgstr "Este enlace ya se ha usado: la nueva clave se ha cancelado."
+
+#: templates/keys/cancel_refused.html:2 templates/keys/cancel_refused.html:4
+msgid "The new key could not be cancelled"
+msgstr "No se ha podido cancelar la nueva clave"
+
+#: templates/keys/cancel_refused.html:5
+msgid "Your previous key can no longer be used, so cancelling the new key would leave our e-mails to you unencrypted. The new key stays in use for now, and our staff have been told. Please write to us."
+msgstr "Su clave anterior ya no se puede usar, así que cancelar la nueva clave dejaría sin cifrar los correos que le enviamos. Por ahora la nueva clave sigue en uso y nuestro personal ya está avisado. Escríbanos, por favor."
+
+#: templates/ui/_theme_switch.html
+msgid "Theme"
+msgstr "Tema"
+
+#: templates/ui/_theme_switch.html
+msgid "Same as this device"
+msgstr "Como en este dispositivo"
+
+#: templates/ui/_theme_switch.html
+msgid "Light"
+msgstr "Claro"
+
+#: templates/ui/_theme_switch.html
+msgid "Dim"
+msgstr "Atenuado"
+
+#: templates/ui/_theme_switch.html
+msgid "Dark"
+msgstr "Oscuro"
+
+#: apps/portal/forms.py
+msgid "Choose a network"
+msgstr "Elija una red"
+
+#: templates/portal/_quote.html
+msgid "Open in wallet"
+msgstr "Abrir en el monedero"
+
+#: templates/keys/upload.html
+msgid "Choose a file"
+msgstr "Elegir un archivo"
+
+#: templates/keys/upload.html
+msgid "No file chosen"
+msgstr "Ningún archivo elegido"
+
+#: templates/portal/pay.html
+msgid "Keep this page."
+msgstr "Guarde esta página."
+
+#: templates/portal/pay.html
+msgid "Bookmark it or copy its address to come back to it. We e-mail you only once your payment has arrived."
+msgstr "Añádala a marcadores o copie su dirección para volver a ella. Le escribiremos solo cuando haya llegado su pago."
+
+#: templates/links/unavailable.html
+msgid "This payment link is no longer available."
+msgstr "Este enlace de pago ya no está disponible."
+
+#: templates/links/unavailable.html
+msgid "Contact the seller if you have any questions."
+msgstr "Si tiene alguna pregunta, póngase en contacto con el vendedor."
+
+#: templates/links/_field.html
+msgid "optional"
+msgstr "opcional"
+
+#: templates/links/page.html
+msgid "Price"
+msgstr "Precio"
+
+#: templates/links/page.html
+msgid "You choose the amount to pay."
+msgstr "Usted elige el importe que paga."
+
+#: templates/links/page.html
+msgid "Your details"
+msgstr "Sus datos"
+
+#: templates/links/page.html
+msgid "We ask every buyer: the answer decides which of our companies bills you."
+msgstr "Lo preguntamos a todos los compradores: la respuesta decide cuál de nuestras empresas le factura."
+
+#: templates/links/page.html
+msgid "Continue to payment"
+msgstr "Continuar al pago"
+
+#: templates/links/page.html
+msgid "Next you choose how to pay. Nothing is charged before you pay."
+msgstr "A continuación elegirá cómo pagar. No se cobra nada hasta que pague."
+
+#: templates/links/page.html
+#, python-format
+msgid "Plus %(tax)s tax."
+msgstr "Más %(tax)s de impuestos."
+
+#: apps/links/forms.py
+msgid "Address line 1"
+msgstr "Dirección, línea 1"
+
+#: apps/links/forms.py
+msgid "Address line 2"
+msgstr "Dirección, línea 2"
+
+#: apps/links/forms.py
+msgid "City"
+msgstr "Ciudad"
+
+#: apps/links/forms.py
+msgid "Postal code"
+msgstr "Código postal"
+
+#: apps/links/forms.py
+msgid "State or region"
+msgstr "Provincia o región"
+
+#: apps/links/forms.py
+msgid "Country"
+msgstr "País"
+
+#: apps/links/forms.py
+msgid "E-mail address"
+msgstr "Correo electrónico"
+
+#: apps/links/forms.py
+msgid "Are you a US tax resident?"
+msgstr "¿Es usted residente fiscal en EE. UU.?"
+
+#: apps/links/forms.py
+msgid "Yes, I am"
+msgstr "Sí, lo soy"
+
+#: apps/links/forms.py
+msgid "No, I am not"
+msgstr "No, no lo soy"
+
+#: apps/links/forms.py
+msgid "Coupon code"
+msgstr "Código de cupón"
+
+#: apps/links/forms.py
+#, python-format
+msgid "Amount (%(currency)s)"
+msgstr "Importe (%(currency)s)"
+
+#: apps/links/forms.py
+msgid "Quantity"
+msgstr "Cantidad"
+
+#: apps/links/forms.py
+msgid "Full name"
+msgstr "Nombre completo"
+
+#: apps/links/forms.py
+msgid "Billing address"
+msgstr "Dirección de facturación"
+
+#: apps/links/forms.py
+msgid "Shipping address"
+msgstr "Dirección de envío"
+
+#: apps/links/forms.py
+msgid "Phone"
+msgstr "Teléfono"
+
+#: apps/links/forms.py
+#, python-format
+msgid "Between %(min)s and %(max)s."
+msgstr "Entre %(min)s y %(max)s."
+
+#: apps/links/forms.py
+#, python-format
+msgid "At least %(min)s."
+msgstr "Como mínimo %(min)s."
+
+#: apps/links/forms.py
+#, python-format
+msgid "At most %(max)s."
+msgstr "Como máximo %(max)s."
+
+#: apps/links/forms.py
+#, python-format
+msgid "Choose a quantity from 1 to %(max)s."
+msgstr "Elija una cantidad de 1 a %(max)s."
+
+#: apps/links/forms.py
+msgid "Enter the amount as a plain number, such as 12.50."
+msgstr "Escriba el importe como un número sin más, por ejemplo 12,50."
+
+#: apps/links/forms.py
+#, python-format
+msgid "The amount must be at least %(min)s."
+msgstr "El importe debe ser de al menos %(min)s."
+
+#: apps/links/forms.py
+msgid "The amount must be greater than zero."
+msgstr "El importe debe ser mayor que cero."
+
+#: apps/links/forms.py
+#, python-format
+msgid "The amount may be at most %(max)s."
+msgstr "El importe puede ser como máximo %(max)s."
+
+#: apps/links/forms.py
+msgid "This code is not valid."
+msgstr "Este código no es válido."
+
+#: apps/links/forms.py
+msgid "This code has been used up."
+msgstr "Este código ya se ha agotado."
+
+#: apps/links/views.py
+msgid "This payment link cannot be paid right now."
+msgstr "Este enlace de pago no se puede pagar en este momento."
+
+#: apps/links/views.py
+msgid "This order cannot be placed. Check the details and try again."
+msgstr "No se puede crear el pedido. Revise los datos e inténtelo de nuevo."
+
+#: apps/notify/services.py
+#, python-format
+msgid "Order %(ref)s was paid through a payment link"
+msgstr "El pedido %(ref)s se pagó mediante un enlace de pago"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:1 templates/email/partial.html:4 templates/email/partial.txt:1 templates/email/receipt.html:4 templates/email/receipt.txt:1
+msgid "Hello,"
+msgstr "Buenos días:"
+
+#: templates/portal/_back.html:1
+#, python-format
+msgid "Back to %(host)s"
+msgstr "Volver a %(host)s"
+
+#: templates/portal/_quote.html templates/portal/pay.html
+msgid "A person confirms Monero and Zcash payments. This may take a while during European night hours."
+msgstr "Una persona confirma los pagos en Monero y Zcash. Durante la noche europea puede tardar un poco."
+
+#: apps/notify/services.py
+#, python-format
+msgid "Staff change: %(ref)s"
+msgstr "Cambio del personal: %(ref)s"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "A change that needs a superuser and a recent second factor was made on the staff pages."
+msgstr "Se ha hecho en las páginas del personal un cambio que requiere un superusuario y un segundo factor reciente."
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "Who:"
+msgstr "Quién:"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "What:"
+msgstr "Qué:"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "When:"
+msgstr "Cuándo:"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "If you did not expect it, check it on the staff page and in the audit log:"
+msgstr "Si no lo esperaba, revíselo en la página del personal y en el registro de auditoría:"
+
+#, python-format
+msgid "Reminder: invoice %(ref)s from %(org)s"
+msgstr "Recordatorio: factura %(ref)s de %(org)s"
+
+#, python-format
+msgid "This is a friendly reminder that the payment request %(ref)s from %(org)s is still open."
+msgstr "Le recordamos amablemente que la solicitud de pago %(ref)s de %(org)s sigue pendiente."
+
+#, python-format
+msgid "This is a friendly reminder that invoice %(ref)s from %(org)s is still open."
+msgstr "Le recordamos amablemente que la factura %(ref)s de %(org)s sigue pendiente."
+
+#, python-format
+msgid "Amount still due: %(total)s"
+msgstr "Importe pendiente: %(total)s"
+
+msgid "If you have already paid, please ignore this message."
+msgstr "Si ya ha pagado, ignore este mensaje."
+
+#, python-format
+msgid "Reminder: payment request %(ref)s from %(org)s"
+msgstr "Recordatorio: solicitud de pago %(ref)s de %(org)s"

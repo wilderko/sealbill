@@ -1,0 +1,14 @@
+{% extends "staff/auth.html" %}{% load i18n %}
+{% block lang %}{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}{% endblock %}
+{% block title %}{% translate "Unlock" %}{% endblock %}
+{% block brand %}<div class="auth-mark" aria-hidden="true"><svg class="icon"><use href="#i-lock"/></svg></div>{% endblock %}
+{% block content %}
+<h1>{% translate "Unlock the vault" %}</h1>
+{% if unsealed %}<p class="notice notice--ok">{% translate "The vault is unsealed." %}</p>{% endif %}
+{% if error %}<p class="error" role="alert">{% translate "Wrong password." %}</p>{% endif %}
+<form method="post" class="form-stack">{% csrf_token %}
+<div class="field"><label for="vault-password">{% translate "Password" %}</label><input id="vault-password" type="password" name="password" autocomplete="current-password" autofocus required></div>
+<button type="submit" class="btn btn--primary btn--block">{% translate "Unlock" %}</button>
+</form>
+{% endblock %}
+{% block switch %}{% include "ui/_theme_switch.html" %}{% endblock %}

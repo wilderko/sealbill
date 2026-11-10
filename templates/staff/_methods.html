@@ -1,0 +1,7 @@
+<div id="methods" class="methods">
+{% if stored_flag %}<p class="hint">Stored answer for this contact: US tax resident = {{ stored_flag }}. "Unknown" never changes it.</p>{% endif %}
+<p class="methods__issuer">{% if issuer %}Issued by <strong>{{ issuer_name }}</strong>{% if by_rule %} because of the US tax resident rule: a US tax resident is invoiced by the US issuer, not by {{ requested_by_name }}{% if requested_by_name|slice:"-1:" != "." %}.{% endif %}{% elif issuer_name|slice:"-1:" != "." %}.{% endif %}{% else %}<span class="error">No organization is marked as the US-resident issuer.</span>{% endif %}</p>
+{% if methods %}<fieldset class="check-list"><legend>Offered payment methods ({{ currency }})</legend>
+{% for key, label, checked in methods %}<label class="check"><input type="checkbox" name="methods" value="{{ key }}"{% if checked %} checked{% endif %}> <span>{{ label }}</span></label>
+{% endfor %}</fieldset>{% elif issuer %}<p class="hint">{{ issuer_name }} has no active payment method for {{ currency }}; the invoice cannot be sent until it has one.</p>{% endif %}
+</div>

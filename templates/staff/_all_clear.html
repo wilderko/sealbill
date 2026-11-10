@@ -1,0 +1,22 @@
+{% if clear_count %}<details class="all-clear">
+<summary><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg><span class="all-clear__text">{% if open_count %}{{ clear_count }} other queue{{ clear_count|pluralize }} clear{% else %}All clear: nothing needs a person{% endif %}</span><span class="all-clear__toggle">Show {{ clear_count }} queue{{ clear_count|pluralize }}</span></summary>
+<ul class="all-clear__list">
+{% if not declarations %}<li><span>Declared payments</span><span>Nothing declared.</span></li>{% endif %}
+{% if not reviews %}<li><span>Payments to review</span><span>Nothing to review.</span></li>{% endif %}
+{% if not awaiting %}<li><span>Waiting for staff confirmation</span><span>Nothing waiting.</span></li>{% endif %}
+{% if not stuck_gateway %}<li><span>Gateway payments seen but not settled</span><span>Nothing stuck.</span></li>{% endif %}
+{% if not refunds %}<li><span>Refunds due</span><span>No refunds due.</span></li>{% endif %}
+{% if not invalidated %}<li><span>Confirmed payments the gateway now calls invalid</span><span>No payment was called invalid.</span></li>{% endif %}
+{% if not fx_legs %}<li><span>Exchange rates refused</span><span>Every exchange rate is in use.</span></li>{% endif %}
+{% if not watchers %}<li><span>Watchers that could not look</span><span>Every watcher can look.</span></li>{% endif %}
+{% if not pending %}<li><span>Transfers seen but not recorded</span><span>Every transfer seen was recorded.</span></li>{% endif %}
+{% if not gaps %}<li><span>Blocks not scanned, or to check</span><span>No blocks are waiting for a person.</span></li>{% endif %}
+{% if not overpaid %}<li><span>Overpaid invoices</span><span>No invoice is overpaid.</span></li>{% endif %}
+{% if not wrong_issuer %}<li><span>US tax residents with invoices from another issuer</span><span>Every invoice has the right issuer.</span></li>{% endif %}
+{% if not failed_keys %}<li><span>Encryption keys that stopped working</span><span>Every key in use works.</span></li>{% endif %}
+{% if not expiring_keys %}<li><span>Encryption keys expiring within 30 days</span><span>No active key expires within 30 days.</span></li>{% endif %}
+{% if not undelivered %}<li><span>E-mail not delivered</span><span>Everything was delivered.</span></li>{% endif %}
+{% if not link_alerts %}<li><span>Payment links</span><span>No payment link needs a person.</span></li>{% endif %}
+{% if not undelivered_webhooks %}<li><span>Webhooks not delivered</span><span>Every webhook was delivered.</span></li>{% endif %}
+</ul>
+</details>{% endif %}

@@ -1,0 +1,16 @@
+{% extends "staff/base.html" %}
+{% block title %}Organizations{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:settings' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Settings</a>
+<header class="page-head"><div class="page-head__text"><h1>Organizations</h1>
+<p class="page-head__meta">The legal entities that issue invoices.</p></div>
+<div class="page-head__actions"><a class="btn btn--primary" href="{% url 'staff:org_new' %}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>New organization</a></div></header>
+{% include "ui/_messages.html" %}
+{% if orgs %}<div class="card table-card"><div class="table-wrap"><table class="table--rows">
+<thead><tr><th>Organization</th><th>Language</th><th>Numbering</th><th class="num">Next number</th><th>US issuer</th></tr></thead><tbody>
+{% for o in orgs %}<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:org_edit' pk=o.pk %}">{{ o.slug }}</a></td>
+<td data-label="Language">{{ o.default_language }}</td><td class="muted" data-label="Numbering">{{ o.number_format }}</td>
+<td class="num" data-label="Next number">{{ o.next_number }}</td><td data-label="US issuer">{% if o.is_us_resident_issuer %}Yes{% else %}<span class="muted">No</span>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-bank"/></svg><p>No organizations yet.</p><a href="{% url 'staff:org_new' %}">Create the first organization</a></div>{% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "ui/base.html" %}{% load i18n %}
+{% block body_class %}auth{% endblock %}
+{% block body %}<div class="auth-shell">
+<main class="auth-main">
+{% block brand %}<p class="auth-brand"><span class="brand-mark" aria-hidden="true"><svg class="icon"><use href="#i-invoice"/></svg></span><span>Invoicing</span></p>{% endblock %}
+<div class="card auth-card">
+{% block content %}{% endblock %}
+</div>
+</main>
+<footer class="auth-foot">{% block switch %}{% language "en" %}{% include "ui/_theme_switch.html" %}{% endlanguage %}{% endblock %}</footer>
+</div>
+{% endblock %}

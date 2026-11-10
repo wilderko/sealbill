@@ -1,0 +1,69 @@
+services:
+  web:
+    build: .
+    # Tables first (idempotent): migrations, then the cache tables (rate limits, sealed flag).
+    command: >-
+      sh -c "python manage.py migrate --noinput
+      && python manage.py createcachetable
+      && exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    env_file: .env
+    environment:
+      VAULT_KEY_PATH: /run/vault/key
+      GPG_TMP_DIR: /run/gpg  # never beside the key: that tmpfs is 1 MiB and holds the key alone
+    # Loopback only: the reverse proxy on the host terminates TLS and forwards here.
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - vault-key:/run/vault
+      - gpg-tmp:/run/gpg
+      - vault-config:/app/vault
+      - media:/app/media
+    depends_on:
+      - postgres
+
+  worker:
+    build: .
+    command: python manage.py run_worker
+    env_file: .env
+    environment:
+      VAULT_KEY_PATH: /run/vault/key
+      GPG_TMP_DIR: /run/gpg
+    volumes:
+      - vault-key:/run/vault
+      - gpg-tmp:/run/gpg
+      - vault-config:/app/vault
+      - media:/app/media
+    depends_on:
+      - postgres
+      - web
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: pay
+      POSTGRES_USER: pay
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  # RAM-only: the vault key must never reach persistent disk. It holds the key and nothing
+  # else (the caches live in the database), so 1 MiB can never fill up. Owned by the image's
+  # app user (uid 10001, see the Dockerfile): mounted as root's, the key could not be written.
+  vault-key:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: "size=1m,mode=0700,uid=10001,gid=10001"
+  # RAM-only too: throw-away gpg keyrings and openssl temp files for encrypted e-mail, deleted
+  # after each use. Kept apart from the key's tmpfs so a busy queue can never fill that one.
+  gpg-tmp:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: "size=16m,mode=0700,uid=10001,gid=10001"
+  vault-config:
+  media:  # organization logos, read by the web (PDFs on pages) and the worker (PDFs in e-mail)
+  pgdata:

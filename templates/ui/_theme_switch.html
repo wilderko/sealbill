@@ -1,0 +1,9 @@
+{% load i18n %}<form method="post" action="{% url 'theme' %}" class="theme-switch" data-theme-switch>{% csrf_token %}<input type="hidden" name="next" value="{{ theme_next }}">
+<span class="theme-switch__label" id="theme-switch-label">{% translate "Theme" %}</span>
+<span class="segmented" role="group" aria-labelledby="theme-switch-label">
+<button type="submit" name="theme" value="auto" class="segmented__btn" aria-pressed="{% if theme %}false{% else %}true{% endif %}" title="{% translate 'Same as this device' %}"><svg class="icon" aria-hidden="true"><use href="#i-device"/></svg><span class="sr-only">{% translate "Same as this device" %}</span></button>
+<button type="submit" name="theme" value="white" class="segmented__btn" aria-pressed="{% if theme == 'white' %}true{% else %}false{% endif %}" title="{% translate 'Light' %}"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg><span class="sr-only">{% translate "Light" %}</span></button>
+<button type="submit" name="theme" value="dim" class="segmented__btn" aria-pressed="{% if theme == 'dim' %}true{% else %}false{% endif %}" title="{% translate 'Dim' %}"><svg class="icon" aria-hidden="true"><use href="#i-dim"/></svg><span class="sr-only">{% translate "Dim" %}</span></button>
+<button type="submit" name="theme" value="black" class="segmented__btn" aria-pressed="{% if theme == 'black' %}true{% else %}false{% endif %}" title="{% translate 'Dark' %}"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg><span class="sr-only">{% translate "Dark" %}</span></button>
+</span>
+</form>

@@ -1,0 +1,11 @@
+#!/bin/bash
+# manage.py as payinv, with the units' environment (install as root: /usr/local/sbin/payinv-manage).
+#   payinv-manage createsuperuser
+#   printf '%s\n' "$password" | payinv-manage unseal_vault
+# Arguments go to manage.py as they are; stdin is passed through, so a password read with
+# `read -rs` and printed by the shell's own printf never appears in a command line.
+set -euo pipefail
+cd /srv/sealbill/app
+exec sudo -u payinv -H bash -c 'set -a; . /etc/sealbill/env; set +a
+export DJANGO_SETTINGS_MODULE=config.settings.production
+exec .venv/bin/python manage.py "$@"' payinv-manage "$@"

@@ -1,0 +1,32 @@
+# Apache 2.4 front for pay-invoicing, part 1 of 2: the :80 vhost. Install it FIRST: it serves the
+# ACME webroot certbot needs, and redirects everything else to https. Once the certificate exists,
+# install part 2, pay-invoicing-ssl.conf.example (the :443 vhost). See the README.
+# Replace ${PAY_HOST} with the real host name (or define it: Define PAY_HOST pay.example.org) and
+# enable: a2enmod proxy proxy_http headers rewrite ssl
+#
+# Access logs: this vhost logs no URL at all (it serves only the ACME files and a redirect). The :443
+# vhost logs the path without the query string, and nothing of the URL under the capability paths
+# (/i/, /p/, /k/, /l/), where the path itself is the token.
+
+<VirtualHost *:80>
+    ServerName ${PAY_HOST}
+
+    # Let's Encrypt (first issue and every renewal): the challenge files are served from this
+    # webroot over plain http (certbot certonly --webroot -w /var/www/letsencrypt).
+    Alias /.well-known/acme-challenge/ /var/www/letsencrypt/.well-known/acme-challenge/
+    <Directory "/var/www/letsencrypt/.well-known/acme-challenge/">
+        Options None
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
+    RewriteRule ^/?(.*)$ https://${PAY_HOST}/$1 [R=301,L]
+
+    # Without a CustomLog here, the distribution's global other-vhosts log would write the full
+    # request line (query string, or a capability URL typed with http://) before the redirect.
+    # Method, status, size and time only: no URL, however it was spelled (//i/..., /%69/...).
+    LogFormat "%h %l %u %t \"%m\" %>s %b %D" pay_http
+    CustomLog ${APACHE_LOG_DIR}/pay-invoicing-redirect.log pay_http
+</VirtualHost>

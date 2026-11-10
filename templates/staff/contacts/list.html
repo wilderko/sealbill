@@ -1,0 +1,22 @@
+{% extends "staff/base.html" %}
+{% block title %}Contacts{% endblock %}
+{% block content %}
+<header class="page-head"><div class="page-head__text"><h1>Contacts</h1>
+<p class="page-head__meta">Every organization. Search by the exact e-mail address.</p></div></header>
+<form method="get" class="filters" role="search">
+<label class="filters__field"><span class="sr-only">Organization</span><select name="org" aria-label="Organization"><option value="">Every organization</option>{% for pk, name in organizations %}<option value="{{ pk }}"{% if pk|stringformat:"s" == org %} selected{% endif %}>{{ name }}</option>{% endfor %}</select></label>
+<label class="filters__field"><span class="sr-only">Kind</span><select name="kind" aria-label="Kind"><option value="">Clients and link buyers</option><option value="record"{% if kind == "record" %} selected{% endif %}>Clients of record</option><option value="link"{% if kind == "link" %} selected{% endif %}>Link buyers</option></select></label>
+<label class="filters__field filters__field--grow"><span class="sr-only">E-mail</span><input name="q" value="{{ q }}" placeholder="E-mail address" aria-label="E-mail" type="search"></label>
+<button type="submit" class="btn">Search</button>
+</form>
+{% if page.object_list %}<div class="card table-card"><div class="table-wrap table-wrap--long"><table class="table--rows">
+<thead><tr><th>Contact</th><th>E-mail</th><th>Organization</th><th>US tax resident</th><th>Added</th></tr></thead><tbody>
+{% for c in page.object_list %}<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:contact_detail' pk=c.pk %}">{{ c.name }}</a>{% if not c.of_record %} <span class="pill pill--attention" title="Made by a payment-link checkout from what the visitor typed; not a client of record">Link buyer</span>{% endif %}</td><td data-label="E-mail">{{ c.email_text }}</td><td data-label="Organization">{{ c.org_name }}</td><td class="muted" data-label="US tax resident">{{ c.get_us_tax_resident_display }}</td><td class="nowrap muted" data-label="Added">{{ c.created_at|date:"Y-m-d" }}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% if page.paginator.num_pages > 1 %}<nav class="status-tabs" aria-label="Pages">
+{% if page.has_previous %}<a href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.previous_page_number }}">Previous</a>{% endif %}
+<span class="muted">Page {{ page.number }} of {{ page.paginator.num_pages }} ({{ page.paginator.count }} contacts)</span>
+{% if page.has_next %}<a href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>{% endif %}
+{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-bookmark"/></svg><p>No contacts match.</p>{% if org or q or kind %}<a href="{% url 'staff:contact_list' %}">Show every contact</a>{% endif %}</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% load i18n %}<article class="doc card">
+<header class="doc-head">
+<p class="doc-kind">{% if invoice.kind == "payment_request" %}{% translate "Payment request" %}{% else %}{% translate "Invoice" %}{% endif %}</p>
+<dl class="doc-meta">
+{% if invoice.number %}<div><dt>{% translate "Number" %}</dt><dd>{{ invoice.number }}</dd></div>{% endif %}
+<div><dt>{% translate "Issue date" %}</dt><dd>{{ invoice.issue_date|date:"DATE_FORMAT" }}</dd></div>
+<div><dt>{% translate "Due date" %}</dt><dd>{% if invoice.due_date %}{{ invoice.due_date|date:"DATE_FORMAT" }}{% else %}{% translate "Due on receipt" %}{% endif %}</dd></div>
+</dl>
+</header>
+<section class="parties">
+<div><p class="label">{% translate "From" %}</p>
+<p class="party-name">{{ seller.legal_name }}</p>
+{% if seller.address %}<div class="pre">{{ seller.address }}</div>{% endif %}
+{% if seller.tax_ids %}<div class="pre muted">{{ seller.tax_ids }}</div>{% endif %}</div>
+<div><p class="label">{% translate "Bill to" %}</p>
+<p class="party-name">{{ buyer.name }}</p>
+{% for line in buyer.address_lines %}<div>{{ line }}</div>{% endfor %}
+{% if buyer.tax_ids %}<div class="pre muted">{{ buyer.tax_ids }}</div>{% endif %}</div>
+</section>
+{% if invoice.title %}<h2 class="doc-subject">{{ invoice.title }}</h2>{% endif %}
+<div class="table-wrap doc-lines">
+<table>
+<thead><tr><th>{% translate "Description" %}</th><th class="num">{% translate "Qty" %}</th><th class="num">{% translate "Unit price" %}</th><th class="num">{% translate "Tax" %}</th><th class="num">{% translate "Amount" %}</th></tr></thead>
+<tbody>
+{% for l in lines %}<tr><td class="line-desc"><span class="line-name">{{ l.name }}</span>{% if l.description %}<div class="pre muted">{{ l.description }}</div>{% endif %}</td>
+<td class="num line-meta" data-label="{% translate "Qty" %}">{{ l.quantity }}</td><td class="num line-meta" data-label="{% translate "Unit price" %}">{{ l.unit_price }}</td><td class="num line-meta" data-label="{% translate "Tax" %}">{{ l.tax_rate }}</td><td class="num line-total">{{ l.total }}</td></tr>{% endfor %}
+</tbody></table>
+</div>
+<table class="totals">
+<tr><td>{% translate "Subtotal" %}</td><td class="num">{{ money.subtotal }}</td></tr>
+{% if money.has_discount %}<tr><td>{% translate "Discount" %}</td><td class="num">-{{ money.discount }}</td></tr>{% endif %}
+<tr><td>{% translate "Tax" %}</td><td class="num">{{ money.tax }}</td></tr>
+<tr class="grand"><td>{% translate "Total" %}</td><td class="num">{{ money.total }}</td></tr>
+</table>
+{% if invoice.notes %}<section class="doc-notes"><h2>{% translate "Notes" %}</h2><div class="pre">{{ invoice.notes }}</div></section>{% endif %}
+</article>

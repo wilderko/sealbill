@@ -1,0 +1,7 @@
+{% load ui %}<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Order</th><th>Status</th><th class="num">Total</th><th>Buyer</th><th>Made</th>{% if link.fulfillment %}<th>Fulfilment</th>{% endif %}</tr></thead><tbody>
+{% for o in rows %}<tr><td><a class="strong-link" href="{% url 'staff:invoice' pk=o.invoice_id %}">{{ o.ref }}</a></td><td class="cell-status">{% pill o.invoice.status %}</td><td class="num cell-amount" data-label="Total">{{ o.total_text }}</td>
+<td class="cell-buyer" data-label="Buyer"><div><span class="cell-main">{{ o.buyer|default:"No name given" }}</span><span class="cell-sub">{{ o.email_text }}</span></div></td><td class="nowrap" data-label="Made">{{ o.created_at|date:"Y-m-d H:i" }}</td>
+{% if link.fulfillment %}<td class="fulfil-cell" data-label="Fulfilment">{% if o.fulfilled_at %}<span class="muted">Fulfilled {{ o.fulfilled_at|date:"Y-m-d" }}{% if o.fulfilled_by %} by {{ o.fulfilled_by.get_username }}{% endif %}</span>{% elif o.held %}<span class="muted">After the US tax residency item</span>{% elif o.is_paid %}<form method="post" action="{% url 'staff:order_fulfil' pk=o.pk %}" class="row-form">{% csrf_token %}<button type="submit" class="btn btn--sm btn--primary">Mark fulfilled</button></form>{% else %}<span class="muted">After payment</span>{% endif %}</td>{% endif %}</tr>
+{% empty %}<tr class="empty-row"><td colspan="{% if link.fulfillment %}6{% else %}5{% endif %}">{{ empty }}</td></tr>{% endfor %}
+</tbody></table></div></div>

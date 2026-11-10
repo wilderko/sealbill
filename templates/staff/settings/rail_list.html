@@ -1,0 +1,21 @@
+{% extends "staff/base.html" %}
+{% block title %}Rail accounts{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:settings' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Settings</a>
+<header class="page-head"><div class="page-head__text"><h1>Rail accounts</h1>
+<p class="page-head__meta">Where crypto and Lightning payments arrive. Accounts are deactivated, never deleted.</p></div>
+<div class="page-head__actions"><a class="btn btn--primary" href="{% url 'staff:rail_new' %}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>New rail account</a></div></header>
+{% include "ui/_messages.html" %}
+{% include "staff/_stepup.html" with action="create, change, activate or deactivate a rail account" %}
+<p class="helptext">Quotes a client may still pay keep being watched until they are released.</p>
+{% if rows %}<div class="card table-card"><div class="table-wrap"><table class="table--rows">
+<thead><tr><th>Organization</th><th>Kind</th><th>Label</th><th>Address</th><th>Status</th><th>Watcher</th><th>Credentials</th><th></th></tr></thead><tbody>
+{% for r in rows %}<tr><td data-label="Organization">{{ r.a.org.slug }}</td><td data-label="Kind">{{ r.a.kind }}</td>
+<td><a class="strong-link" href="{% url 'staff:rail_edit' pk=r.a.pk %}">{{ r.a.label|default:"(no label)" }}</a></td>
+<td class="muted" data-label="Address">{{ r.a.address|default:"-" }}</td>
+<td data-label="Status">{% if r.a.active %}Active{% else %}<span class="muted">Inactive</span>{% endif %}</td>
+<td data-label="Watcher">{{ r.health }}</td><td data-label="Credentials">{% if not r.takes_credentials %}<span class="muted">&mdash;</span>{% else %}credentials set: {% if r.has_credentials %}yes{% else %}no{% endif %}{% endif %}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:rail_toggle' pk=r.a.pk %}" class="row-form">{% csrf_token %}<button type="submit" class="btn btn--sm">{% if r.a.active %}Deactivate{% else %}Activate{% endif %}</button></form></td></tr>{% endfor %}
+</tbody></table></div></div>
+{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-bank"/></svg><p>No rail accounts yet.</p><a href="{% url 'staff:rail_new' %}">Create the first rail account</a></div>{% endif %}
+{% endblock %}

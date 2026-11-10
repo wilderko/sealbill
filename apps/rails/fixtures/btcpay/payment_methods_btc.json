@@ -1,0 +1,4 @@
+[{"paymentMethodId": "BTC-CHAIN", "currency": "BTC", "destination": "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
+  "paymentLink": "bitcoin:bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4?amount=0.00123456",
+  "rate": "81000.12", "paymentMethodPaid": "0", "totalPaid": "0", "due": "0.00123456", "amount": "0.00123456",
+  "networkFee": "0", "payments": [], "activated": true}]

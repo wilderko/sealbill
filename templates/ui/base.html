@@ -1,0 +1,22 @@
+{% load static %}<!doctype html>
+<html lang="{% block lang %}en{% endblock %}"{% if theme %} data-theme="{{ theme }}"{% endif %}>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+{% block meta %}{% endblock %}<meta name="color-scheme" content="{% if theme == 'white' %}light{% elif theme %}dark{% else %}light dark{% endif %}">
+{% if theme %}<meta name="theme-color" content="{% if theme == 'white' %}#f1f3f6{% elif theme == 'dim' %}#1b1f26{% else %}#0f1013{% endif %}">
+{% else %}<meta name="theme-color" content="#f1f3f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1013" media="(prefers-color-scheme: dark)">
+{% endif %}<meta name="htmx-config" content='{"includeIndicatorStyles":false,"allowEval":false,"selfRequestsOnly":true}'>
+<title>{% block title %}{% endblock %}</title>
+<link rel="preload" href="{% static 'fonts/inter-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{% static 'ui/app.css' %}">
+<script src="{% static 'portal/htmx.min.js' %}" nonce="{{ csp_nonce }}"></script>
+{% block scripts %}{% endblock %}<script src="{% static 'ui/ui.js' %}" nonce="{{ csp_nonce }}" defer></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{% include "ui/_icons.html" %}
+{% block body %}{% endblock %}
+</body>
+</html>

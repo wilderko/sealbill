@@ -1,0 +1,27 @@
+{% extends "staff/base.html" %}
+{% block title %}API tokens{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:settings' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Settings</a>
+<header class="page-head"><div class="page-head__text"><h1>API tokens</h1>
+<p class="page-head__meta">One organization each. A token is shown once, when it is created; revoking is permanent and the row stays.</p></div></header>
+{% include "ui/_messages.html" %}
+{% include "staff/_stepup.html" with action="create, rescope or revoke an API token" %}
+{% if error %}<div class="error" role="alert"><p>{{ error }}</p></div>{% endif %}
+<section class="card form-card narrow"><div class="card-body"><h2 class="card-title">New token</h2>
+<form method="post" action="{% url 'staff:token_new' %}" autocomplete="off">{% csrf_token %}<div class="form-grid">
+<div class="field"><label for="id_org">Organization</label><select name="org" id="id_org">{% for o in orgs %}<option value="{{ o.pk }}"{% if form.org == o.pk %} selected{% endif %}>{{ o.slug }}</option>{% endfor %}</select></div>
+<div class="field"><label for="id_name">Name</label><input type="text" name="name" id="id_name" maxlength="100" value="{{ form.name }}" autocomplete="off"></div>
+<div class="field field--wide"><span class="label">Scopes</span>{% for s in scopes %}<label class="check"><input type="checkbox" name="scopes" value="{{ s }}"{% if s in form.scopes %} checked{% endif %}> <span>{{ s }}</span></label> {% endfor %}
+<p class="helptext">admin covers every other scope and the webhook endpoints.</p></div></div>
+<button type="submit" class="btn btn--primary">Create token</button></form></div></section>
+{% if rows %}<div class="card table-card"><div class="table-wrap"><table class="table--rows">
+<thead><tr><th>Organization</th><th>Name</th><th>Scopes</th><th>Created</th><th>Last used</th><th>Status</th><th></th></tr></thead><tbody>
+{% for t in rows %}<tr><td data-label="Organization">{{ t.org.slug }}</td><td data-label="Name">{{ t.name }}</td>
+<td data-label="Scopes">{% if t.revoked_at %}{{ t.scopes|join:", " }}{% else %}<form method="post" action="{% url 'staff:token_scopes' pk=t.pk %}" class="row-form">{% csrf_token %}{% for s in scopes %}<label class="check"><input type="checkbox" name="scopes" value="{{ s }}"{% if s in t.scopes %} checked{% endif %}> <span>{{ s }}</span></label> {% endfor %}<button type="submit" class="btn btn--sm">Save scopes</button></form>{% endif %}</td>
+<td class="muted" data-label="Created">{{ t.created_at|date:"Y-m-d" }}</td>
+<td class="muted" data-label="Last used">{{ t.last_used_at|date:"Y-m-d H:i"|default:"never" }}</td>
+<td data-label="Status">{% if t.revoked_at %}<span class="muted">Revoked {{ t.revoked_at|date:"Y-m-d" }}</span>{% else %}Active{% endif %}</td>
+<td class="actions-cell">{% if not t.revoked_at %}<form method="post" action="{% url 'staff:token_revoke' pk=t.pk %}" class="row-form" data-confirm="Revoke this token? Integrations using it stop working immediately.">{% csrf_token %}<button type="submit" class="btn btn--sm btn--danger-outline">Revoke</button></form>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-bank"/></svg><p>No API tokens yet.</p></div>{% endif %}
+{% endblock %}

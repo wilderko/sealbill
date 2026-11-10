@@ -1,0 +1,11 @@
+{% autoescape off %}A payment is waiting for your confirmation.
+
+The gateway reports it settled, but {{ asset }} is never confirmed automatically. Check that the money reached the wallet, then confirm or reject the payment.
+
+Payment: #{{ payment_id }}
+Network: {{ network_name }}
+Amount: {{ amount }}
+{% if invoice_ref %}Invoice: {{ invoice_ref }}
+{% endif %}
+{{ admin_url }}
+{% endautoescape %}

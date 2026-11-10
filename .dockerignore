@@ -1,0 +1,11 @@
+.env
+.venv
+.git
+/vault/
+*.sqlite3
+media/
+staticfiles/
+__pycache__/
+*.pyc
+.env.*
+deploy/

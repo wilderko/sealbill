@@ -1,0 +1,3 @@
+{% if stepup and not stepup.superuser %}<div class="notice stepup"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><p>Only a superuser may {{ action }}.</p></div>
+{% elif stepup and not stepup.fresh %}<div class="notice reverify stepup"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><p>A superuser may {{ action }} with a second factor given in the last ten minutes.</p><a class="btn btn--sm" href="{{ stepup.reverify_url }}">Verify again</a></div>
+{% endif %}

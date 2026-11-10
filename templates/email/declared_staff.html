@@ -1,0 +1,5 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>{% blocktranslate %}A client has declared a payment for {{ ref }}. It needs your review.{% endblocktranslate %}</p><p>{% translate "Open the invoice on the staff page:" %}<br><a href="{{ admin_url }}">{{ admin_url }}</a></p>
+</body></html>

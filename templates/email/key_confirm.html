@@ -1,0 +1,6 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}</p><p>{% blocktranslate %}A key was uploaded for your e-mail address so that {{ org }} can send you encrypted e-mail:{% endblocktranslate %}</p><p style="font-family:monospace">{% blocktranslate %}Fingerprint: {{ fingerprint }}{% endblocktranslate %}</p><p>{% translate "To start using it, open this link and press Confirm:" %}<br><a href="{{ confirm_url }}">{{ confirm_url }}</a></p><p>{% translate "The link works for 7 days. Until you confirm, our e-mails to you stay as they are." %}</p><p>{% translate "If you did not upload this key, ignore this e-mail: nothing changes." %}</p>
+<p>{{ org }}</p>
+</body></html>

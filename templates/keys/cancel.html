@@ -1,0 +1,14 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "Cancel the new encryption key" %}{% endblock %}
+{% block content %}
+<div class="card narrow-card"><div class="card-body">
+<div class="card-icon card-icon--warn" aria-hidden="true"><svg class="icon"><use href="#i-key"/></svg></div>
+<h1>{% translate "Cancel the new encryption key" %}</h1>
+<div class="fingerprint"><span class="label">{% translate "Fingerprint" %}</span><span class="mono">{{ fingerprint }}</span></div>
+<p>{% translate "Someone uploaded this key for your e-mail address. If it was not you, cancel it here: it is refused, and our e-mails to you stay encrypted to your current key." %}</p>
+<form method="post" action="{% url 'keys:cancel' token=token %}{{ lang_query }}">{% csrf_token %}
+<p><button type="submit" class="btn btn--danger">{% translate "Cancel the new key" %}</button></p>
+</form>
+<p class="hint">{% translate "If you uploaded this key yourself, close this page: nothing changes." %}</p>
+</div></div>
+{% endblock %}

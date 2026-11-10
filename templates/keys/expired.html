@@ -1,0 +1,13 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% if rejected %}{% translate "This key cannot be used" %}{% else %}{% translate "This link does not work" %}{% endif %}{% endblock %}
+{% block content %}
+<div class="card narrow-card"><div class="card-body">
+<div class="card-icon card-icon--warn" aria-hidden="true"><svg class="icon"><use href="#i-alert"/></svg></div>
+<h1>{% if rejected %}{% translate "This key cannot be used" %}{% else %}{% translate "This link does not work" %}{% endif %}</h1>
+{% if rejected %}<p class="error" role="alert">{{ rejected }}</p>
+<p>{% translate "Upload a working key from your invoice page." %}</p>
+{% elif reason == "expired" %}<p>{% translate "This link has expired. Upload the key again from your invoice page and we will send you a new one." %}</p>
+{% elif reason == "used" %}<p>{% translate "This link has already been used, or the key it confirms was withdrawn." %}</p>
+{% else %}<p>{% translate "This link is not valid. Check that you copied all of it." %}</p>{% endif %}
+</div></div>
+{% endblock %}

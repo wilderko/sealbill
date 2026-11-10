@@ -1,0 +1,11 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "This link does not work" %}{% endblock %}
+{% block content %}
+<div class="card narrow-card"><div class="card-body">
+<div class="card-icon card-icon--warn" aria-hidden="true"><svg class="icon"><use href="#i-alert"/></svg></div>
+<h1>{% translate "This link does not work" %}</h1>
+{% if reason == "expired" or reason == "withdrawn" %}<p>{% translate "This link has expired. If a key you did not upload is in use, write to us and we will remove it." %}</p>
+{% elif reason == "used" %}<p>{% translate "This link has already been used: the new key was cancelled." %}</p>
+{% else %}<p>{% translate "This link is not valid. Check that you copied all of it." %}</p>{% endif %}
+</div></div>
+{% endblock %}

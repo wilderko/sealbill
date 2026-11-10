@@ -1,0 +1,169 @@
+{
+ "jetton_transfers": [
+  {
+   "query_id": "17571074283045446940",
+   "source": "0:220AF24B2FF79F14D7B38C8B15BB2746B521606DCEB9B84FE05AE7FA511E5094",
+   "destination": "0:852443F8599FE6A5DA34FE43049AC4E0BEB3071BB2BFB56635EA9421287C283A",
+   "amount": "1500000",
+   "source_wallet": "0:7FAE0AAB33965DF3FFBC37C5C34CF6E43DBDA6EBD660174464AC296CE9CF87FE",
+   "jetton_master": "0:B113A994B5024A16719F69139328EB759596C38A25F59028B146FECDC3621DFE",
+   "transaction_hash": "p8UxcqTejuVXjV+mEwfxpyVRLoD/k33zng0i4ELdjN0=",
+   "transaction_lt": "114047386000027",
+   "transaction_now": 1793635051,
+   "transaction_aborted": false,
+   "response_destination": "0:220AF24B2FF79F14D7B38C8B15BB2746B521606DCEB9B84FE05AE7FA511E5094",
+   "custom_payload": null,
+   "decoded_custom_payload": null,
+   "forward_ton_amount": "1",
+   "forward_payload": "te6cckEBAQEAKAAATAAAAAAxMDAgVGVsZWdyYW0gU3RhcnMgCgpSZWYjbms2NnJxT1BCabimKA==",
+   "decoded_forward_payload": {
+    "@type": "text_comment",
+    "comment": "100 Telegram Stars \n\nRef#nk66rqOPB",
+    "type": "text_comment"
+   },
+   "trace_id": "NRyqMjZo95xdhRjwAW7UqMvCXs+/WGzmMuUdgyIOBQI="
+  },
+  {
+   "query_id": "3341902212359626236",
+   "source": "0:220AF24B2FF79F14D7B38C8B15BB2746B521606DCEB9B84FE05AE7FA511E5094",
+   "destination": "0:852443F8599FE6A5DA34FE43049AC4E0BEB3071BB2BFB56635EA9421287C283A",
+   "amount": "2250000",
+   "source_wallet": "0:7FAE0AAB33965DF3FFBC37C5C34CF6E43DBDA6EBD660174464AC296CE9CF87FE",
+   "jetton_master": "0:B113A994B5024A16719F69139328EB759596C38A25F59028B146FECDC3621DFE",
+   "transaction_hash": "zmgp7tJgjHIu80O2Y9gEhegWOdFa0AbCRnw0pk37494=",
+   "transaction_lt": "114047386000025",
+   "transaction_now": 1793635051,
+   "transaction_aborted": false,
+   "response_destination": "0:220AF24B2FF79F14D7B38C8B15BB2746B521606DCEB9B84FE05AE7FA511E5094",
+   "custom_payload": null,
+   "decoded_custom_payload": null,
+   "forward_ton_amount": "1",
+   "forward_payload": "te6cckEBAQEAKAAATAAAAAAxNTAgVGVsZWdyYW0gU3RhcnMgCgpSZWYjY0FqOTR2TXhYajtC0w==",
+   "decoded_forward_payload": {
+    "@type": "text_comment",
+    "comment": "150 Telegram Stars \n\nRef#cAj94vMxX",
+    "type": "text_comment"
+   },
+   "trace_id": "NRyqMjZo95xdhRjwAW7UqMvCXs+/WGzmMuUdgyIOBQI="
+  },
+  {
+   "query_id": "11551517139455412679",
+   "source": "0:35D3E5B7959D61A85EFEAA3705272832BB584A38DA244B526FF65CFFB9283DAB",
+   "destination": "0:852443F8599FE6A5DA34FE43049AC4E0BEB3071BB2BFB56635EA9421287C283A",
+   "amount": "750000",
+   "source_wallet": "0:C2B61CA5B963E6C63BC69ACAC21B73605862E9D95C66A870E77FCD1750439DBC",
+   "jetton_master": "0:B113A994B5024A16719F69139328EB759596C38A25F59028B146FECDC3621DFE",
+   "transaction_hash": "WajCpHn1XDGqs5nEAMxYB9l2MXQ5ua2clFX6IREVQ2g=",
+   "transaction_lt": "114047375000037",
+   "transaction_now": 1793635047,
+   "transaction_aborted": false,
+   "response_destination": "0:35D3E5B7959D61A85EFEAA3705272832BB584A38DA244B526FF65CFFB9283DAB",
+   "custom_payload": null,
+   "decoded_custom_payload": null,
+   "forward_ton_amount": "1",
+   "forward_payload": "te6cckEBAQEAJwAASgAAAAA1MCBUZWxlZ3JhbSBTdGFycyAKClJlZiNUM0pMZGRkOVT1dMuE",
+   "decoded_forward_payload": {
+    "@type": "text_comment",
+    "comment": "50 Telegram Stars \n\nRef#T3JLddd9T",
+    "type": "text_comment"
+   },
+   "trace_id": "b4QQ3SzCMPqvpWY621GZYhkYAnajjs29CzUrMbxtrIQ="
+  }
+ ],
+ "address_book": {
+  "0:220AF24B2FF79F14D7B38C8B15BB2746B521606DCEB9B84FE05AE7FA511E5094": {
+   "user_friendly": "UQAiCvJLL_efFNezjIsVuydGtSFgbc65uE_gWuf6UR5QlF-N",
+   "domain": null,
+   "interfaces": [
+    "wallet_v5r1"
+   ]
+  },
+  "0:35D3E5B7959D61A85EFEAA3705272832BB584A38DA244B526FF65CFFB9283DAB": {
+   "user_friendly": "UQA10-W3lZ1hqF7-qjcFJygyu1hKONokS1Jv9lz_uSg9q5AM",
+   "domain": null,
+   "interfaces": [
+    "wallet_v5r1"
+   ]
+  },
+  "0:7FAE0AAB33965DF3FFBC37C5C34CF6E43DBDA6EBD660174464AC296CE9CF87FE": {
+   "user_friendly": "EQB_rgqrM5Zd8_-8N8XDTPbkPb2m69ZgF0RkrCls6c-H_sHu",
+   "domain": null,
+   "interfaces": [
+    "jetton_wallet_governed"
+   ]
+  },
+  "0:852443F8599FE6A5DA34FE43049AC4E0BEB3071BB2BFB56635EA9421287C283A": {
+   "user_friendly": "EQCFJEP4WZ_mpdo0_kMEmsTgvrMHG7K_tWY16pQhKHwoOoy2",
+   "domain": null,
+   "interfaces": [
+    "wallet_highload_v3r1"
+   ]
+  },
+  "0:B113A994B5024A16719F69139328EB759596C38A25F59028B146FECDC3621DFE": {
+   "user_friendly": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+   "domain": null,
+   "interfaces": [
+    "jetton_master"
+   ]
+  },
+  "0:C2B61CA5B963E6C63BC69ACAC21B73605862E9D95C66A870E77FCD1750439DBC": {
+   "user_friendly": "EQDCthyluWPmxjvGmsrCG3NgWGLp2VxmqHDnf80XUEOdvLLl",
+   "domain": null,
+   "interfaces": [
+    "jetton_wallet_governed"
+   ]
+  }
+ },
+ "metadata": {
+  "0:7FAE0AAB33965DF3FFBC37C5C34CF6E43DBDA6EBD660174464AC296CE9CF87FE": {
+   "is_indexed": true,
+   "token_info": [
+    {
+     "valid": true,
+     "type": "jetton_wallets",
+     "extra": {
+      "balance": "1484383267",
+      "jetton": "0:B113A994B5024A16719F69139328EB759596C38A25F59028B146FECDC3621DFE",
+      "owner": "0:220AF24B2FF79F14D7B38C8B15BB2746B521606DCEB9B84FE05AE7FA511E5094"
+     }
+    }
+   ]
+  },
+  "0:B113A994B5024A16719F69139328EB759596C38A25F59028B146FECDC3621DFE": {
+   "is_indexed": true,
+   "token_info": [
+    {
+     "valid": true,
+     "type": "jetton_masters",
+     "name": "Tether USD",
+     "symbol": "USD\u20ae",
+     "description": "Tether Token for Tether USD",
+     "image": "https://tether.to/images/logoCircle.png",
+     "is_nsfw": false,
+     "is_scam": false,
+     "extra": {
+      "_image_big": "https://proxy.toncenter.com/yz-3m7auC_anGW1Ym_SF2mjKl-o8Dnss1dQVxz4304k/pr:big/bG9jYWw6Ly8vMTEvZjIvMTFmMjE1ZTc0YWQxMGZkYTI5MmVlMGQwMDhlNzhjZGY0MTViYWVlODBhMDg5ZjUxZjdmYWFmZTliZTBmMjI4NA",
+      "_image_medium": "https://proxy.toncenter.com/HIgyb4_W9CJmt5bxYup_WyBY0o6hKyjl0sFwJWH2L5w/pr:medium/bG9jYWw6Ly8vMTEvZjIvMTFmMjE1ZTc0YWQxMGZkYTI5MmVlMGQwMDhlNzhjZGY0MTViYWVlODBhMDg5ZjUxZjdmYWFmZTliZTBmMjI4NA",
+      "_image_small": "https://proxy.toncenter.com/zw1kB_VnqUT_mcakALKtiJ4aCJ9XKhu_WqB7XMGxdD4/pr:small/bG9jYWw6Ly8vMTEvZjIvMTFmMjE1ZTc0YWQxMGZkYTI5MmVlMGQwMDhlNzhjZGY0MTViYWVlODBhMDg5ZjUxZjdmYWFmZTliZTBmMjI4NA",
+      "decimals": "6",
+      "uri": "https://tether.to/usdt-ton.json"
+     }
+    }
+   ]
+  },
+  "0:C2B61CA5B963E6C63BC69ACAC21B73605862E9D95C66A870E77FCD1750439DBC": {
+   "is_indexed": true,
+   "token_info": [
+    {
+     "valid": true,
+     "type": "jetton_wallets",
+     "extra": {
+      "balance": "121104175",
+      "jetton": "0:B113A994B5024A16719F69139328EB759596C38A25F59028B146FECDC3621DFE",
+      "owner": "0:35D3E5B7959D61A85EFEAA3705272832BB584A38DA244B526FF65CFFB9283DAB"
+     }
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,10 @@
+{% extends "staff/base.html" %}
+{% block title %}Token created{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:token_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>API tokens</a>
+<header class="page-head"><div class="page-head__text"><h1>Token created</h1>
+<p class="page-head__meta">{{ token.org.slug }} &middot; {{ token.name }} &middot; {{ token.scopes|join:", " }}</p></div></header>
+<div class="notice notice--ok" role="status"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg><p>Copy the token now. It is shown only on this page and cannot be shown again; if it is lost, revoke it and make a new one.</p></div>
+<section class="card form-card narrow"><div class="card-body"><div class="copy-field"><span class="copy-field__label">Token</span><span class="copy-field__value mono">{{ plain }}</span><button type="button" class="btn btn--sm copy-btn" data-copy="{{ plain }}" data-done="Copied"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>Copy</span></button></div></div></section>
+<p><a class="btn" href="{% url 'staff:token_list' %}">Done</a></p>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "staff/base.html" %}
+{% block title %}{% if link %}Edit payment link{% else %}New payment link{% endif %}{% endblock %}
+{% block content %}
+{% if link %}<a class="back-link" href="{% url 'staff:link_detail' pk=link.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Payment link #{{ link.pk }}</a>{% else %}<a class="back-link" href="{% url 'staff:link_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Payment links</a>{% endif %}
+<header class="page-head">
+<div class="page-head__text"><h1>{% if link %}Edit payment link #{{ link.pk }}{% else %}New payment link{% endif %}</h1>
+<p class="page-head__meta">{% if link %}Orders already made keep what they were made with. The URL stays the same.{% else %}The link works as soon as it is saved and active.{% endif %}</p></div>
+<div class="page-head__actions"><button type="submit" form="link-form" class="btn btn--primary">{% if link %}Save changes{% else %}Create link{% endif %}</button></div>
+</header>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+{{ form.non_field_errors }}
+<form method="post" id="link-form" class="invoice-form" enctype="multipart/form-data">{% csrf_token %}
+<section class="card form-card"><div class="card-body">
+<h2 class="card-title">What is sold</h2>
+<div class="form-grid">
+{% include "ui/_field.html" with field=form.organization %}
+{% include "ui/_field.html" with field=form.kind %}
+{% include "ui/_field.html" with field=form.title wide=True %}
+{% include "ui/_field.html" with field=form.description wide=True %}
+<div class="field field--wide{% if form.image.errors %} field--error{% endif %}"><label for="{{ form.image.id_for_label }}">Image</label>
+{% include "ui/_file_pick.html" with input_id=form.image.id_for_label input_name=form.image.html_name accept="image/png,image/jpeg,image/webp" choose_label="Choose an image" empty_label="No image chosen" %}
+<p class="helptext">{{ form.image.help_text }}</p>{{ form.image.errors }}
+{% if form.remove_image and has_image %}<label class="check" for="{{ form.remove_image.id_for_label }}">{{ form.remove_image }} <span>{{ form.remove_image.label }}</span></label>{% endif %}</div>
+</div></div></section>
+<section class="card form-card"><div class="card-body">
+<h2 class="card-title">Price</h2>
+<div class="form-grid">
+{% include "ui/_field.html" with field=form.currency %}
+{% include "ui/_field.html" with field=form.price %}
+{% include "ui/_field.html" with field=form.tax_percent %}
+{% include "ui/_field.html" with field=form.max_quantity %}
+{% include "ui/_field.html" with field=form.customer_chooses wide=True %}
+{% include "ui/_field.html" with field=form.min_amount %}
+{% include "ui/_field.html" with field=form.max_amount %}
+</div>
+<p class="hint">Amounts are in major units of the currency (12.50 for EUR). With "the customer chooses", the price is ignored and the bounds are optional; the quantity is then one.</p>
+</div></section>
+<section class="card form-card"><div class="card-body">
+<h2 class="card-title">What the buyer is asked</h2>
+<p class="hint">The e-mail address and "Are you a US tax resident?" are always asked.</p>
+<div class="form-grid">
+{% include "ui/_field.html" with field=form.name_field %}
+{% include "ui/_field.html" with field=form.billing_field %}
+{% include "ui/_field.html" with field=form.shipping_field %}
+{% include "ui/_field.html" with field=form.phone_field %}
+</div>
+<fieldset class="custom-questions"><legend>Extra questions</legend>
+{% for label, required in form.custom_rows %}<div class="custom-question{% if label.errors %} field--error{% endif %}">{{ label }}<label class="check" for="{{ required.id_for_label }}">{{ required }} <span>Required</span></label>{{ label.errors }}</div>{% endfor %}
+</fieldset>
+</div></section>
+<section class="card form-card"><div class="card-body">
+<h2 class="card-title">Payment methods</h2>
+<div class="radio-stack">{% for radio in form.methods %}<label class="check" for="{{ radio.id_for_label }}">{{ radio.tag }} <span>{{ radio.choice_label }}</span></label>{% endfor %}</div>
+<p class="hint">A custom set names kinds of payment, not accounts: a US tax resident's order is issued by the US-resident organization, which offers its own accounts of the same kinds. A bank transfer must be in the link's currency.</p>
+{% if form.method_types.field.choices %}<fieldset class="check-list check-list--columns"><legend>{{ form.method_types.label }}</legend>
+{% for box in form.method_types %}<label class="check" for="{{ box.id_for_label }}">{{ box.tag }} <span>{{ box.choice_label }}</span></label>{% endfor %}</fieldset>{% else %}<p class="hint">No organization has an active payment method yet.</p>{% endif %}
+{{ form.method_types.errors }}
+</div></section>
+<section class="card form-card"><div class="card-body">
+<h2 class="card-title">Availability and follow-up</h2>
+<div class="form-grid">
+{% include "ui/_field.html" with field=form.active %}
+{% include "ui/_field.html" with field=form.valid_until %}
+{% include "ui/_field.html" with field=form.max_uses %}
+{% include "ui/_field.html" with field=form.fulfillment wide=True %}
+{% include "ui/_field.html" with field=form.notify_staff wide=True %}
+{% include "ui/_field.html" with field=form.internal_note wide=True %}
+</div>
+</div></section>
+<div class="form-actions form-actions--end"><button type="submit" class="btn btn--primary">{% if link %}Save changes{% else %}Create link{% endif %}</button></div>
+</form>
+{% endblock %}

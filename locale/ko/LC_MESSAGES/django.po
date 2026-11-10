@@ -1,0 +1,1169 @@
+# Translations (ko) of the invoicing service.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Sealbill contributors
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-03 06:49+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: apps/core/tests_i18n.py:196 templates/vault/unlock.html:5
+msgid "Unlock the vault"
+msgstr "보관함 잠금 해제"
+
+#: apps/keys/views.py:30
+msgid "The file is too large to be a public key."
+msgstr "공개 키라고 보기에는 파일이 너무 큽니다."
+
+#: apps/keys/views.py:31
+msgid ""
+"This is a .p12/.pfx file, which holds a private key. Upload only the "
+"certificate."
+msgstr "개인 키가 들어 있는 .p12/.pfx 파일입니다. 인증서만 업로드하십시오."
+
+#: apps/keys/views.py:32
+msgid ""
+"This contains a private key. Keep it to yourself and upload only the public "
+"key."
+msgstr "개인 키가 들어 있습니다. 개인 키는 직접 보관하시고 공개 키만 업로드하십시오."
+
+#: apps/keys/views.py:33
+msgid "This is not a PGP public key or an S/MIME certificate."
+msgstr "PGP 공개 키나 S/MIME 인증서가 아닙니다."
+
+#: apps/keys/views.py:34
+msgid "This contains more than one key. Upload one key only."
+msgstr "키가 두 개 이상 들어 있습니다. 하나만 업로드하십시오."
+
+#: apps/keys/views.py:35
+msgid "This key cannot be used to encrypt e-mail."
+msgstr "이 키로는 이메일을 암호화할 수 없습니다."
+
+#: apps/keys/views.py:36
+msgid "This key has expired."
+msgstr "이 키는 만료되었습니다."
+
+#: apps/keys/views.py:37
+msgid "This key is not valid yet."
+msgstr "이 키는 아직 유효하지 않습니다."
+
+#: apps/keys/views.py:38
+msgid "This key has been revoked."
+msgstr "이 키는 폐기되었습니다."
+
+#: apps/keys/views.py:39
+msgid "This key does not name the e-mail address we write to you at."
+msgstr "이 키에는 저희가 이메일을 보내는 주소가 들어 있지 않습니다."
+
+#: apps/keys/views.py:40
+msgid "This type or size of key is not supported."
+msgstr "지원하지 않는 키 유형 또는 크기입니다."
+
+#: apps/keys/views.py:75
+msgid ""
+"Too many keys were uploaded through this link. Please try again in an hour."
+msgstr "이 링크로 너무 많은 키가 업로드되었습니다. 한 시간 후에 다시 시도해 주십시오."
+
+#: apps/keys/views.py:79
+msgid "Paste the key or choose a file."
+msgstr "키를 붙여넣거나 파일을 선택하십시오."
+
+#: apps/keys/views.py:87 apps/keys/views.py:140
+msgid ""
+"We could not check the key right now. Please try again in a few minutes."
+msgstr "지금은 키를 확인할 수 없습니다. 몇 분 후에 다시 시도해 주십시오."
+
+#: apps/notify/services.py:32
+#, python-format
+msgid "Invoice %(ref)s from %(org)s"
+msgstr "%(org)s의 청구서 %(ref)s"
+
+#: apps/notify/services.py:33
+#, python-format
+msgid "Payment request %(ref)s from %(org)s"
+msgstr "%(org)s의 결제 요청 %(ref)s"
+
+#: apps/notify/services.py:34
+#, python-format
+msgid "Receipt for %(ref)s from %(org)s"
+msgstr "%(org)s의 %(ref)s 영수증"
+
+#: apps/notify/services.py:35
+#, python-format
+msgid "Partial payment received for %(ref)s"
+msgstr "%(ref)s에 대한 부분 결제가 접수되었습니다"
+
+#: apps/notify/services.py:36
+#, python-format
+msgid "Confirm your encryption key for %(org)s"
+msgstr "%(org)s용 암호화 키를 확인하십시오"
+
+#: apps/notify/services.py:37
+#, python-format
+msgid "Payment declared for %(ref)s"
+msgstr "%(ref)s에 대한 결제가 신고되었습니다"
+
+#: apps/notify/services.py:38
+#, python-format
+msgid "The vault is sealed: %(count)s e-mails are waiting"
+msgstr "금고가 봉인되어 있습니다: 이메일 %(count)s건이 대기 중입니다"
+
+#: apps/notify/services.py:39
+#, python-format
+msgid "Payment #%(ref)s needs review"
+msgstr "결제 #%(ref)s 검토가 필요합니다"
+
+#: apps/notify/services.py:40
+#, python-format
+msgid "Payment #%(ref)s is waiting for your confirmation"
+msgstr "결제 #%(ref)s 확인을 기다리고 있습니다"
+
+#: apps/notify/services.py:44
+#, python-format
+msgid "Message from %(org)s"
+msgstr "%(org)s에서 보낸 메시지"
+
+#: apps/payments/models.py:36
+msgid "The token is not one this invoice accepts."
+msgstr "이 청구서는 해당 토큰을 받지 않습니다."
+
+#: apps/payments/models.py:37
+msgid "No open invoice matches this payment."
+msgstr "이 결제와 일치하는 미결 청구서가 없습니다."
+
+#: apps/payments/models.py:38
+msgid "More than one open invoice could match this payment."
+msgstr "이 결제에 해당할 수 있는 미결 청구서가 둘 이상입니다."
+
+#: apps/payments/models.py:39
+msgid "The payment arrived after the quote expired."
+msgstr "견적 유효 기간이 지난 뒤에 결제가 도착했습니다."
+
+#: apps/payments/models.py:40
+msgid "This looks like a duplicate of another payment."
+msgstr "다른 결제와 중복된 것으로 보입니다."
+
+#: apps/payments/models.py:41
+msgid "The payment is far above what was owed."
+msgstr "결제 금액이 청구 금액보다 훨씬 큽니다."
+
+#: apps/payments/models.py:42
+msgid "The invoice was already closed when the payment arrived."
+msgstr "결제가 도착했을 때 청구서는 이미 마감되어 있었습니다."
+
+#: apps/payments/models.py:43
+msgid "The payment was made before the quote was issued."
+msgstr "견적이 발행되기 전에 결제가 이루어졌습니다."
+
+#: apps/payments/models.py:44
+msgid "A very small transfer, probably address-poisoning spam."
+msgstr "매우 적은 금액의 전송으로, 주소 포이즈닝 스팸일 가능성이 높습니다."
+
+#: apps/payments/models.py:45
+msgid "The transaction was dropped from the chain."
+msgstr "이 거래는 체인에서 사라졌습니다."
+
+#: apps/payments/models.py:46
+msgid "BTCPay reports a partial payment."
+msgstr "BTCPay가 부분 결제를 보고했습니다."
+
+#: apps/payments/models.py:47
+msgid "BTCPay invoice was marked as paid by hand."
+msgstr "BTCPay 청구서가 수동으로 결제 완료 처리되었습니다."
+
+#: apps/payments/models.py:48
+msgid "BTCPay reports the invoice as invalid."
+msgstr "BTCPay가 청구서를 유효하지 않은 것으로 보고했습니다."
+
+#: apps/payments/models.py:49
+msgid "BTCPay reports a late payment."
+msgstr "BTCPay가 늦게 도착한 결제를 보고했습니다."
+
+#: apps/portal/crypto.py:69
+#, python-format
+msgid "%(asset)s on %(network)s"
+msgstr "%(network)s의 %(asset)s"
+
+#: apps/portal/forms.py:6
+msgid "Network (optional)"
+msgstr "네트워크 (선택)"
+
+#: apps/portal/forms.py:7
+msgid "Transaction number or hash (optional)"
+msgstr "거래 번호 또는 해시 (선택)"
+
+#: apps/portal/forms.py:8
+msgid "Note (optional)"
+msgstr "메모 (선택)"
+
+#: apps/portal/forms.py:13
+msgid "Other"
+msgstr "기타"
+
+#: apps/portal/views.py:181
+msgid "This invoice can no longer be paid online."
+msgstr "이 청구서는 더 이상 온라인으로 결제할 수 없습니다."
+
+#: apps/portal/views.py:182
+msgid "This payment method is not available for this invoice."
+msgstr "이 결제 방법은 이 청구서에 사용할 수 없습니다."
+
+#: apps/portal/views.py:183
+msgid "That network or token is not available for this invoice."
+msgstr "이 네트워크 또는 토큰은 이 청구서에 사용할 수 없습니다."
+
+#: apps/portal/views.py:184
+msgid "Nothing is left to pay on this invoice."
+msgstr "이 청구서에는 더 이상 결제할 금액이 없습니다."
+
+#: apps/portal/views.py:185
+msgid "Exchange rates are unavailable right now. Try again in a minute."
+msgstr "지금은 환율을 불러올 수 없습니다. 1분 후에 다시 시도해 주세요."
+
+#: apps/portal/views.py:186
+msgid ""
+"The exchange rate cannot be fixed reliably right now. Try again in a minute."
+msgstr ""
+"지금은 환율을 안정적으로 확정할 수 없습니다. 1분 후에 다시 시도해 주세요."
+
+#: apps/portal/views.py:213
+msgid ""
+"Too many payments are open right now. Please try again in a few minutes."
+msgstr "현재 진행 중인 결제가 너무 많습니다. 몇 분 후에 다시 시도해 주세요."
+
+#: apps/portal/views.py
+msgid "There have been too many payment attempts on this invoice today. Please try again tomorrow, or contact us."
+msgstr "오늘 이 청구서의 결제 시도가 너무 많았습니다. 내일 다시 시도하시거나 문의해 주세요."
+
+#: apps/portal/views.py:188
+msgid ""
+"This payment method is temporarily unavailable. Try another one, or try "
+"again shortly."
+msgstr ""
+"이 결제 방법은 일시적으로 사용할 수 없습니다. 다른 방법을 선택하거나 잠시 후 "
+"다시 시도해 주세요."
+
+#: apps/portal/views.py:214
+msgid "Too many attempts. Wait a few minutes and try again."
+msgstr "시도 횟수가 너무 많습니다. 몇 분 후에 다시 시도해 주세요."
+
+#: apps/vault/views.py:17
+msgid "Too many attempts. Try again later."
+msgstr "시도 횟수가 너무 많습니다. 잠시 후 다시 시도해 주십시오."
+
+#: templates/email/declared_staff.html:4 templates/email/declared_staff.txt:1
+#, python-format
+msgid "A client has declared a payment for %(ref)s. It needs your review."
+msgstr "고객이 %(ref)s에 대한 결제를 신고했습니다. 확인이 필요합니다."
+
+#: templates/email/declared_staff.html:4 templates/email/declared_staff.txt:7
+msgid "Open the invoice on the staff page:"
+msgstr "직원 페이지에서 청구서 열기:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:1
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:1
+#: templates/email/partial.html:4 templates/email/partial.txt:1
+#: templates/email/receipt.html:4 templates/email/receipt.txt:1
+#, python-format
+msgid "Dear %(name)s,"
+msgstr "%(name)s 님, 안녕하십니까."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:3
+#, python-format
+msgid "%(org)s has sent you a payment request (%(ref)s)."
+msgstr "%(org)s에서 결제 요청(%(ref)s)을 보내 드렸습니다."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:4
+#, python-format
+msgid "%(org)s has sent you invoice %(ref)s."
+msgstr "%(org)s에서 청구서 %(ref)s을(를) 보내 드렸습니다."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:8
+#, python-format
+msgid "Amount due: %(total)s"
+msgstr "납부하실 금액: %(total)s"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:10
+#, python-format
+msgid "Due date: %(due)s"
+msgstr "납부 기한: %(due)s"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:12
+msgid "Pay online:"
+msgstr "온라인으로 결제하기:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:15
+msgid "View the invoice online:"
+msgstr "청구서 온라인으로 보기:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:18
+msgid "The payment request is attached as a PDF."
+msgstr "결제 요청서가 PDF로 첨부되어 있습니다."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:18
+msgid "The invoice is attached as a PDF."
+msgstr "청구서가 PDF로 첨부되어 있습니다."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:19
+#: templates/email/receipt.html:4 templates/email/receipt.txt:11
+msgid ""
+"The PDF could not be attached to this e-mail. You can download it from the "
+"invoice page."
+msgstr ""
+"이 이메일에 PDF를 첨부하지 못했습니다. 청구서 페이지에서 내려받으실 수 있습니"
+"다."
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:3
+#, python-format
+msgid ""
+"A key was uploaded for your e-mail address so that %(org)s can send you "
+"encrypted e-mail:"
+msgstr "%(org)s에서 암호화된 이메일을 보낼 수 있도록 고객님의 이메일 주소에 대한 키가 업로드되었습니다:"
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:5
+#, python-format
+msgid "Fingerprint: %(fingerprint)s"
+msgstr "지문: %(fingerprint)s"
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:7
+msgid "To start using it, open this link and press Confirm:"
+msgstr "사용을 시작하시려면 이 링크를 열고 확인을 누르십시오:"
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:10
+msgid ""
+"The link works for 7 days. Until you confirm, our e-mails to you stay as "
+"they are."
+msgstr "링크는 7일 동안 유효합니다. 확인하시기 전까지 저희 이메일은 지금처럼 전송됩니다."
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:12
+msgid "If you did not upload this key, ignore this e-mail: nothing changes."
+msgstr "이 키를 업로드하지 않으셨다면 이 이메일을 무시하십시오. 아무것도 바뀌지 않습니다."
+
+#: templates/email/partial.html:4 templates/email/partial.txt:3
+#, python-format
+msgid "%(org)s has received a partial payment for %(ref)s."
+msgstr "%(org)s에서 %(ref)s에 대한 부분 결제를 받았습니다."
+
+#: templates/email/partial.html:4 templates/email/partial.txt:5
+#, python-format
+msgid "Amount received: %(paid)s"
+msgstr "수령 금액: %(paid)s"
+
+#: templates/email/partial.html:4 templates/email/partial.txt:7
+#, python-format
+msgid "Still outstanding: %(remaining)s"
+msgstr "남은 금액: %(remaining)s"
+
+#: templates/email/partial.html:4 templates/email/partial.txt:9
+msgid "You can pay the rest here:"
+msgstr "나머지 금액은 여기에서 결제하실 수 있습니다:"
+
+#: templates/email/partial.html:4 templates/email/partial.txt:10
+msgid "To pay the rest, please use the payment link from our original e-mail."
+msgstr "나머지 금액은 처음 보내드린 이메일의 결제 링크로 결제해 주세요."
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:3
+#, python-format
+msgid "Thank you. %(org)s has received your payment for %(ref)s."
+msgstr "감사합니다. %(org)s에서 %(ref)s에 대한 결제를 받았습니다."
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:5
+#, python-format
+msgid "Amount paid: %(total)s"
+msgstr "결제 금액: %(total)s"
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:7
+msgid "View the receipt online:"
+msgstr "영수증 온라인으로 보기:"
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:10
+msgid "Your receipt is attached as a PDF."
+msgstr "영수증이 PDF로 첨부되어 있습니다."
+
+#: templates/email/vault_sealed_staff.html:4
+#: templates/email/vault_sealed_staff.txt:1
+#, python-format
+msgid "The vault is sealed, so %(count)s e-mails cannot be sent."
+msgstr "금고가 봉인되어 있어 이메일 %(count)s건을 보낼 수 없습니다."
+
+#: templates/email/vault_sealed_staff.html:4
+#: templates/email/vault_sealed_staff.txt:3
+msgid "Unlock it here:"
+msgstr "여기에서 잠금을 해제하세요:"
+
+#: templates/keys/confirm.html:2 templates/keys/confirm.html:4
+msgid "Confirm your encryption key"
+msgstr "암호화 키를 확인하십시오"
+
+#: templates/keys/confirm.html:5 templates/keys/confirmed.html:5
+#: templates/keys/upload.html:7
+msgid "Fingerprint"
+msgstr "지문"
+
+#: templates/keys/confirm.html:7
+msgid ""
+"Press Confirm and our e-mails to you will be encrypted to this key from now "
+"on."
+msgstr "확인을 누르시면 앞으로 저희가 보내는 이메일이 이 키로 암호화됩니다."
+
+#: templates/keys/confirm.html:10
+msgid "Confirm"
+msgstr "확인"
+
+#: templates/keys/confirm.html:12
+msgid "If you did not ask for this, close this page: nothing changes."
+msgstr "요청하지 않으셨다면 이 페이지를 닫으십시오. 아무것도 바뀌지 않습니다."
+
+#: templates/keys/confirmed.html:2 templates/keys/confirmed.html:4
+msgid "Key confirmed"
+msgstr "키가 확인되었습니다"
+
+#: templates/keys/confirmed.html:7
+msgid "From now on, our e-mails to you are encrypted to this key."
+msgstr "이제부터 저희가 보내는 이메일은 이 키로 암호화됩니다."
+
+#: templates/keys/expired.html:2 templates/keys/expired.html:4
+msgid "This key cannot be used"
+msgstr "이 키는 사용할 수 없습니다"
+
+#: templates/keys/expired.html:2 templates/keys/expired.html:4
+msgid "This link does not work"
+msgstr "이 링크는 작동하지 않습니다"
+
+#: templates/keys/expired.html:6
+msgid "Upload a working key from your invoice page."
+msgstr "청구서 페이지에서 작동하는 키를 업로드하십시오."
+
+#: templates/keys/expired.html:7
+msgid ""
+"This link has expired. Upload the key again from your invoice page and we "
+"will send you a new one."
+msgstr "이 링크는 만료되었습니다. 청구서 페이지에서 키를 다시 업로드하시면 새 링크를 보내 드립니다."
+
+#: templates/keys/expired.html:8
+msgid "This link has already been used, or the key it confirms was withdrawn."
+msgstr "이미 사용된 링크이거나, 이 링크로 확인하려던 키가 철회되었습니다."
+
+#: templates/keys/expired.html:9
+msgid "This link is not valid. Check that you copied all of it."
+msgstr "유효하지 않은 링크입니다. 링크 전체를 복사했는지 확인하십시오."
+
+#: templates/keys/upload.html:2 templates/keys/upload.html:4
+#: templates/portal/invoice.html:7
+msgid "Receive encrypted e-mail"
+msgstr "암호화된 이메일 받기"
+
+#: templates/keys/upload.html:6
+msgid "Check your e-mail"
+msgstr "이메일을 확인하십시오"
+
+#: templates/keys/upload.html:9
+msgid ""
+"We sent a confirmation e-mail, encrypted to this key, to your address. Open "
+"it and follow the link inside to start using the key. Until then nothing "
+"changes. The link works for 7 days."
+msgstr ""
+"이 키로 암호화된 확인 이메일을 고객님의 주소로 보냈습니다. 이메일을 열고 그 안의 링크를 따라가시면 키 사용이 시작됩니다. 그때까지는 "
+"아무것도 바뀌지 않습니다. 링크는 7일 동안 유효합니다."
+
+#: templates/keys/upload.html:11
+msgid ""
+"Upload your PGP public key or S/MIME certificate. Our e-mails to you, "
+"invoices and receipts included, will then be encrypted to it."
+msgstr ""
+"PGP 공개 키 또는 S/MIME 인증서를 업로드하십시오. 그러면 청구서와 영수증을 포함하여 저희가 보내는 이메일이 이 키로 암호화됩니다."
+
+#: templates/keys/upload.html:12
+msgid ""
+"Upload only a public key or a certificate, never a private key or a .p12/."
+"pfx file."
+msgstr "공개 키나 인증서만 업로드하십시오. 개인 키나 .p12/.pfx 파일은 절대 업로드하지 마십시오."
+
+#: templates/keys/upload.html:15
+msgid "Paste the key"
+msgstr "키 붙여넣기"
+
+#: templates/keys/upload.html:17
+msgid "Or choose a file"
+msgstr "또는 파일 선택"
+
+#: templates/keys/upload.html:19
+msgid "Upload the key"
+msgstr "키 업로드"
+
+#: templates/keys/upload.html:22
+msgid "Back to the invoice"
+msgstr "청구서로 돌아가기"
+
+#: templates/pdf/_base.html:8 templates/portal/_summary.html:5
+msgid "Number"
+msgstr "번호"
+
+#: templates/pdf/_base.html:9 templates/portal/_summary.html:6
+msgid "Issue date"
+msgstr "발행일"
+
+#: templates/pdf/_base.html:11 templates/portal/_summary.html:7
+msgid "Due date"
+msgstr "결제 기한"
+
+#: templates/pdf/_base.html:12 templates/portal/_summary.html:8
+msgid "Due on receipt"
+msgstr "청구서 수령 즉시 결제"
+
+#: templates/pdf/_base.html:18 templates/portal/_summary.html:13
+msgid "From"
+msgstr "공급자"
+
+#: templates/pdf/_base.html:22 templates/portal/_summary.html:17
+msgid "Bill to"
+msgstr "청구 대상"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+msgid "Description"
+msgstr "설명"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+msgid "Qty"
+msgstr "수량"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+msgid "Unit price"
+msgstr "단가"
+
+#: templates/pdf/_base.html:29 templates/pdf/_base.html:37
+#: templates/portal/_summary.html:25 templates/portal/_summary.html:34
+msgid "Tax"
+msgstr "세금"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+#: templates/portal/pay.html:26 templates/portal/pay.html:31
+msgid "Amount"
+msgstr "금액"
+
+#: templates/pdf/_base.html:35 templates/portal/_summary.html:32
+msgid "Subtotal"
+msgstr "소계"
+
+#: templates/pdf/_base.html:36 templates/portal/_summary.html:33
+msgid "Discount"
+msgstr "할인"
+
+#: templates/pdf/_base.html:38 templates/portal/_summary.html:35
+msgid "Total"
+msgstr "합계"
+
+#: templates/pdf/_base.html:40 templates/portal/_summary.html:37
+msgid "Notes"
+msgstr "비고"
+
+#: templates/pdf/invoice.html:2 templates/portal/_summary.html:4
+#: templates/portal/invoice.html:2 templates/portal/pay.html:2
+msgid "Payment request"
+msgstr "결제 요청서"
+
+#: templates/pdf/invoice.html:2 templates/portal/_summary.html:4
+#: templates/portal/invoice.html:2 templates/portal/pay.html:2
+msgid "Invoice"
+msgstr "청구서"
+
+#: templates/pdf/invoice.html:4 templates/portal/pay.html:10
+msgid "Payment"
+msgstr "결제"
+
+#: templates/pdf/invoice.html:5 templates/pdf/receipt.html:8
+#: templates/portal/pay.html:12
+msgid "Payment reference"
+msgstr "결제 참조번호"
+
+#: templates/pdf/invoice.html:10 templates/portal/pay.html:18
+msgid "Beneficiary"
+msgstr "수취인"
+
+#: templates/pdf/invoice.html:11 templates/portal/pay.html:19
+msgid "Beneficiary address"
+msgstr "수취인 주소"
+
+#: templates/pdf/invoice.html:12 templates/pdf/invoice.html:16
+#: templates/portal/pay.html:20 templates/portal/pay.html:24
+msgid "Account"
+msgstr "계좌"
+
+#: templates/pdf/invoice.html:13 templates/portal/pay.html:21
+msgid "Bank"
+msgstr "은행"
+
+#: templates/pdf/invoice.html:14 templates/portal/pay.html:22
+msgid "Bank address"
+msgstr "은행 주소"
+
+#: templates/pdf/invoice.html:16 templates/portal/pay.html:24
+msgid "Intermediary bank"
+msgstr "중개 은행"
+
+#: templates/pdf/receipt.html:2
+msgid "Receipt"
+msgstr "영수증"
+
+#: templates/pdf/receipt.html:4
+msgid "PAID"
+msgstr "결제 완료"
+
+#: templates/pdf/receipt.html:5
+msgid "Paid on"
+msgstr "결제일"
+
+#: templates/portal/_quote.html:3
+#, python-format
+msgid "Pay %(asset)s on %(network_name)s"
+msgstr "%(network_name)s에서 %(asset)s로 결제"
+
+#: templates/portal/_quote.html:4
+msgid "Amount to send"
+msgstr "보낼 금액"
+
+#: templates/portal/_quote.html:6 templates/portal/_quote.html:9
+#: templates/portal/_quote.html:12
+msgid "Copied"
+msgstr "복사됨"
+
+#: templates/portal/_quote.html:6 templates/portal/_quote.html:9
+#: templates/portal/_quote.html:12
+msgid "Copy"
+msgstr "복사"
+
+#: templates/portal/_quote.html:7
+msgid "Address"
+msgstr "주소"
+
+#: templates/portal/_quote.html:10
+msgid "Lightning invoice"
+msgstr "라이트닝 청구서"
+
+#: templates/portal/_quote.html:13
+msgid "Open the payment page"
+msgstr "결제 페이지 열기"
+
+#: templates/portal/_quote.html:14
+msgid "QR code with the payment details"
+msgstr "결제 정보가 담긴 QR 코드"
+
+#: templates/portal/_quote.html:16
+#, python-format
+msgid ""
+"Send exactly this amount of %(asset)s on %(network_name)s. Another token or "
+"network cannot be matched automatically."
+msgstr ""
+"%(network_name)s에서 %(asset)s를 정확히 이 금액만큼 보내 주세요. 다른 토큰이"
+"나 다른 네트워크로 보내면 자동으로 확인할 수 없습니다."
+
+#: templates/portal/_quote.html:17
+msgid "Valid until"
+msgstr "유효 기한"
+
+#: templates/portal/_quote.html:17
+msgid "This amount has expired. Get a new one."
+msgstr "이 금액의 유효 기간이 만료되었습니다. 새 금액을 받아 주세요."
+
+#: templates/portal/_quote.html:21
+msgid "Get a new amount"
+msgstr "새 금액 받기"
+
+#: templates/portal/_quote.html:23
+msgid ""
+"After you have sent it, this page updates by itself. If it does not, use “I "
+"have paid” below."
+msgstr ""
+"송금하면 이 페이지가 자동으로 갱신됩니다. 갱신되지 않으면 아래의 '결제했습니"
+"다'를 사용해 주세요."
+
+#: templates/portal/_status.html:1 templates/portal/void.html:2
+#: templates/portal/void.html:4
+msgid "This payment request has been voided"
+msgstr "이 결제 요청은 무효 처리되었습니다"
+
+#: templates/portal/_status.html:1 templates/portal/void.html:2
+#: templates/portal/void.html:4
+msgid "This invoice has been voided"
+msgstr "이 청구서는 무효 처리되었습니다"
+
+#: templates/portal/_status.html:2
+msgid "Payment received, our staff are checking it"
+msgstr "결제가 접수되어 담당자가 확인 중입니다"
+
+#: templates/portal/_status.html:3
+msgid "Payment seen, waiting for confirmation"
+msgstr "결제가 감지되었으며 확인을 기다리는 중입니다"
+
+#: templates/portal/_status.html:4
+msgid "We have been told that you have paid. We are checking the payment."
+msgstr "결제하셨다는 연락을 받았습니다. 결제를 확인하고 있습니다."
+
+#: templates/portal/_status.html:5
+msgid "Partially paid. Please pay the remaining amount."
+msgstr "일부 결제되었습니다. 남은 금액을 결제해 주십시오."
+
+#: templates/portal/_status.html:6
+msgid "Paid. Thank you."
+msgstr "결제 완료. 감사합니다."
+
+#: templates/portal/_status.html:7
+msgid "Overdue. Please pay as soon as possible."
+msgstr "기한이 지났습니다. 가능한 한 빨리 결제해 주십시오."
+
+#: templates/portal/_status.html:8
+msgid "Awaiting payment"
+msgstr "결제 대기 중"
+
+#: templates/portal/invoice.html:6
+msgid "Download PDF"
+msgstr "PDF 다운로드"
+
+#: templates/portal/pay.html:11
+msgid "Amount to pay"
+msgstr "결제할 금액"
+
+#: templates/portal/pay.html:13
+msgid "Please quote this reference in the payment."
+msgstr "결제 시 이 참조 번호를 기재해 주십시오."
+
+#: templates/portal/pay.html:17
+msgid "Bank transfer"
+msgstr "계좌 이체"
+
+#: templates/portal/pay.html:27
+msgid ""
+"When you send the transfer, choose OUR as the bank charges option, so that "
+"the full amount arrives."
+msgstr "이체 시 전액이 도착하도록 수수료 옵션은 OUR로 선택해 주십시오."
+
+#: templates/portal/pay.html:30
+msgid "Online payment"
+msgstr "온라인 결제"
+
+#: templates/portal/pay.html:32
+msgid "Open payment link"
+msgstr "결제 링크 열기"
+
+#: templates/portal/pay.html:40
+msgid "Pay with crypto"
+msgstr "암호화폐로 결제"
+
+#: templates/portal/pay.html:41
+msgid ""
+"Choose a network and a token. You get the exact amount to send, and it is "
+"checked automatically."
+msgstr ""
+"네트워크와 토큰을 선택하세요. 보낼 정확한 금액이 표시되고 결제는 자동으로 확"
+"인됩니다."
+
+#: templates/portal/pay.html:55 templates/portal/pay.html:62
+msgid "I have paid"
+msgstr "결제했습니다"
+
+#: templates/portal/pay.html:56
+msgid ""
+"Once you have paid, let us know. You may add the transaction number and a "
+"note."
+msgstr "결제하신 후 알려 주십시오. 거래 번호와 메모를 추가하실 수 있습니다."
+
+#: templates/portal/pay.html:57
+msgid "Please correct the errors below."
+msgstr "아래의 오류를 수정해 주십시오."
+
+#: templates/portal/too_many.html:2 templates/portal/too_many.html:4
+msgid "Too many requests"
+msgstr "요청이 너무 많습니다"
+
+#: templates/portal/too_many.html:5
+msgid "Please wait a minute and try again."
+msgstr "1분 후에 다시 시도해 주십시오."
+
+#: templates/portal/void.html:5
+msgid "Please do not pay it. Contact the sender if you have any questions."
+msgstr "결제하지 마십시오. 문의 사항은 발행인에게 연락해 주십시오."
+
+#: templates/vault/unavailable.html:3 templates/vault/unavailable.html:5
+msgid "Temporarily unavailable"
+msgstr "일시적으로 이용할 수 없습니다"
+
+#: templates/vault/unavailable.html:6
+msgid "Please try again in a few minutes."
+msgstr "몇 분 후에 다시 시도해 주십시오."
+
+#: templates/vault/unlock.html:3 templates/vault/unlock.html:10
+msgid "Unlock"
+msgstr "잠금 해제"
+
+#: templates/vault/unlock.html:6
+msgid "The vault is unsealed."
+msgstr "보관함이 잠금 해제되었습니다."
+
+#: templates/vault/unlock.html:7
+msgid "Wrong password."
+msgstr "비밀번호가 올바르지 않습니다."
+
+#: templates/vault/unlock.html:9
+msgid "Password"
+msgstr "비밀번호"
+
+#: apps/portal/views.py:277
+msgid ""
+"We already have your notice of payment and are checking it. You do not need "
+"to send it again."
+msgstr "결제 알림을 이미 받았으며 확인하고 있습니다. 다시 보내실 필요는 없습니다."
+
+#: apps/notify/services.py:37
+#, python-format
+msgid "New encryption key for your e-mail from %(org)s"
+msgstr "%(org)s 이메일용 새 암호화 키"
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:3
+#, python-format
+msgid "Someone uploaded a new encryption key for your e-mail address. Once it is confirmed, %(org)s will encrypt its e-mails to you with that key instead of your current one, the key this message is encrypted to."
+msgstr "누군가 고객님의 이메일 주소에 대한 새 암호화 키를 업로드했습니다. 이 키가 확인되면 %(org)s에서 보내는 이메일은 현재 키, 즉 이 메시지를 암호화한 키 대신 새 키로 암호화됩니다."
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:5
+#, python-format
+msgid "Fingerprint of the new key: %(fingerprint)s"
+msgstr "새 키의 지문: %(fingerprint)s"
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:7
+msgid "If you uploaded it yourself, there is nothing to do here."
+msgstr "직접 업로드하셨다면 아무것도 하실 필요가 없습니다."
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:9
+msgid "If you did not, open this link and cancel the new key there. It is refused, and your current key stays in use:"
+msgstr "그렇지 않다면 이 링크를 열어 새 키를 취소하십시오. 새 키는 거부되고 현재 키가 계속 사용됩니다:"
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:12
+msgid "The link works for 7 days."
+msgstr "링크는 7일 동안 유효합니다."
+
+#: templates/keys/cancel.html:2 templates/keys/cancel.html:4
+msgid "Cancel the new encryption key"
+msgstr "새 암호화 키 취소"
+
+#: templates/keys/cancel.html:7
+msgid "Someone uploaded this key for your e-mail address. If it was not you, cancel it here: it is refused, and our e-mails to you stay encrypted to your current key."
+msgstr "누군가 고객님의 이메일 주소에 대해 이 키를 업로드했습니다. 본인이 아니라면 여기에서 취소하십시오. 이 키는 거부되고 저희 이메일은 계속 현재 키로 암호화됩니다."
+
+#: templates/keys/cancel.html:9
+msgid "Cancel the new key"
+msgstr "새 키 취소"
+
+#: templates/keys/cancel.html:11
+msgid "If you uploaded this key yourself, close this page: nothing changes."
+msgstr "이 키를 직접 업로드하셨다면 이 페이지를 닫으십시오. 아무것도 바뀌지 않습니다."
+
+#: templates/keys/cancelled.html:2 templates/keys/cancelled.html:4
+msgid "The new key was cancelled"
+msgstr "새 키가 취소되었습니다"
+
+#: templates/keys/cancelled.html:5
+msgid "The new key was refused and will not be used."
+msgstr "새 키는 거부되었으며 사용되지 않습니다."
+
+#: templates/keys/cancelled.html:5
+msgid "Our e-mails to you stay encrypted to your current key."
+msgstr "저희 이메일은 계속 현재 키로 암호화됩니다."
+
+#: templates/keys/cancel_unusable.html:5
+msgid "This link has expired. If a key you did not upload is in use, write to us and we will remove it."
+msgstr "이 링크는 만료되었습니다. 업로드하지 않은 키가 사용되고 있다면 저희에게 알려 주십시오. 해당 키를 삭제해 드리겠습니다."
+
+#: templates/keys/cancel_unusable.html:6
+msgid "This link has already been used: the new key was cancelled."
+msgstr "이 링크는 이미 사용되었습니다. 새 키가 취소되었습니다."
+
+#: templates/keys/cancel_refused.html:2 templates/keys/cancel_refused.html:4
+msgid "The new key could not be cancelled"
+msgstr "새 키를 취소할 수 없습니다"
+
+#: templates/keys/cancel_refused.html:5
+msgid "Your previous key can no longer be used, so cancelling the new key would leave our e-mails to you unencrypted. The new key stays in use for now, and our staff have been told. Please write to us."
+msgstr "이전 키를 더 이상 사용할 수 없으므로 새 키를 취소하면 저희 이메일이 암호화되지 않은 채 전송됩니다. 따라서 새 키는 당분간 계속 사용되며, 담당 직원에게 이 사실을 알렸습니다. 저희에게 연락해 주십시오."
+
+#: templates/ui/_theme_switch.html
+msgid "Theme"
+msgstr "테마"
+
+#: templates/ui/_theme_switch.html
+msgid "Same as this device"
+msgstr "이 기기 설정에 따름"
+
+#: templates/ui/_theme_switch.html
+msgid "Light"
+msgstr "밝게"
+
+#: templates/ui/_theme_switch.html
+msgid "Dim"
+msgstr "중간 밝기"
+
+#: templates/ui/_theme_switch.html
+msgid "Dark"
+msgstr "어둡게"
+
+#: apps/portal/forms.py
+msgid "Choose a network"
+msgstr "네트워크 선택"
+
+#: templates/portal/_quote.html
+msgid "Open in wallet"
+msgstr "지갑에서 열기"
+
+#: templates/keys/upload.html
+msgid "Choose a file"
+msgstr "파일 선택"
+
+#: templates/keys/upload.html
+msgid "No file chosen"
+msgstr "선택한 파일 없음"
+
+#: templates/portal/pay.html
+msgid "Keep this page."
+msgstr "이 페이지를 보관하세요."
+
+#: templates/portal/pay.html
+msgid "Bookmark it or copy its address to come back to it. We e-mail you only once your payment has arrived."
+msgstr "다시 돌아오려면 북마크하거나 주소를 복사해 두세요. 결제가 도착한 뒤에만 이메일을 보내 드립니다."
+
+#: templates/links/unavailable.html
+msgid "This payment link is no longer available."
+msgstr "이 결제 링크는 더 이상 사용할 수 없습니다."
+
+#: templates/links/unavailable.html
+msgid "Contact the seller if you have any questions."
+msgstr "궁금한 점이 있으면 판매자에게 문의하세요."
+
+#: templates/links/_field.html
+msgid "optional"
+msgstr "선택"
+
+#: templates/links/page.html
+msgid "Price"
+msgstr "가격"
+
+#: templates/links/page.html
+msgid "You choose the amount to pay."
+msgstr "결제할 금액을 직접 정합니다."
+
+#: templates/links/page.html
+msgid "Your details"
+msgstr "구매자 정보"
+
+#: templates/links/page.html
+msgid "We ask every buyer: the answer decides which of our companies bills you."
+msgstr "모든 구매자에게 묻습니다. 답변에 따라 어느 회사가 청구할지 정해집니다."
+
+#: templates/links/page.html
+msgid "Continue to payment"
+msgstr "결제 계속하기"
+
+#: templates/links/page.html
+msgid "Next you choose how to pay. Nothing is charged before you pay."
+msgstr "다음 단계에서 결제 방법을 고릅니다. 결제하기 전에는 아무것도 청구되지 않습니다."
+
+#: templates/links/page.html
+#, python-format
+msgid "Plus %(tax)s tax."
+msgstr "세금 %(tax)s 별도."
+
+#: apps/links/forms.py
+msgid "Address line 1"
+msgstr "주소 1"
+
+#: apps/links/forms.py
+msgid "Address line 2"
+msgstr "주소 2"
+
+#: apps/links/forms.py
+msgid "City"
+msgstr "도시"
+
+#: apps/links/forms.py
+msgid "Postal code"
+msgstr "우편번호"
+
+#: apps/links/forms.py
+msgid "State or region"
+msgstr "주 또는 지역"
+
+#: apps/links/forms.py
+msgid "Country"
+msgstr "국가"
+
+#: apps/links/forms.py
+msgid "E-mail address"
+msgstr "이메일 주소"
+
+#: apps/links/forms.py
+msgid "Are you a US tax resident?"
+msgstr "미국 세법상 거주자입니까?"
+
+#: apps/links/forms.py
+msgid "Yes, I am"
+msgstr "예, 그렇습니다"
+
+#: apps/links/forms.py
+msgid "No, I am not"
+msgstr "아니요, 아닙니다"
+
+#: apps/links/forms.py
+msgid "Coupon code"
+msgstr "쿠폰 코드"
+
+#: apps/links/forms.py
+#, python-format
+msgid "Amount (%(currency)s)"
+msgstr "금액 (%(currency)s)"
+
+#: apps/links/forms.py
+msgid "Quantity"
+msgstr "수량"
+
+#: apps/links/forms.py
+msgid "Full name"
+msgstr "이름"
+
+#: apps/links/forms.py
+msgid "Billing address"
+msgstr "청구지 주소"
+
+#: apps/links/forms.py
+msgid "Shipping address"
+msgstr "배송지 주소"
+
+#: apps/links/forms.py
+msgid "Phone"
+msgstr "전화번호"
+
+#: apps/links/forms.py
+#, python-format
+msgid "Between %(min)s and %(max)s."
+msgstr "%(min)s에서 %(max)s 사이."
+
+#: apps/links/forms.py
+#, python-format
+msgid "At least %(min)s."
+msgstr "최소 %(min)s."
+
+#: apps/links/forms.py
+#, python-format
+msgid "At most %(max)s."
+msgstr "최대 %(max)s."
+
+#: apps/links/forms.py
+#, python-format
+msgid "Choose a quantity from 1 to %(max)s."
+msgstr "수량을 1에서 %(max)s 사이로 고르세요."
+
+#: apps/links/forms.py
+msgid "Enter the amount as a plain number, such as 12.50."
+msgstr "금액을 12.50처럼 숫자로만 입력하세요."
+
+#: apps/links/forms.py
+#, python-format
+msgid "The amount must be at least %(min)s."
+msgstr "금액은 %(min)s 이상이어야 합니다."
+
+#: apps/links/forms.py
+msgid "The amount must be greater than zero."
+msgstr "금액은 0보다 커야 합니다."
+
+#: apps/links/forms.py
+#, python-format
+msgid "The amount may be at most %(max)s."
+msgstr "금액은 최대 %(max)s입니다."
+
+#: apps/links/forms.py
+msgid "This code is not valid."
+msgstr "유효하지 않은 코드입니다."
+
+#: apps/links/forms.py
+msgid "This code has been used up."
+msgstr "사용 한도가 끝난 코드입니다."
+
+#: apps/links/views.py
+msgid "This payment link cannot be paid right now."
+msgstr "지금은 이 결제 링크로 결제할 수 없습니다."
+
+#: apps/links/views.py
+msgid "This order cannot be placed. Check the details and try again."
+msgstr "주문을 만들 수 없습니다. 입력 내용을 확인하고 다시 시도하세요."
+
+#: apps/notify/services.py
+#, python-format
+msgid "Order %(ref)s was paid through a payment link"
+msgstr "주문 %(ref)s이(가) 결제 링크로 결제되었습니다"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:1 templates/email/partial.html:4 templates/email/partial.txt:1 templates/email/receipt.html:4 templates/email/receipt.txt:1
+msgid "Hello,"
+msgstr "안녕하세요."
+
+#: templates/portal/_back.html:1
+#, python-format
+msgid "Back to %(host)s"
+msgstr "%(host)s(으)로 돌아가기"
+
+#: templates/portal/_quote.html templates/portal/pay.html
+msgid "A person confirms Monero and Zcash payments. This may take a while during European night hours."
+msgstr "Monero와 Zcash 결제는 담당자가 직접 확인합니다. 유럽의 야간 시간대에는 시간이 다소 걸릴 수 있습니다."
+
+#: apps/notify/services.py
+#, python-format
+msgid "Staff change: %(ref)s"
+msgstr "직원 변경: %(ref)s"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "A change that needs a superuser and a recent second factor was made on the staff pages."
+msgstr "직원 페이지에서 슈퍼유저와 최근 2단계 인증이 필요한 변경이 이루어졌습니다."
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "Who:"
+msgstr "누가:"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "What:"
+msgstr "무엇을:"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "When:"
+msgstr "언제:"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "If you did not expect it, check it on the staff page and in the audit log:"
+msgstr "예상하지 못한 변경이라면 직원 페이지와 감사 로그에서 확인하세요:"
+
+#, python-format
+msgid "Reminder: invoice %(ref)s from %(org)s"
+msgstr "결제 안내: %(org)s의 청구서 %(ref)s"
+
+#, python-format
+msgid "This is a friendly reminder that the payment request %(ref)s from %(org)s is still open."
+msgstr "%(org)s에서 보낸 결제 요청 %(ref)s이(가) 아직 처리되지 않았음을 알려 드립니다."
+
+#, python-format
+msgid "This is a friendly reminder that invoice %(ref)s from %(org)s is still open."
+msgstr "%(org)s에서 보낸 청구서 %(ref)s이(가) 아직 결제되지 않았음을 알려 드립니다."
+
+#, python-format
+msgid "Amount still due: %(total)s"
+msgstr "남은 결제 금액: %(total)s"
+
+msgid "If you have already paid, please ignore this message."
+msgstr "이미 결제하셨다면 이 메시지는 무시해 주세요."
+
+#, python-format
+msgid "Reminder: payment request %(ref)s from %(org)s"
+msgstr "결제 안내: %(org)s의 결제 요청 %(ref)s"

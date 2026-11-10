@@ -1,0 +1,5 @@
+{"id": "Xg3SvYtDbiPfbCpJgYdbPv", "storeId": "ST0RE1", "amount": "100.00", "currency": "EUR",
+ "type": "Standard", "checkoutLink": "https://btcpay.example/i/Xg3SvYtDbiPfbCpJgYdbPv",
+ "createdTime": 1762084800, "expirationTime": 1762086600, "monitoringTime": 1762091400,
+ "status": "New", "additionalStatus": "None", "availableStatusesForManualMarking": ["Settled", "Invalid"],
+ "archived": false, "metadata": {"orderId": "inv7"}}

@@ -1,0 +1,19 @@
+{% extends "staff/base.html" %}{% load ui %}
+{% block title %}Invoices{% endblock %}
+{% block content %}
+<header class="page-head">
+<div class="page-head__text"><h1>Invoices</h1></div>
+<div class="page-head__actions"><a class="btn btn--primary" href="{% url 'staff:invoice_new' %}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>New invoice</a></div>
+</header>
+<nav class="status-tabs" aria-label="Status">{% for t in status_tabs %}<a href="{{ t.url }}"{% if t.current %} aria-current="page"{% endif %}>{{ t.label }} <span class="count{% if t.current %} count--current{% endif %}">{{ t.count }}</span></a>{% endfor %}</nav>
+<form method="get" class="filters" role="search">
+{% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+<label class="filters__field"><span class="sr-only">Organization</span><select name="organization" aria-label="Organization"><option value="">Every organization</option>{% for pk, name in organizations %}<option value="{{ pk }}"{% if pk|stringformat:"s" == org %} selected{% endif %}>{{ name }}</option>{% endfor %}</select></label>
+<label class="filters__field filters__field--grow"><span class="sr-only">Number or external reference</span><input name="q" value="{{ q }}" placeholder="Number or external reference" aria-label="Number or external reference" type="search"></label>
+<button type="submit" class="btn">Search</button>
+</form>
+{% if invoices %}<div class="card table-card"><div class="table-wrap table-wrap--long"><table class="table--rows">
+<thead><tr><th>Number</th><th>Status</th><th class="num">Total</th><th>Contact</th><th>Organization</th><th>Type</th><th>Issued</th></tr></thead><tbody>
+{% for i in invoices %}<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:invoice' pk=i.pk %}">{% invoice_ref i.number i.pk %}</a></td><td class="cell-status">{% pill i.status %}</td><td class="num cell-amount" data-label="Total">{{ i.total_text }}</td><td data-label="Contact">{{ i.contact_name }}</td><td data-label="Organization">{{ i.org_name }}</td><td class="muted" data-label="Type">{% if i.kind == "payment_request" %}Payment request{% else %}Invoice{% endif %}</td><td class="nowrap muted" data-label="Issued">{{ i.issue_date|date:"Y-m-d" }}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=invoices %}{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-invoice"/></svg><p>No invoices match.</p>{% if status or org or q %}<a href="{% url 'staff:invoice_list' %}">Show every invoice</a>{% else %}<a href="{% url 'staff:invoice_new' %}">Create the first invoice</a>{% endif %}</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "Receive encrypted e-mail" %}{% endblock %}
+{% block content %}
+<div class="narrow-col">
+<a class="back-link" href="{% url 'portal:invoice' token=token %}{{ lang_query }}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>{% translate "Back to the invoice" %}</a>
+<div class="card"><div class="card-body narrow-card__body">
+<div class="card-icon" aria-hidden="true"><svg class="icon"><use href="#i-key"/></svg></div>
+<h1>{% translate "Receive encrypted e-mail" %}</h1>
+{% if uploaded %}
+<h2>{% translate "Check your e-mail" %}</h2>
+<div class="fingerprint"><span class="label">{% translate "Fingerprint" %}</span><span class="mono">{{ fingerprint }}</span></div>
+<p>{% translate "We sent a confirmation e-mail, encrypted to this key, to your address. Open it and follow the link inside to start using the key. Until then nothing changes. The link works for 7 days." %}</p>
+{% else %}
+<p>{% translate "Upload your PGP public key or S/MIME certificate. Our e-mails to you, invoices and receipts included, will then be encrypted to it." %}</p>
+<p class="hint">{% translate "Upload only a public key or a certificate, never a private key or a .p12/.pfx file." %}</p>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+<form method="post" enctype="multipart/form-data" action="{% url 'keys:upload' token=token %}{{ lang_query }}" class="form-stack">{% csrf_token %}
+<div class="field"><label for="key">{% translate "Paste the key" %}</label>
+<textarea id="key" name="key" rows="10" spellcheck="false" autocomplete="off" class="mono"></textarea></div>
+<div class="field"><label for="key_file">{% translate "Or choose a file" %}</label>
+{% translate "Choose a file" as choose %}{% translate "No file chosen" as nothing %}{% include "ui/_file_pick.html" with input_id="key_file" input_name="key_file" accept=".asc,.gpg,.pgp,.pem,.crt,.cer,.der" choose_label=choose empty_label=nothing %}</div>
+<div class="form-actions"><button type="submit" class="btn btn--primary">{% translate "Upload the key" %}</button></div>
+</form>
+{% endif %}
+</div></div>
+</div>
+{% endblock %}

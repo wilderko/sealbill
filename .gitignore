@@ -1,0 +1,11 @@
+.env
+*.sqlite3
+media/
+staticfiles/
+/vault/
+.venv/
+__pycache__/
+*.pyc
+.impeccable/review/
+# Migration exports (client data): keep them out of the repository
+/*.ndjson

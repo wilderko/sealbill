@@ -1,0 +1,46 @@
+[Unit]
+Description=pay-invoicing web (gunicorn on the socket of pay-web.socket)
+# The socket (/run/pay-invoicing-web/gunicorn.sock, payinv:www-data 0660) is created by pay-web.socket
+# and inherited by gunicorn. It stays in place while this unit restarts: Apache's requests wait.
+Requires=pay-web.socket
+# On Debian and Ubuntu the server runs as postgresql@18-main.service; postgresql.service is the
+# umbrella unit, ordered after every instance, so waiting for it waits for the database.
+After=network.target postgresql.service pay-web.socket
+Wants=postgresql.service
+
+[Service]
+User=payinv
+Group=payinv
+UMask=0077
+WorkingDirectory=/srv/sealbill/app
+EnvironmentFile=/etc/sealbill/env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.production
+Environment=VAULT_KEY_PATH=/run/pay-invoicing/vault.key
+Environment=GPG_TMP_DIR=/run/pay-invoicing/gpg
+Environment=MEDIA_ROOT=/srv/sealbill/media
+Environment=STATIC_ROOT=/run/pay-invoicing/static
+# fontconfig (PDF rendering) keeps its cache here: the home directory is read-only to the service.
+Environment=XDG_CACHE_HOME=/run/pay-invoicing/cache
+# /run/pay-invoicing is tmpfs, shared with pay-worker.service. It is kept across restarts of
+# either unit, so the vault stays unsealed after a reload. The gpg subdirectory is created
+# lazily (0700) by the application on first use.
+RuntimeDirectory=pay-invoicing
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/srv/sealbill/media /srv/sealbill/vault
+ExecStartPre=/srv/sealbill/app/.venv/bin/python manage.py migrate --noinput
+ExecStartPre=/srv/sealbill/app/.venv/bin/python manage.py createcachetable
+ExecStartPre=/srv/sealbill/app/.venv/bin/python manage.py collectstatic --noinput
+# No --bind: gunicorn listens on the socket systemd passes it (LISTEN_FDS). No control socket: its
+# default place ($HOME/.gunicorn) is read-only here, and nothing uses gunicornc.
+ExecStart=/srv/sealbill/app/.venv/bin/gunicorn config.wsgi:application --workers 3 --timeout 30 --no-control-socket
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

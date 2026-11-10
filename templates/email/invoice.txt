@@ -1,0 +1,21 @@
+{% load i18n %}{% autoescape off %}{% if name %}{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}{% else %}{% translate "Hello," %}{% endif %}
+
+{% if is_request %}{% blocktranslate %}{{ org }} has sent you a payment request ({{ ref }}).{% endblocktranslate %}
+{% else %}{% blocktranslate %}{{ org }} has sent you invoice {{ ref }}.{% endblocktranslate %}
+{% endif %}
+{% if message %}{{ message }}
+{% endif %}
+{% blocktranslate %}Amount due: {{ total }}{% endblocktranslate %}
+
+{% if due %}{% blocktranslate %}Due date: {{ due }}{% endblocktranslate %}
+{% endif %}
+{% translate "Pay online:" %}
+{{ pay_url }}
+
+{% translate "View the invoice online:" %}
+{{ view_url }}
+
+{% if pdf_attached %}{% if is_request %}{% blocktranslate %}The payment request is attached as a PDF.{% endblocktranslate %}{% else %}{% blocktranslate %}The invoice is attached as a PDF.{% endblocktranslate %}{% endif %}
+{% else %}{% blocktranslate %}The PDF could not be attached to this e-mail. You can download it from the invoice page.{% endblocktranslate %}
+{% endif %}
+{{ org }}{% endautoescape %}

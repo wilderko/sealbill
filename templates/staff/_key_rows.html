@@ -1,0 +1,7 @@
+{% load ui %}<table>
+<thead><tr><th>Key</th><th>State</th><th>Kind</th><th>Fingerprint</th><th>Why</th><th>Source</th><th>Expires</th><th>Added</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for k in rows %}<tr><td>#{{ k.pk }}</td><td class="cell-status">{% pill k.state %}</td><td data-label="Kind">{{ k.get_kind_display }}</td><td class="mono" data-label="Fingerprint">{{ k.fingerprint_text }}</td>
+<td data-label="Why">{% if k.state == "failed" %}{{ k.last_error_kind|default:"?" }}{% if k.failed_while %}, while {{ k.failed_while }}{% endif %}{% else %}-{% endif %}</td>
+<td data-label="Source">{{ k.source }}</td><td class="nowrap" data-label="Expires">{{ k.expires_at|date:"Y-m-d"|default:"never" }}</td><td class="nowrap" data-label="Added">{{ k.created_at|date:"Y-m-d H:i" }}</td>
+<td class="actions-cell">{% if k.state == "active" or k.state == "pending" or k.state == "failed" %}<form method="post" action="{% url 'staff:revoke_key' pk=k.pk %}" class="row-form" data-confirm="Revoke this encryption key? Letters to this contact will no longer be encrypted to it.">{% csrf_token %}<button type="submit" class="btn btn--sm btn--danger-outline">Revoke</button></form>{% endif %}</td></tr>{% endfor %}
+</tbody></table>

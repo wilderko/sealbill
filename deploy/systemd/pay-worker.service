@@ -1,0 +1,34 @@
+[Unit]
+Description=pay-invoicing worker (e-mail, webhooks, chain watchers)
+# postgresql.service: the umbrella unit of postgresql@18-main.service on Debian and Ubuntu.
+After=network.target postgresql.service pay-web.service
+Wants=postgresql.service
+
+[Service]
+User=payinv
+Group=payinv
+UMask=0077
+WorkingDirectory=/srv/sealbill/app
+EnvironmentFile=/etc/sealbill/env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.production
+Environment=VAULT_KEY_PATH=/run/pay-invoicing/vault.key
+Environment=GPG_TMP_DIR=/run/pay-invoicing/gpg
+Environment=MEDIA_ROOT=/srv/sealbill/media
+# fontconfig (PDFs attached to e-mail) keeps its cache here: the home directory is read-only.
+Environment=XDG_CACHE_HOME=/run/pay-invoicing/cache
+# Same RuntimeDirectory name as pay-web.service: one directory, shared, preserved.
+RuntimeDirectory=pay-invoicing
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/srv/sealbill/media /srv/sealbill/vault
+ExecStart=/srv/sealbill/app/.venv/bin/python manage.py run_worker
+Restart=always
+RestartSec=3
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

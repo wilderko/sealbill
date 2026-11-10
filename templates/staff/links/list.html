@@ -1,0 +1,20 @@
+{% extends "staff/base.html" %}
+{% block title %}Payment links{% endblock %}
+{% block content %}
+<header class="page-head">
+<div class="page-head__text"><h1>Payment links</h1>
+<p class="page-head__meta">One page for a service at a set price, paid by many people. Each checkout makes an order: an invoice or a payment request, sent at once, with no e-mail before payment.</p></div>
+<div class="page-head__actions"><a class="btn btn--primary" href="{% url 'staff:link_new' %}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>New payment link</a></div>
+</header>
+{% if links %}<div class="card table-card"><div class="table-wrap table-wrap--long"><table class="table--rows">
+<thead><tr><th>Link</th><th class="num">Price</th><th class="num">Orders</th><th class="num">Paid</th><th>To fulfil</th><th>State</th><th>Organization</th></tr></thead><tbody>
+{% for l in links %}<tr class="row-link"><td><a class="strong-link" href="{% url 'staff:link_detail' pk=l.pk %}">{{ l.title_text }}</a></td>
+<td class="num cell-amount" data-label="Price">{{ l.price_text }}</td>
+<td class="num" data-label="Orders">{{ l.orders_total }}</td>
+<td class="num" data-label="Paid">{{ l.orders_paid }}</td>
+<td data-label="To fulfil">{% if l.to_fulfil %}<span class="pill pill--attention">{{ l.to_fulfil }} to fulfil</span>{% elif l.fulfillment %}<span class="muted">Nothing</span>{% else %}<span class="muted">Off</span>{% endif %}</td>
+<td data-label="State">{% if l.status_text == "Active" %}{{ l.status_text }}{% else %}<span class="muted">{{ l.status_text }}</span>{% endif %}</td>
+<td class="muted" data-label="Organization">{{ l.org_name }}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=links %}
+{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-link"/></svg><p>No payment links yet.</p><a href="{% url 'staff:link_new' %}">Create the first payment link</a></div>{% endif %}
+{% endblock %}

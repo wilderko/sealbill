@@ -1,0 +1,33 @@
+{% load i18n %}{% if error %}<p class="error" role="alert">{{ error }}</p>
+{% else %}<div class="quote">
+<h3 class="quote-title">{% blocktranslate %}Pay {{ asset }} on {{ network_name }}{% endblocktranslate %}</h3>
+<div class="copy-field copy-field--amount"><span class="copy-field__label">{% translate "Amount to send" %}</span>
+<span class="copy-field__value quote-amount">{{ amount }} {{ asset }}</span>
+<button type="button" class="btn btn--sm copy-btn" data-copy="{{ amount }}" data-done="{% translate 'Copied' %}"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>{% translate "Copy" %}</span></button></div>
+<div class="quote-body">
+<div class="quote-fields">
+{% if quote.address %}<div class="copy-field"><span class="copy-field__label">{% translate "Address" %}</span>
+<span class="copy-field__value mono">{{ quote.address }}</span>
+<button type="button" class="btn btn--sm copy-btn" data-copy="{{ quote.address }}" data-done="{% translate 'Copied' %}"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>{% translate "Copy" %}</span></button></div>{% endif %}
+{% if quote.bolt11 %}<div class="copy-field"><span class="copy-field__label">{% translate "Lightning invoice" %}</span>
+<span class="copy-field__value mono copy-field__value--long">{{ quote.bolt11 }}</span>
+<button type="button" class="btn btn--sm copy-btn" data-copy="{{ quote.bolt11 }}" data-done="{% translate 'Copied' %}"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>{% translate "Copy" %}</span></button></div>{% endif %}
+{% if wallet_link %}<p><a class="btn btn--sm quote-wallet" href="{{ wallet_link }}">{% translate "Open in wallet" %}<svg class="icon" aria-hidden="true"><use href="#i-external"/></svg></a></p>{% endif %}
+{% if checkout_link %}<p><a class="btn btn--primary" href="{{ checkout_link }}" rel="noopener noreferrer">{% translate "Open the payment page" %}<svg class="icon" aria-hidden="true"><use href="#i-external"/></svg></a></p>{% endif %}
+</div>
+{% if qr %}<figure class="quote-qr"><img class="qr" src="{{ qr }}" width="220" height="220" alt="{% translate 'QR code with the payment details' %}"></figure>{% endif %}
+</div>
+<p class="warning"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><strong>{% blocktranslate %}Send exactly this amount of {{ asset }} on {{ network_name }}. Another token or network cannot be matched automatically.{% endblocktranslate %}</strong></p>
+<div class="validity">
+<p class="validity__text">{% translate "Valid until" %} <time datetime="{{ expires_iso }}" data-expires="{{ expires_iso }}" data-expired="{% translate 'This amount has expired. Get a new one.' %}">{{ expires_at|date:"DATE_FORMAT" }} {{ expires_at|time:"H:i" }} UTC</time>
+<span class="countdown" data-countdown></span></p>
+{% if valid_total_s %}<progress class="validity__bar" max="{{ valid_total_s }}" value="{{ valid_left_s }}" data-validity aria-hidden="true"></progress>{% endif %}
+</div>
+<div class="quote-foot">
+<form method="post" action="{% url 'portal:quote' token=token %}{{ lang_query }}" hx-post="{% url 'portal:quote' token=token %}{{ lang_query }}" hx-target="#quote" hx-swap="innerHTML">{% csrf_token %}
+<input type="hidden" name="method" value="{{ quote.rail_account.method_key }}"><input type="hidden" name="network" value="{{ quote.network }}"><input type="hidden" name="asset" value="{{ quote.asset }}"><input type="hidden" name="refresh" value="1">
+<button type="submit" class="btn btn--sm"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>{% translate "Get a new amount" %}</button>
+</form>
+<p class="hint">{% translate "After you have sent it, this page updates by itself. If it does not, use “I have paid” below." %}</p>
+</div>
+</div>{% endif %}

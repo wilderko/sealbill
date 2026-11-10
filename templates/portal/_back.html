@@ -1,0 +1,1 @@
+{% load i18n %}{% if back_link %}<p class="back-to"><a class="{% if back_link.settled %}btn btn--primary {% endif %}back-link" href="{{ back_link.url }}" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>{% blocktranslate with host=back_link.host %}Back to {{ host }}{% endblocktranslate %}</a></p>{% endif %}

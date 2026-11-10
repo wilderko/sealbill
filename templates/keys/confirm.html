@@ -1,0 +1,15 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "Confirm your encryption key" %}{% endblock %}
+{% block content %}
+<div class="card narrow-card"><div class="card-body">
+<div class="card-icon" aria-hidden="true"><svg class="icon"><use href="#i-key"/></svg></div>
+<h1>{% translate "Confirm your encryption key" %}</h1>
+<div class="fingerprint"><span class="label">{% translate "Fingerprint" %}</span><span class="mono">{{ fingerprint }}</span></div>
+<p>{% translate "Press Confirm and our e-mails to you will be encrypted to this key from now on." %}</p>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+<form method="post" action="{% url 'keys:confirm' token=token %}{{ lang_query }}">{% csrf_token %}
+<p><button type="submit" class="btn btn--primary">{% translate "Confirm" %}</button></p>
+</form>
+<p class="hint">{% translate "If you did not ask for this, close this page: nothing changes." %}</p>
+</div></div>
+{% endblock %}

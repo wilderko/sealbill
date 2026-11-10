@@ -1,0 +1,252 @@
+{% extends "staff/base.html" %}{% load ui %}
+{% block title %}Needs a person{% endblock %}
+{% block content %}
+<header class="page-head">
+<div class="page-head__text">
+<h1>Needs a person</h1>
+{% if open_count %}<p class="page-head__meta"><span class="pill pill--attention">{{ open_count }} open</span></p>{% endif %}
+</div>
+</header>
+{% include "ui/_messages.html" %}
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+{% comment %}
+Each queue stands as its own section only while it holds rows. An empty queue is folded into the
+"all clear" line at the end, which names it with the sentence that says what is fine. The two lists
+name the same queues: a queue added to one belongs in the other.
+
+Rows: the first cell and the cells marked cell-status and cell-amount head a row when rows stack on a phone;
+every other cell carries data-label for that layout. One note field and one filled action per row.
+Every other action is a form of its own, with its own note, in the row menu: a form holds one action
+and no formaction, so Enter in a note runs the action that note belongs to (final review C1: a
+Reject note in Confirm's form confirmed the payment).
+{% endcomment %}
+{% if not open_count %}{% include "staff/_all_clear.html" %}{% endif %}
+
+{% if declarations %}<section class="queue" id="declarations">
+<div class="queue-head"><h2>Declared payments</h2><span class="count count--attention">{{ declarations.total }}</span></div>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Invoice</th><th>Status</th><th>Declared</th><th>Network</th><th>Transaction</th></tr></thead><tbody>
+{% for d in declarations %}<tr><td><a class="strong-link" href="{% url 'staff:invoice' pk=d.invoice_id %}">{% invoice_ref d.invoice.number d.invoice_id %}</a></td><td class="cell-status">{% pill d.invoice.status %}</td><td class="nowrap" data-label="Declared">{{ d.created_at|date:"Y-m-d H:i" }}</td><td data-label="Network">{{ d.network|network_words }}</td><td class="mono" data-label="Transaction">{{ d.tx_hash|default:"-" }}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=declarations %}
+</section>{% endif %}
+
+{% if reviews %}<section class="queue" id="reviews">
+<div class="queue-head"><h2>Payments to review</h2><span class="count count--attention">{{ reviews.total }}</span></div>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Invoice</th><th class="num">Amount</th><th>Why</th><th>Network</th><th>Transaction</th><th>Action</th></tr></thead><tbody>
+{% for p in reviews %}<tr>
+<td>{% if p.invoice_id %}<a class="strong-link" href="{% url 'staff:invoice' pk=p.invoice_id %}">{% invoice_ref p.invoice.number p.invoice_id %}</a>{% else %}<span class="muted">No invoice</span>{% endif %}</td>
+<td class="num cell-amount" data-label="Amount">{{ p.received_amount|floatformat:"-8" }} {{ p.asset }}</td>
+<td class="why" data-label="Why">{{ p.reason_text }}</td>
+<td data-label="Network">{{ p.network|network_words:p.rail }}</td>
+<td class="mono" data-label="Transaction">{% if p.explorer_url %}<a href="{{ p.explorer_url }}" rel="noopener noreferrer">{{ p.tx_hash|truncatechars:18 }}</a>{% else %}{{ p.tx_hash|truncatechars:18 }}{% endif %}</td>
+<td class="actions-cell">
+{% if p.awaiting_finality %}<p class="cell-note">Waiting for the chain to finalize this transfer; it can be confirmed or assigned once it is.</p>
+<form method="post" action="{% url 'staff:reject' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Note" aria-label="Note"> <button type="submit" class="btn btn--sm">Reject</button></form>
+{% else %}
+{% if p.invoice_id and p.amount_minor > 0 %}<form method="post" action="{% url 'staff:confirm' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Note" aria-label="Note"> <button type="submit" class="btn btn--sm btn--primary">Confirm</button></form>
+<details class="row-menu"><summary class="row-menu__toggle">Reject<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+<form method="post" action="{% url 'staff:reject' pk=p.pk %}" class="row-menu__panel">{% csrf_token %}<input name="note" placeholder="Why it is rejected" aria-label="Why it is rejected"> <button type="submit" class="btn btn--sm">Reject</button></form>
+</details>
+{% else %}<form method="post" action="{% url 'staff:reject' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Note" aria-label="Note"> <button type="submit" class="btn btn--sm">Reject</button></form>{% endif %}
+<details class="row-menu"><summary class="row-menu__toggle">Assign to an invoice<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+<form method="post" action="{% url 'staff:assign' pk=p.pk %}" class="row-menu__panel">{% csrf_token %}<input name="invoice" placeholder="Invoice number or id" aria-label="Invoice number or id" required> <input name="amount" placeholder="Amount" aria-label="Amount in the invoice currency" required> <input name="note" placeholder="Note" aria-label="Note" required> <button type="submit" class="btn btn--sm">Assign</button></form>
+</details>
+{% endif %}
+</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=reviews %}
+</section>{% endif %}
+
+{% if dust.total %}<details id="dust" class="quiet-fold"><summary>{{ dust.total }} very small transfer{{ dust.total|pluralize }} (probably address-poisoning spam): show</summary>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th class="num">Amount</th><th>Network</th><th>Transaction</th><th>Action</th></tr></thead><tbody>
+{% for p in dust %}<tr>
+<td class="num cell-amount" data-label="Amount">{{ p.received_amount|floatformat:"-8" }} {{ p.asset }}</td>
+<td data-label="Network">{{ p.network|network_words:p.rail }}</td>
+<td class="mono" data-label="Transaction">{% if p.explorer_url %}<a href="{{ p.explorer_url }}" rel="noopener noreferrer">{{ p.tx_hash|truncatechars:18 }}</a>{% else %}{{ p.tx_hash|truncatechars:18 }}{% endif %}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:reject' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Note" aria-label="Note"> <button type="submit" class="btn btn--sm">Reject</button></form></td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=dust %}</details>{% endif %}
+
+{% if awaiting %}<section class="queue" id="awaiting">
+<div class="queue-head"><h2>Waiting for staff confirmation</h2><span class="count count--attention">{{ awaiting.total }}</span></div>
+<p class="queue-hint">Monero and Zcash payments, and money recorded by hand: nothing watches for these, so check the wallet or the bank before confirming.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Invoice</th><th>State</th><th class="num">Amount</th><th>Network</th><th>Reference</th><th>Action</th></tr></thead><tbody>
+{% for p in awaiting %}<tr>
+<td>{% if p.invoice_id %}<a class="strong-link" href="{% url 'staff:invoice' pk=p.invoice_id %}">{% invoice_ref p.invoice.number p.invoice_id %}</a>{% endif %}</td>
+<td class="cell-status">{% pill p.state %}</td>
+<td class="num cell-amount" data-label="Amount">{{ p.received_amount|floatformat:"-8" }} {{ p.asset }}</td>
+<td data-label="Network">{{ p.network|network_words:p.rail }}</td>
+<td class="mono" data-label="Reference">{{ p.external_id|default:p.tx_hash|truncatechars:24 }}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:confirm' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Note" aria-label="Note"> <button type="submit" class="btn btn--sm btn--primary">Confirm</button></form>
+<details class="row-menu"><summary class="row-menu__toggle">Reject<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+<form method="post" action="{% url 'staff:reject' pk=p.pk %}" class="row-menu__panel">{% csrf_token %}<input name="note" placeholder="Why it is rejected" aria-label="Why it is rejected"> <button type="submit" class="btn btn--sm">Reject</button></form>
+</details></td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=awaiting %}
+</section>{% endif %}
+
+{% if stuck_gateway %}<section class="queue" id="stuck-gateway">
+<div class="queue-head"><h2>Gateway payments seen but not settled</h2><span class="count count--attention">{{ stuck_gateway.total }}</span></div>
+<p class="queue-hint">BTCPay or Lightning saw these payments more than six hours ago and has not settled them. The worker keeps asking; check the payment in BTCPay or the node, then confirm or reject it here.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Invoice</th><th class="num">Amount</th><th>Seen</th><th>Network</th><th>Reference</th><th>Action</th></tr></thead><tbody>
+{% for p in stuck_gateway %}<tr>
+<td>{% if p.invoice_id %}<a class="strong-link" href="{% url 'staff:invoice' pk=p.invoice_id %}">{% invoice_ref p.invoice.number p.invoice_id %}</a>{% endif %}</td>
+<td class="num cell-amount" data-label="Amount">{{ p.received_amount|floatformat:"-8" }} {{ p.asset }}</td>
+<td class="nowrap" data-label="Seen">{{ p.detected_at|date:"Y-m-d H:i" }}</td>
+<td data-label="Network">{{ p.network|network_words:p.rail }}</td>
+<td class="mono" data-label="Reference">{{ p.external_id|truncatechars:32 }}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:confirm' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Note" aria-label="Note"> <button type="submit" class="btn btn--sm btn--primary">Confirm</button></form>
+<details class="row-menu"><summary class="row-menu__toggle">Reject<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+<form method="post" action="{% url 'staff:reject' pk=p.pk %}" class="row-menu__panel">{% csrf_token %}<input name="note" placeholder="Why it is rejected" aria-label="Why it is rejected"> <button type="submit" class="btn btn--sm">Reject</button></form>
+</details></td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=stuck_gateway %}
+</section>{% endif %}
+
+{% if refunds %}<section class="queue" id="refunds">
+<div class="queue-head"><h2>Refunds due</h2><span class="count count--attention">{{ refunds.total }}</span></div>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Invoice</th><th class="num">Refund</th><th class="num">Received</th><th>Network</th><th>Send it back to</th><th>Transaction</th><th>Action</th></tr></thead><tbody>
+{% for p in refunds %}<tr>
+<td>{% if p.invoice_id %}<a class="strong-link" href="{% url 'staff:invoice' pk=p.invoice_id %}">{% invoice_ref p.invoice.number p.invoice_id %}</a>{% endif %}</td>
+<td class="num cell-amount" data-label="Refund">{{ p.refund_text }}</td>
+<td class="num" data-label="Received">{{ p.received_amount|floatformat:"-8" }} {{ p.asset }}</td>
+<td data-label="Network">{{ p.network|network_words:p.rail }}</td>
+<td class="mono" data-label="Send it back to">{{ p.from_address|default:"-" }}</td>
+<td class="mono" data-label="Transaction">{% if p.explorer_url %}<a href="{{ p.explorer_url }}" rel="noopener noreferrer">{{ p.tx_hash|truncatechars:18 }}</a>{% else %}{{ p.tx_hash|truncatechars:18 }}{% endif %}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:refund' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Note" aria-label="Note" required> <button type="submit" class="btn btn--sm btn--primary">Refunded</button></form></td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=refunds %}
+</section>{% endif %}
+
+{% if invalidated %}<section class="queue" id="invalidated">
+<div class="queue-head"><h2>Confirmed payments the gateway now calls invalid</h2><span class="count count--attention">{{ invalidated.total }}</span></div>
+<p class="queue-hint">BTCPay settled these payments and the invoice counts them; BTCPay then reported the invoice invalid (a double spend, a reorg, or a payment that never confirmed). Nothing was undone. Check the payment in BTCPay: if the money is not there, reverse the payment on its invoice; if it is, keep it here.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Invoice</th><th class="num">Amount</th><th>Confirmed</th><th>Called invalid</th><th>Network</th><th>Reference</th><th>Action</th></tr></thead><tbody>
+{% for p in invalidated %}<tr>
+<td>{% if p.invoice_id %}<a class="strong-link" href="{% url 'staff:invoice' pk=p.invoice_id %}">{% invoice_ref p.invoice.number p.invoice_id %}</a>{% endif %}</td>
+<td class="num cell-amount" data-label="Amount">{{ p.received_amount|floatformat:"-8" }} {{ p.asset }}</td>
+<td class="nowrap" data-label="Confirmed">{{ p.confirmed_at|date:"Y-m-d H:i" }}</td>
+<td class="nowrap" data-label="Called invalid">{{ p.gateway_invalid_at|date:"Y-m-d H:i" }}</td>
+<td data-label="Network">{{ p.network|network_words:p.rail }}</td>
+<td class="mono" data-label="Reference">{{ p.external_id|truncatechars:32 }}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:keep_gateway_invalid' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Note" aria-label="Note" required> <button type="submit" class="btn btn--sm btn--primary">Keep</button></form></td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=invalidated %}
+</section>{% endif %}
+
+{% if fx_legs %}<section class="queue" id="fx">
+<div class="queue-head"><h2>Exchange rates refused</h2><span class="count count--attention">{{ fx_legs.total }}</span></div>
+<p class="queue-hint">Crypto quotes in these currencies are refused, because their ECB rate from Frankfurter could not be trusted. Payments are still seen; only new quotes are refused.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Currency</th><th>Refused since</th><th>Why, and what to do</th><th>Action</th></tr></thead><tbody>
+{% for w in fx_legs %}<tr><td class="mono">{{ w.currency }}</td><td class="nowrap" data-label="Refused since">{{ w.failing_since|date:"Y-m-d H:i" }}</td><td class="why cell-long" data-label="Why, and what to do">{{ w.explanation }}</td>
+<td class="actions-cell">{% if w.can_accept %}<form method="post" action="{% url 'staff:accept_fx_leg' pk=w.leg.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="What you checked" aria-label="Note" required> <button type="submit" class="btn btn--sm btn--primary">Accept {{ w.leg.pending_rate }}</button></form>{% else %}<span class="muted">-</span>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=fx_legs %}
+</section>{% endif %}
+
+{% if watchers %}<section class="queue" id="watchers">
+<div class="queue-head"><h2>Watchers that could not look</h2><span class="count count--attention">{{ watchers.total }}</span></div>
+<p class="queue-hint">While a watcher cannot look, payments it would have seen are not recorded, unless its row says otherwise.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Watcher</th><th>Failing since</th><th>Kind</th><th class="num">Failures</th></tr></thead><tbody>
+{% for w in watchers %}<tr><td><span class="watcher-name">{{ w.words }}</span><span class="mono muted">{{ w.name }}</span></td><td class="nowrap" data-label="Failing since">{{ w.failing_since|date:"Y-m-d H:i" }}</td><td class="why cell-long" data-label="Kind">{{ w.last_error_kind|default:"-" }}{% if w.explanation %}<br>{{ w.explanation }}{% endif %}</td><td class="num" data-label="Failures">{{ w.consecutive_failures }}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=watchers %}
+</section>{% endif %}
+
+{% if pending %}<section class="queue" id="pending">
+<div class="queue-head"><h2>Transfers seen but not recorded</h2><span class="count count--attention">{{ pending.total }}</span></div>
+<p class="queue-hint">A watcher saw these transfers but recording them failed. They are tried again every minute until they are recorded; nothing is lost meanwhile.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Network</th><th class="num">Amount</th><th>Account</th><th>Transaction</th><th>Seen</th><th class="num">Attempts</th><th>Kind</th></tr></thead><tbody>
+{% for t in pending %}<tr><td>{{ t.network|network_words }}</td><td class="num cell-amount" data-label="Amount">{{ t.amount_text }}</td><td data-label="Account">{{ t.account.label }}</td>
+<td class="mono" data-label="Transaction">{% if t.explorer_url %}<a href="{{ t.explorer_url }}" rel="noopener noreferrer">{{ t.tx_hash|truncatechars:18 }}</a>{% else %}{{ t.tx_hash|truncatechars:18 }}{% endif %}</td>
+<td class="nowrap" data-label="Seen">{{ t.created_at|date:"Y-m-d H:i" }}</td><td class="num" data-label="Attempts">{{ t.attempts }}</td><td data-label="Kind">{{ t.last_error_kind|default:"-" }}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=pending %}
+</section>{% endif %}
+
+{% if gaps %}<section class="queue" id="gaps">
+<div class="queue-head"><h2>Blocks not scanned, or to check</h2><span class="count count--attention">{{ gaps.total }}</span></div>
+<p class="queue-hint">A transfer in these blocks may be missing: the watcher moved past them without reading them (versions before the native ETH walk carried across runs skipped blocks after a long pause), no node would list them (spam can do that), or the wallet's native balance rose across them with no transaction to explain it. Check the wallet's history on the explorer for those blocks, record anything you find, then acknowledge.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Network</th><th>Address</th><th class="num">From block</th><th class="num">To block</th><th>Why</th><th>Since</th><th>Action</th></tr></thead><tbody>
+{% for g in gaps %}<tr><td>{{ g.network|network_words }}</td><td class="mono" data-label="Address">{{ g.address }}</td><td class="num" data-label="From block">{{ g.from_block }}</td><td class="num" data-label="To block">{{ g.to_block }}</td><td data-label="Why">{{ g.get_reason_display }}</td><td class="nowrap" data-label="Since">{{ g.created_at|date:"Y-m-d H:i" }}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:acknowledge_gap' pk=g.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="What you checked" aria-label="What you checked"> <button type="submit" class="btn btn--sm btn--primary">Acknowledge</button></form></td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=gaps %}
+</section>{% endif %}
+
+{% if overpaid %}<section class="queue" id="overpaid">
+<div class="queue-head"><h2>Overpaid invoices</h2><span class="count count--attention">{{ overpaid.total }}</span></div>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Invoice</th><th>Status</th></tr></thead><tbody>
+{% for i in overpaid %}<tr><td><a class="strong-link" href="{% url 'staff:invoice' pk=i.pk %}">{% invoice_ref i.number i.pk %}</a></td><td class="cell-status">{% pill "overpaid" %}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=overpaid %}
+</section>{% endif %}
+
+{% if wrong_issuer %}<section class="queue" id="wrong-issuer">
+<div class="queue-head"><h2>US tax residents with invoices from another issuer</h2><span class="count count--attention">{{ wrong_issuer.total }}</span></div>
+<p class="queue-hint">The contact is now flagged as a US tax resident. Void each invoice and create it again; the US-resident organization then issues it.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Invoice</th><th>Status</th><th>Issuer</th><th>Contact</th></tr></thead><tbody>
+{% for i in wrong_issuer %}<tr><td><a class="strong-link" href="{% url 'staff:invoice' pk=i.pk %}">{% invoice_ref i.number i.pk %}</a></td><td class="cell-status">{% pill i.status %}</td><td data-label="Issuer">{{ org_names|get:i.org_id }}</td><td data-label="Contact">#{{ i.contact_id }}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=wrong_issuer %}
+</section>{% endif %}
+
+{% if failed_keys %}<section class="queue" id="failed-keys">
+<div class="queue-head"><h2>Encryption keys that stopped working</h2><span class="count count--attention">{{ failed_keys.total }}</span></div>
+<p class="queue-hint">E-mail to these contacts was refused rather than sent unencrypted. A key that failed while active stops all e-mail to its contact until they have a new working key or the failed key is revoked (open the contact to upload or revoke); then retry their messages under "E-mail not delivered" below. A key that failed while still pending was never confirmed and stops nothing.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Key</th><th>Contact</th><th>Kind</th><th>Why</th><th>Failed while</th><th>Fingerprint</th><th>Expires</th></tr></thead><tbody>
+{% for k in failed_keys %}<tr><td>#{{ k.pk }}</td><td data-label="Contact"><a href="{% url 'staff:contact_keys' pk=k.contact_id %}">#{{ k.contact_id }}</a></td><td data-label="Kind">{{ k.get_kind_display }}</td><td data-label="Why">{{ k.last_error_kind|default:"-" }}</td><td data-label="Failed while">{{ k.failed_while|default:"-" }}</td><td class="mono" data-label="Fingerprint">{{ k.fingerprint_text }}</td><td class="nowrap" data-label="Expires">{{ k.expires_at|date:"Y-m-d"|default:"never" }}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=failed_keys %}
+</section>{% endif %}
+
+{% if expiring_keys %}<section class="queue" id="expiring-keys">
+<div class="queue-head"><h2>Encryption keys expiring within 30 days</h2><span class="count count--attention">{{ expiring_keys.total }}</span></div>
+<p class="queue-hint">Once a key expires, e-mail to its contact is refused until they have a new one. Ask the contact for a renewed key before the date.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Key</th><th>Contact</th><th>Kind</th><th>Expires</th><th>Fingerprint</th></tr></thead><tbody>
+{% for k in expiring_keys %}<tr><td>#{{ k.pk }}</td><td data-label="Contact"><a href="{% url 'staff:contact_keys' pk=k.contact_id %}">#{{ k.contact_id }}</a></td><td data-label="Kind">{{ k.get_kind_display }}</td><td class="nowrap" data-label="Expires">{{ k.expires_at|date:"Y-m-d H:i" }}</td><td class="mono" data-label="Fingerprint">{{ k.fingerprint_text }}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=expiring_keys %}
+</section>{% endif %}
+
+{% if undelivered %}<section class="queue" id="undelivered">
+<div class="queue-head"><h2>E-mail not delivered</h2><span class="count count--attention">{{ undelivered.total }}</span></div>
+<p class="queue-hint">Messages that failed after every retry (about sixteen hours), and messages still waiting after an hour. Retry once the cause is fixed. Dismiss a failed message only when it must never go out: it is cancelled for good, no retry sends it, and who dismissed it and why is recorded.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Message</th><th>State</th><th>Kind</th><th class="num">Attempts</th><th>Why</th><th>Queued</th><th>Next attempt</th><th>Invoice</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for m in undelivered %}<tr><td>#{{ m.pk }}</td><td class="cell-status">{% pill m.state %}</td><td data-label="Kind">{{ m.kind }}</td><td class="num" data-label="Attempts">{{ m.attempts }}</td><td data-label="Why">{{ m.last_error|default:"-" }}</td><td class="nowrap" data-label="Queued">{{ m.created_at|date:"Y-m-d H:i" }}</td><td class="nowrap" data-label="Next attempt">{{ m.next_attempt_at|date:"Y-m-d H:i"|default:"-" }}</td>
+<td data-label="Invoice">{% if m.invoice_id %}<a class="strong-link" href="{% url 'staff:invoice' pk=m.invoice_id %}">{% invoice_ref m.invoice.number m.invoice_id %}</a>{% else %}<span class="muted">-</span>{% endif %}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:retry_outbox' pk=m.pk %}" class="row-form">{% csrf_token %}<button type="submit" class="btn btn--sm btn--primary">Retry now</button></form>
+{% if m.state == "failed" %}<details class="row-menu"><summary class="row-menu__toggle">Dismiss<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+<form method="post" action="{% url 'staff:dismiss_outbox' pk=m.pk %}" class="row-menu__panel">{% csrf_token %}<input name="reason" placeholder="Why it will not be sent" aria-label="Why it will not be sent" required maxlength="2000"> <button type="submit" class="btn btn--sm btn--danger-outline">Dismiss for good</button></form>
+</details>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=undelivered %}
+</section>{% endif %}
+
+{% if link_alerts %}<section class="queue" id="link-alerts">
+<div class="queue-head"><h2>Payment links</h2><span class="count count--attention">{{ link_alerts.total }}</span></div>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Link</th><th>What happened</th><th>Order</th><th>Raised</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for a in link_alerts %}<tr><td><a class="strong-link" href="{% url 'staff:link_detail' pk=a.link_id %}">Link #{{ a.link_id }}</a></td>
+<td class="why" data-label="What happened">{{ a.text }}</td>
+<td data-label="Order">{% if a.invoice_id %}<a href="{% url 'staff:invoice' pk=a.invoice_id %}">{{ a.invoice.number|default:"Payment request" }} #{{ a.invoice_id }}</a>{% else %}<span class="muted">-</span>{% endif %}</td>
+<td class="nowrap" data-label="Raised">{{ a.created_at|date:"Y-m-d H:i" }}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:link_alert_resolve' pk=a.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="What you checked" aria-label="What you checked" maxlength="1000"> <button type="submit" class="btn btn--sm btn--primary">Resolved</button></form></td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=link_alerts %}
+</section>{% endif %}
+
+{% if undelivered_webhooks %}<section class="queue" id="undelivered-webhooks">
+<div class="queue-head"><h2>Webhooks not delivered</h2><span class="count count--attention">{{ undelivered_webhooks.total }}</span></div>
+<p class="queue-hint">Events an endpoint did not accept after every retry (about sixteen hours), and deliveries still retrying after an hour. Nothing is lost: retry once the receiver accepts deliveries again, or dismiss a failed delivery that should never be retried (recorded with your reason). "refused:private_address" or "refused:unresolvable" means the endpoint's host resolves to an address that is not public, or to none; "redirect" means it answered with a redirect, which is never followed.</p>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Delivery</th><th>State</th><th>Event</th><th>Endpoint</th><th>Organization</th><th class="num">Attempts</th><th>Why</th><th class="num">Status</th><th>Queued</th><th>Next attempt</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for w in undelivered_webhooks %}<tr><td>#{{ w.pk }}</td><td class="cell-status">{% pill w.state %}</td><td data-label="Event">{{ w.event.type }}</td><td data-label="Endpoint">#{{ w.endpoint_id }}{% if w.endpoint.description %} {{ w.endpoint.description }}{% endif %}</td><td data-label="Organization">{{ org_names|get:w.endpoint.org_id }}</td><td class="num" data-label="Attempts">{{ w.attempts }}</td><td data-label="Why">{{ w.last_error_kind|default:"-" }}</td><td class="num" data-label="Status">{{ w.last_status_code|default:"-" }}</td><td class="nowrap" data-label="Queued">{{ w.created_at|date:"Y-m-d H:i" }}</td><td class="nowrap" data-label="Next attempt">{{ w.next_attempt_at|date:"Y-m-d H:i"|default:"-" }}</td>
+<td class="actions-cell"><form method="post" action="{% url 'staff:retry_webhook' pk=w.pk %}" class="row-form">{% csrf_token %}<button type="submit" class="btn btn--sm btn--primary">Retry now</button></form>
+{% if w.state == "failed" %}<details class="row-menu"><summary class="row-menu__toggle">Dismiss<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+<form method="post" action="{% url 'staff:dismiss_webhook' pk=w.pk %}" class="row-menu__panel">{% csrf_token %}<input name="reason" placeholder="Why it will not be retried" aria-label="Why it will not be retried" required maxlength="2000"> <button type="submit" class="btn btn--sm btn--danger-outline">Dismiss for good</button></form>
+</details>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>{% include "staff/_capped.html" with section=undelivered_webhooks %}
+</section>{% endif %}
+
+{% if open_count %}{% include "staff/_all_clear.html" %}{% endif %}
+{% endblock %}

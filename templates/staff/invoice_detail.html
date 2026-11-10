@@ -1,0 +1,134 @@
+{% extends "staff/base.html" %}{% load ui %}
+{% block title %}{% if invoice.number %}Invoice {{ invoice.number }}{% else %}Draft #{{ invoice.pk }}{% endif %}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:invoice_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Invoices</a>
+<header class="page-head">
+<div class="page-head__text">
+<h1>{% if invoice.number %}Invoice {{ invoice.number }}{% else %}Draft #{{ invoice.pk }}{% endif %} {% pill invoice.status %}</h1>
+<p class="page-head__meta">{{ invoice.contact.display_name|default:invoice.contact.legal_name }} · {{ org_name }}</p>
+</div>
+<div class="page-head__actions">
+{% if is_draft %}<a class="btn" href="{% url 'staff:invoice_edit' pk=invoice.pk %}">Edit this draft</a>{% endif %}
+{% if can_pay %}<details class="disclosure"{% if form.errors %} open{% endif %}><summary class="btn btn--primary">Record payment</summary>
+<div class="disclosure__panel card"><div class="card-body">{% include "staff/record_payment.html" %}</div></div>
+</details>{% endif %}
+{% if can_reissue or can_void %}<details class="menu"{% if void_form.errors %} open{% endif %}><summary class="btn btn--icon" title="More actions"><svg class="icon" aria-hidden="true"><use href="#i-more"/></svg><span class="sr-only">More actions</span></summary>
+<div class="menu__panel card">
+{% if can_reissue %}<a class="menu__item" href="{% url 'staff:invoice_links' pk=invoice.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>Reissue the client links</a>{% endif %}
+{% if can_void %}<form method="post" action="{% url 'staff:void' pk=invoice.pk %}" class="menu__form form-stack">{% csrf_token %}
+{{ void_form.non_field_errors }}
+{% for field in void_form %}{% include "ui/_field.html" %}{% endfor %}
+<button type="submit" class="btn btn--sm btn--danger-outline" data-confirm="Void this invoice? A voided invoice can no longer be paid, and this cannot be undone.">Void invoice</button>
+</form>{% endif %}
+</div>
+</details>{% endif %}
+</div>
+</header>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+{% if migration_unreadable %}<section class="card card--accent migration-banner"><div class="card-body">
+<p><strong>Whether this invoice was carried over from another system cannot be read.</strong></p>
+<p class="hint">Its migration data is sealed or cannot be decrypted, so every action on it is locked. Unlock the vault; if this stays, the stored value is damaged.</p>
+</div></section>{% endif %}
+{% if migration %}<section class="card card--accent migration-banner"><div class="card-body">
+<p><strong>{{ migration.note }}</strong></p>
+<p class="hint">Source status: {{ migration.status|default:"unknown" }}{% if migration.url %} · <a href="{{ migration.url }}" rel="noopener noreferrer">Open in the source system</a>{% endif %}</p>
+</div></section>{% endif %}
+<div class="detail-grid">
+<section class="card detail-facts"><div class="card-body">
+<h2 class="card-title">Details</h2>
+<dl class="kv">
+<div><dt>Contact</dt><dd>{{ invoice.contact.display_name|default:invoice.contact.legal_name }}</dd></div>
+<div><dt>Issuer</dt><dd>{{ org_name }}</dd></div>
+<div><dt>Currency</dt><dd>{{ invoice.currency }}</dd></div>
+{% if invoice.issue_date %}<div><dt>Issued</dt><dd>{{ invoice.issue_date|date:"Y-m-d" }}</dd></div>{% endif %}
+<div><dt>Due</dt><dd>{% if invoice.due_date %}{{ invoice.due_date|date:"Y-m-d" }}{% else %}On receipt{% endif %}</dd></div>
+{% if invoice.external_reference %}<div><dt>External reference</dt><dd>{{ invoice.external_reference }}</dd></div>{% endif %}
+{% if invoice.payment_link_id %}<div><dt>Payment link</dt><dd><a href="{% url 'staff:link_detail' pk=invoice.payment_link_id %}">Link #{{ invoice.payment_link_id }}</a></dd></div>{% endif %}
+<div><dt>Remaining</dt><dd class="strong">{{ remaining }}</dd></div>
+</dl>
+{% if order_link %}<dl class="kv kv--link-order">
+<div><dt>Made through</dt><dd><a href="{% url 'staff:link_detail' pk=order_link.pk %}">Payment link #{{ order_link.pk }}</a>{% if coupon_code %} · coupon {{ coupon_code }}{% endif %}</dd></div>
+{% for label, value in order_answers %}<div><dt>{{ label }}</dt><dd>{{ value }}</dd></div>{% endfor %}
+<div><dt>US tax resident</dt><dd>{% if order_us_answer == "yes" %}Yes, as typed{% else %}No, as typed{% endif %}</dd></div>
+{% if order_link.fulfillment %}<div><dt>Fulfilment</dt><dd>{% if link_order.fulfilled_at %}Fulfilled {{ link_order.fulfilled_at|date:"Y-m-d H:i" }}{% if link_order.fulfilled_by %} by {{ link_order.fulfilled_by.get_username }}{% endif %}{% elif to_fulfil %}<span class="pill pill--attention">To fulfil</span>{% elif order_held %}After the US tax residency item on Needs a person{% else %}After payment{% endif %}</dd></div>{% endif %}
+</dl>
+{% if to_fulfil %}<form method="post" action="{% url 'staff:order_fulfil' pk=link_order.pk %}" class="form-inline">{% csrf_token %}<input type="hidden" name="next" value="invoice"><button type="submit" class="btn btn--sm btn--primary">Mark fulfilled</button></form>{% endif %}
+{% endif %}
+{% if invoice.issued_by_rule %}<p class="hint">Issued by <strong>{{ org_name }}</strong> under the US tax resident rule (requested by {{ requested_by_name }}): the client is a US tax resident.</p>{% elif invoice.requested_by_org_id != invoice.org_id %}<p class="hint">Requested by {{ requested_by_name }}.</p>{% endif %}
+<ul class="link-list">
+<li><a href="{% url 'staff:contact_detail' pk=invoice.contact_id %}"><svg class="icon" aria-hidden="true"><use href="#i-bookmark"/></svg>This contact</a></li>
+<li><a href="{% url 'staff:contact_keys' pk=invoice.contact_id %}"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg>Encryption keys of this contact</a></li>
+</ul>
+</div></section>
+
+<div class="detail-main">
+{% if is_draft %}<section class="card card--accent draft-card">
+<div class="card-body">
+<h2>Ready to send?</h2>
+<p class="hint">A draft can still be edited. Sending gives it a number and freezes it.</p>
+<div class="draft-card__actions">
+<form method="post" action="{% url 'staff:invoice_send' pk=invoice.pk %}" class="form-inline">{% csrf_token %}{% include "ui/_field.html" with field=send_form.email_client %}<button type="submit" class="btn btn--primary">Send</button></form>
+<form method="post" action="{% url 'staff:invoice_delete' pk=invoice.pk %}" class="inline" data-confirm="Delete this draft? It cannot be brought back.">{% csrf_token %}<button type="submit" class="btn btn--sm btn--danger-outline">Delete draft</button></form>
+</div>
+</div>
+</section>{% endif %}
+
+<section class="card">
+<div class="table-wrap"><table>
+<thead><tr><th>Line</th><th class="num">Qty</th><th class="num">Total</th></tr></thead><tbody>
+{% for line, amount in lines %}<tr><td>{{ line.name }}</td><td class="num">{{ line.quantity }}</td><td class="num">{{ amount }}</td></tr>{% endfor %}
+</tbody></table></div>
+<table class="totals">
+<tr class="grand"><td>Total</td><td class="num">{{ total }}</td></tr>
+<tr><td>Confirmed</td><td class="num">{{ paid }}</td></tr>
+<tr class="remaining"><td>Remaining</td><td class="num">{{ remaining }}</td></tr>
+</table>
+</section>
+
+{% if overpayment_open %}<section class="block" id="overpayment">
+<div class="card"><div class="card-body">
+<p><strong>Paid {{ overpayment_excess }} more than the total.</strong> Refund it to the customer, or keep it and close this item.</p>
+<form method="post" action="{% url 'staff:keep_overpayment' pk=invoice.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Why it is kept (required)" aria-label="Why it is kept" required> <button type="submit" class="btn btn--sm btn--primary">Keep the overpayment</button></form>
+</div></div>
+</section>
+{% elif overpayment_kept %}<p class="hint">Overpayment kept{% if invoice.overpayment_kept_at %} on {{ invoice.overpayment_kept_at|date:"Y-m-d" }}{% endif %}: {{ overpayment_excess }} over the total, not refunded. The reason is in the audit trail.</p>
+{% endif %}
+{% if invoice.reminder_sent_at %}<p class="hint">Reminder queued on {{ invoice.reminder_sent_at|date:"Y-m-d" }}.</p>
+{% endif %}
+<section class="block">
+<h2>Payments</h2>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Payment</th><th>State</th><th class="num">Amount</th><th>Method</th><th class="num">Received</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for p, amount, waiting in payments %}<tr><td>#{{ p.pk }}</td><td class="cell-status">{% pill p.state %}</td><td class="num cell-amount" data-label="Amount">{{ amount }}</td><td data-label="Method">{{ p.network|network_words:p.rail }}</td><td class="num" data-label="Received">{{ p.received_amount|floatformat:"-8" }} {{ p.asset }}</td>
+<td class="actions-cell">{% if p.evidence_note %}<div class="pre cell-note">{{ p.evidence_note }}</div>{% endif %}
+{% if p.state == "detected" or p.state == "needs_review" %}
+{% if waiting %}<p class="cell-note">Waiting for the chain to finalize this transfer; it is decided then.</p>
+<form method="post" action="{% url 'staff:reject' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Reason" aria-label="Reason"><button type="submit" class="btn btn--sm">Reject</button></form>
+{% else %}<form method="post" action="{% url 'staff:confirm' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="note" placeholder="Note" aria-label="Note"><button type="submit" class="btn btn--sm btn--primary">Confirm</button></form>
+<details class="row-menu"><summary class="row-menu__toggle">Reject<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+<form method="post" action="{% url 'staff:reject' pk=p.pk %}" class="row-menu__panel">{% csrf_token %}<input name="note" placeholder="Why it is rejected" aria-label="Why it is rejected"><button type="submit" class="btn btn--sm">Reject</button></form>
+</details>{% endif %}
+{% elif p.state == "confirmed" and not migration and not migration_unreadable %}
+<form method="post" action="{% url 'staff:reverse' pk=p.pk %}" class="row-form">{% csrf_token %}<input name="reason" placeholder="Reason (required)" aria-label="Reason (required)" required><button type="submit" class="btn btn--sm btn--danger-outline">Reverse</button></form>
+{% endif %}</td></tr>
+{% empty %}<tr class="empty-row"><td colspan="6">No payments yet.</td></tr>{% endfor %}
+</tbody></table></div></div>
+</section>
+
+<section class="block">
+<h2>Declarations</h2>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Declared</th><th>State</th><th>Network</th><th>Transaction</th><th>Note</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for d in declarations %}<tr><td class="nowrap">{{ d.created_at|date:"Y-m-d H:i" }}</td><td class="cell-status">{% pill d.state %}</td><td data-label="Network">{{ d.network|network_words }}</td><td class="mono" data-label="Transaction">{{ d.tx_hash|default:"-" }}</td><td class="pre" data-label="Note">{{ d.note|default:"-" }}</td>
+<td class="actions-cell">{% if d.state == "open" %}<form method="post" action="{% url 'staff:dismiss' pk=d.pk %}" class="row-form">{% csrf_token %}<input name="reason" placeholder="Reason (optional)" aria-label="Reason (optional)"><button type="submit" class="btn btn--sm">Dismiss declaration</button></form>{% endif %}</td></tr>
+{% empty %}<tr class="empty-row"><td colspan="6">No declarations yet.</td></tr>{% endfor %}
+</tbody></table></div></div>
+</section>
+</div>
+
+<section class="card detail-audit"><div class="card-body">
+<h2 class="card-title">Audit trail</h2>
+{% if audit %}<ol class="timeline">{% for e in audit %}<li><span class="timeline__what" title="{{ e.action }}">{{ e.action|audit_words }}</span><span class="timeline__meta">{{ e.created_at|date:"Y-m-d H:i" }} · {{ e.actor_username|default:"system" }} · {{ e.model_label|model_words }} #{{ e.object_pk }}</span></li>{% endfor %}</ol>{% else %}<p class="empty-line">No audit entries yet.</p>{% endif %}
+</div></section>
+</div>
+{% endblock %}

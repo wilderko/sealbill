@@ -1,0 +1,25 @@
+{% extends "staff/base.html" %}
+{% block title %}Webhooks{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:settings' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Settings</a>
+<header class="page-head"><div class="page-head__text"><h1>Webhooks</h1>
+<p class="page-head__meta">Where an organization's events are sent. The address must be https on port 443 and public. The secret is shown once.</p></div></header>
+{% include "ui/_messages.html" %}
+{% if error %}<div class="error" role="alert"><p>{{ error }}</p></div>{% endif %}
+<section class="card form-card narrow"><div class="card-body"><h2 class="card-title">New endpoint</h2>
+<form method="post" action="{% url 'staff:webhook_new' %}" autocomplete="off">{% csrf_token %}<div class="form-grid">
+<div class="field"><label for="id_org">Organization</label><select name="org" id="id_org">{% for o in orgs %}<option value="{{ o.pk }}"{% if form.org == o.pk %} selected{% endif %}>{{ o.slug }}</option>{% endfor %}</select></div>
+<div class="field field--wide"><label for="id_url">Address</label><input type="url" name="url" id="id_url" maxlength="2000" value="{{ form.url }}" placeholder="https://example.com/hook" autocomplete="off"></div>
+<div class="field field--wide"><label for="id_description">Description</label><input type="text" name="description" id="id_description" maxlength="200" value="{{ form.description }}" autocomplete="off"></div>
+<div class="field field--wide"><span class="label">Events</span>{% for e in event_types %}<label class="check"><input type="checkbox" name="events" value="{{ e }}"{% if e in form.events %} checked{% endif %}> <span>{{ e }}</span></label> {% endfor %}
+<p class="helptext">None ticked means all events.</p></div></div>
+<button type="submit" class="btn btn--primary">Create endpoint</button></form></div></section>
+{% if rows %}<div class="card table-card"><div class="table-wrap"><table class="table--rows">
+<thead><tr><th>Organization</th><th>Host</th><th>Events</th><th>Status</th></tr></thead><tbody>
+{% for r in rows %}<tr><td data-label="Organization">{{ r.e.org.slug }}</td>
+<td><a class="strong-link" href="{% url 'staff:webhook_detail' pk=r.e.pk %}">{{ r.host }}</a>{% if r.e.description %}<br><span class="muted">{{ r.e.description }}</span>{% endif %}</td>
+<td class="muted" data-label="Events">{{ r.e.events|join:", " }}</td>
+<td data-label="Status">{% if r.e.active %}Active{% else %}<span class="muted">Inactive</span>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-bank"/></svg><p>No webhook endpoints yet.</p></div>{% endif %}
+{% endblock %}

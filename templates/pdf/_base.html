@@ -1,0 +1,43 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"><title>{{ doc_title }}</title>
+<link rel="stylesheet" href="pdf.css"></head>
+<body>
+<div class="head">
+  <div>
+    <h1>{% block heading %}{% endblock %}</h1>
+    {% if invoice.number %}<div><span class="label">{% translate "Number" %}</span> {{ invoice.number }}</div>{% endif %}
+    <div><span class="label">{% translate "Issue date" %}</span> {{ invoice.issue_date|date:"DATE_FORMAT" }}</div>
+    {% block dates %}
+    <div><span class="label">{% translate "Due date" %}</span>
+      {% if invoice.due_date %}{{ invoice.due_date|date:"DATE_FORMAT" }}{% else %}{% translate "Due on receipt" %}{% endif %}</div>
+    {% endblock %}
+  </div>
+  {% if logo_uri %}<img class="logo" src="{{ logo_uri }}" alt="">{% endif %}
+</div>
+<div class="parties">
+  <div><div class="label">{% translate "From" %}</div>
+    <strong>{{ seller.legal_name }}</strong>
+    {% if seller.address %}<div class="pre">{{ seller.address }}</div>{% endif %}
+    {% if seller.tax_ids %}<div class="pre">{{ seller.tax_ids }}</div>{% endif %}</div>
+  <div><div class="label">{% translate "Bill to" %}</div>
+    <strong>{{ buyer.name }}</strong>
+    {% for line in buyer.address_lines %}<div>{{ line }}</div>{% endfor %}
+    {% if buyer.tax_ids %}<div class="pre">{{ buyer.tax_ids }}</div>{% endif %}</div>
+</div>
+{% if invoice.title %}<h2>{{ invoice.title }}</h2>{% endif %}
+<table>
+<thead><tr><th>{% translate "Description" %}</th><th class="num">{% translate "Qty" %}</th><th class="num">{% translate "Unit price" %}</th><th class="num">{% translate "Tax" %}</th><th class="num">{% translate "Amount" %}</th></tr></thead>
+<tbody>
+{% for l in lines %}<tr><td><strong>{{ l.name }}</strong>{% if l.description %}<div class="pre">{{ l.description }}</div>{% endif %}</td>
+<td class="num">{{ l.quantity }}</td><td class="num">{{ l.unit_price }}</td><td class="num">{{ l.tax_rate }}</td><td class="num">{{ l.total }}</td></tr>{% endfor %}
+</tbody></table>
+<table class="totals">
+<tr><td>{% translate "Subtotal" %}</td><td class="num">{{ money.subtotal }}</td></tr>
+{% if money.has_discount %}<tr><td>{% translate "Discount" %}</td><td class="num">-{{ money.discount }}</td></tr>{% endif %}
+<tr><td>{% translate "Tax" %}</td><td class="num">{{ money.tax }}</td></tr>
+<tr class="grand"><td>{% translate "Total" %}</td><td class="num">{{ money.total }}</td></tr>
+</table>
+{% if invoice.notes %}<h2>{% translate "Notes" %}</h2><div class="pre">{{ invoice.notes }}</div>{% endif %}
+{% block payment %}{% endblock %}
+{% if seller.footer_note %}<div class="footer pre">{{ seller.footer_note }}</div>{% endif %}
+</body></html>

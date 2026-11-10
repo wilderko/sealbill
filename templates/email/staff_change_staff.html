@@ -1,0 +1,5 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>{% translate "A change that needs a superuser and a recent second factor was made on the staff pages." %}</p><p>{% translate "Who:" %} {{ who }}<br>{% translate "What:" %} {{ what }}<br>{% translate "When:" %} {{ when }}</p><p>{% translate "If you did not expect it, check it on the staff page and in the audit log:" %}<br><a href="{{ admin_url }}">{{ admin_url }}</a></p>
+</body></html>

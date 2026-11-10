@@ -1,0 +1,6 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>{% if name %}{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}{% else %}{% translate "Hello," %}{% endif %}</p>{% if is_request %}<p>{% blocktranslate %}This is a friendly reminder that the payment request {{ ref }} from {{ org }} is still open.{% endblocktranslate %}</p>{% else %}<p>{% blocktranslate %}This is a friendly reminder that invoice {{ ref }} from {{ org }} is still open.{% endblocktranslate %}</p>{% endif %}<p>{% blocktranslate %}Amount still due: {{ total }}{% endblocktranslate %}</p>{% if due %}<p>{% blocktranslate %}Due date: {{ due }}{% endblocktranslate %}</p>{% endif %}<p>{% translate "Pay online:" %}<br><a href="{{ pay_url }}">{{ pay_url }}</a></p><p>{% translate "View the invoice online:" %}<br><a href="{{ view_url }}">{{ view_url }}</a></p><p>{% translate "If you have already paid, please ignore this message." %}</p>
+<p>{{ org }}</p>
+</body></html>

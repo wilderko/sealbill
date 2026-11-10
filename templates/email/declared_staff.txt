@@ -1,0 +1,5 @@
+{% load i18n %}{% autoescape off %}{% blocktranslate %}A client has declared a payment for {{ ref }}. It needs your review.{% endblocktranslate %}
+
+{% translate "Open the invoice on the staff page:" %}
+{{ admin_url }}
+{% endautoescape %}

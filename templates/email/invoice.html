@@ -1,0 +1,6 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ language }}"><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;color:#222;line-height:1.5">
+<p>{% if name %}{% blocktranslate %}Dear {{ name }},{% endblocktranslate %}{% else %}{% translate "Hello," %}{% endif %}</p>{% if is_request %}<p>{% blocktranslate %}{{ org }} has sent you a payment request ({{ ref }}).{% endblocktranslate %}</p>{% else %}<p>{% blocktranslate %}{{ org }} has sent you invoice {{ ref }}.{% endblocktranslate %}</p>{% endif %}{% if message %}<p>{{ message|linebreaksbr }}</p>{% endif %}<p>{% blocktranslate %}Amount due: {{ total }}{% endblocktranslate %}</p>{% if due %}<p>{% blocktranslate %}Due date: {{ due }}{% endblocktranslate %}</p>{% endif %}<p>{% translate "Pay online:" %}<br><a href="{{ pay_url }}">{{ pay_url }}</a></p><p>{% translate "View the invoice online:" %}<br><a href="{{ view_url }}">{{ view_url }}</a></p>{% if pdf_attached %}<p>{% if is_request %}{% blocktranslate %}The payment request is attached as a PDF.{% endblocktranslate %}{% else %}{% blocktranslate %}The invoice is attached as a PDF.{% endblocktranslate %}{% endif %}</p>{% else %}<p>{% blocktranslate %}The PDF could not be attached to this e-mail. You can download it from the invoice page.{% endblocktranslate %}</p>{% endif %}
+<p>{{ org }}</p>
+</body></html>

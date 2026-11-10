@@ -1,0 +1,25 @@
+{% extends "staff/base.html" %}
+{% block title %}Audit log{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:settings' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Settings</a>
+<header class="page-head"><div class="page-head__text"><h1>Audit log</h1>
+<p class="page-head__meta">Newest first. The list shows no details: open an entry to read them.</p></div></header>
+<form method="get" class="filters" role="search">
+<label class="filters__field"><span class="sr-only">Action</span><input name="action" value="{{ action }}" placeholder="Action" aria-label="Action" list="audit-actions"><datalist id="audit-actions">{% for a in actions %}<option value="{{ a }}">{% endfor %}</datalist></label>
+<label class="filters__field"><span class="sr-only">Model</span><input name="model" value="{{ model }}" placeholder="Model" aria-label="Model" list="audit-models"><datalist id="audit-models">{% for m in models %}<option value="{{ m }}">{% endfor %}</datalist></label>
+<label class="filters__field"><span class="sr-only">Actor</span><input name="actor" value="{{ actor }}" placeholder="Actor" aria-label="Actor"></label>
+<label class="filters__field"><span class="sr-only">From</span><input type="date" name="from" value="{{ start }}" aria-label="From"></label>
+<label class="filters__field"><span class="sr-only">To</span><input type="date" name="to" value="{{ end }}" aria-label="To"></label>
+<button type="submit" class="btn">Filter</button>
+</form>
+{% if page.object_list %}<div class="card table-card"><div class="table-wrap table-wrap--long"><table class="table--rows">
+<thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Model</th><th>Object</th></tr></thead><tbody>
+{% for e in page.object_list %}<tr class="row-link"><td class="nowrap"><a class="strong-link" href="{% url 'staff:audit_detail' pk=e.pk %}">{{ e.created_at|date:"Y-m-d H:i:s" }}</a></td><td data-label="Actor">{{ e.actor_username|default:"-" }}</td><td data-label="Action">{{ e.action }}</td><td data-label="Model">{{ e.model_label }}</td><td data-label="Object">{{ e.object_pk }}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% if page.paginator.num_pages > 1 %}<nav class="status-tabs" aria-label="Pages">
+{% if page.has_previous %}<a href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.previous_page_number }}">Previous</a>{% endif %}
+<span class="muted">Page {{ page.number }} of {{ page.paginator.num_pages }} ({{ page.paginator.count }} rows)</span>
+{% if page.has_next %}<a href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>{% endif %}
+{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg><p>No entries match.</p>{% if query %}<a href="{% url 'staff:audit_list' %}">Show every entry</a>{% endif %}</div>{% endif %}
+{% endblock %}

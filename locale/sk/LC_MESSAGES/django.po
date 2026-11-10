@@ -1,0 +1,1185 @@
+# Translations (sk) of the invoicing service.
+# Sealbill contributors
+msgid ""
+msgstr ""
+"Project-Id-Version: Sealbill\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-03 06:49+0000\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#: apps/core/tests_i18n.py:196 templates/vault/unlock.html:5
+msgid "Unlock the vault"
+msgstr "Odomknutie trezoru"
+
+#: apps/keys/views.py:30
+msgid "The file is too large to be a public key."
+msgstr "Súbor je na verejný kľúč príliš veľký."
+
+#: apps/keys/views.py:31
+msgid ""
+"This is a .p12/.pfx file, which holds a private key. Upload only the "
+"certificate."
+msgstr ""
+"Toto je súbor .p12/.pfx, ktorý obsahuje súkromný kľúč. Nahrajte iba "
+"certifikát."
+
+#: apps/keys/views.py:32
+msgid ""
+"This contains a private key. Keep it to yourself and upload only the public "
+"key."
+msgstr ""
+"Toto obsahuje súkromný kľúč. Nechajte si ho pre seba a nahrajte iba verejný "
+"kľúč."
+
+#: apps/keys/views.py:33
+msgid "This is not a PGP public key or an S/MIME certificate."
+msgstr "Toto nie je verejný kľúč PGP ani certifikát S/MIME."
+
+#: apps/keys/views.py:34
+msgid "This contains more than one key. Upload one key only."
+msgstr "Toto obsahuje viac ako jeden kľúč. Nahrajte iba jeden."
+
+#: apps/keys/views.py:35
+msgid "This key cannot be used to encrypt e-mail."
+msgstr "Týmto kľúčom sa nedajú šifrovať e-maily."
+
+#: apps/keys/views.py:36
+msgid "This key has expired."
+msgstr "Platnosť tohto kľúča vypršala."
+
+#: apps/keys/views.py:37
+msgid "This key is not valid yet."
+msgstr "Tento kľúč ešte nie je platný."
+
+#: apps/keys/views.py:38
+msgid "This key has been revoked."
+msgstr "Tento kľúč bol odvolaný."
+
+#: apps/keys/views.py:39
+msgid "This key does not name the e-mail address we write to you at."
+msgstr "Tento kľúč neuvádza e-mailovú adresu, na ktorú vám píšeme."
+
+#: apps/keys/views.py:40
+msgid "This type or size of key is not supported."
+msgstr "Tento typ alebo veľkosť kľúča nepodporujeme."
+
+#: apps/keys/views.py:75
+msgid ""
+"Too many keys were uploaded through this link. Please try again in an hour."
+msgstr ""
+"Cez tento odkaz bolo nahraných priveľa kľúčov. Skúste to znova o hodinu."
+
+#: apps/keys/views.py:79
+msgid "Paste the key or choose a file."
+msgstr "Vložte kľúč alebo vyberte súbor."
+
+#: apps/keys/views.py:87 apps/keys/views.py:140
+msgid ""
+"We could not check the key right now. Please try again in a few minutes."
+msgstr "Kľúč sa teraz nepodarilo overiť. Skúste to znova o niekoľko minút."
+
+#: apps/notify/services.py:32
+#, python-format
+msgid "Invoice %(ref)s from %(org)s"
+msgstr "Faktúra %(ref)s od %(org)s"
+
+#: apps/notify/services.py:33
+#, python-format
+msgid "Payment request %(ref)s from %(org)s"
+msgstr "Žiadosť o platbu %(ref)s od %(org)s"
+
+#: apps/notify/services.py:34
+#, python-format
+msgid "Receipt for %(ref)s from %(org)s"
+msgstr "Potvrdenie o platbe k %(ref)s od %(org)s"
+
+#: apps/notify/services.py:35
+#, python-format
+msgid "Partial payment received for %(ref)s"
+msgstr "Prijatá čiastočná platba k %(ref)s"
+
+#: apps/notify/services.py:36
+#, python-format
+msgid "Confirm your encryption key for %(org)s"
+msgstr "Potvrďte svoj šifrovací kľúč pre %(org)s"
+
+#: apps/notify/services.py:37
+#, python-format
+msgid "Payment declared for %(ref)s"
+msgstr "Platba k %(ref)s bola oznámená"
+
+#: apps/notify/services.py:38
+#, python-format
+msgid "The vault is sealed: %(count)s e-mails are waiting"
+msgstr "Trezor je zapečatený: čaká %(count)s e-mailov"
+
+#: apps/notify/services.py:39
+#, python-format
+msgid "Payment #%(ref)s needs review"
+msgstr "Platba č. %(ref)s potrebuje kontrolu"
+
+#: apps/notify/services.py:40
+#, python-format
+msgid "Payment #%(ref)s is waiting for your confirmation"
+msgstr "Platba č. %(ref)s čaká na vaše potvrdenie"
+
+#: apps/notify/services.py:44
+#, python-format
+msgid "Message from %(org)s"
+msgstr "Správa od %(org)s"
+
+#: apps/payments/models.py:36
+msgid "The token is not one this invoice accepts."
+msgstr "Tento token faktúra neprijíma."
+
+#: apps/payments/models.py:37
+msgid "No open invoice matches this payment."
+msgstr "Žiadna otvorená faktúra tejto platbe nezodpovedá."
+
+#: apps/payments/models.py:38
+msgid "More than one open invoice could match this payment."
+msgstr "Tejto platbe by mohla zodpovedať viac otvorených faktúr."
+
+#: apps/payments/models.py:39
+msgid "The payment arrived after the quote expired."
+msgstr "Platba dorazila po vypršaní kurzovej ponuky."
+
+#: apps/payments/models.py:40
+msgid "This looks like a duplicate of another payment."
+msgstr "Vyzerá to ako duplicita inej platby."
+
+#: apps/payments/models.py:41
+msgid "The payment is far above what was owed."
+msgstr "Platba je výrazne vyššia, než bolo dlžné."
+
+#: apps/payments/models.py:42
+msgid "The invoice was already closed when the payment arrived."
+msgstr "Faktúra bola v čase prijatia platby už uzavretá."
+
+#: apps/payments/models.py:43
+msgid "The payment was made before the quote was issued."
+msgstr "Platba bola uskutočnená pred vystavením kurzovej ponuky."
+
+#: apps/payments/models.py:44
+msgid "A very small transfer, probably address-poisoning spam."
+msgstr "Veľmi malý prevod, pravdepodobne spam typu address poisoning."
+
+#: apps/payments/models.py:45
+msgid "The transaction was dropped from the chain."
+msgstr "Transakcia bola z reťazca vypadnutá."
+
+#: apps/payments/models.py:46
+msgid "BTCPay reports a partial payment."
+msgstr "BTCPay hlási čiastočnú platbu."
+
+#: apps/payments/models.py:47
+msgid "BTCPay invoice was marked as paid by hand."
+msgstr "Faktúra v BTCPay bola ručne označená ako zaplatená."
+
+#: apps/payments/models.py:48
+msgid "BTCPay reports the invoice as invalid."
+msgstr "BTCPay hlási faktúru ako neplatnú."
+
+#: apps/payments/models.py:49
+msgid "BTCPay reports a late payment."
+msgstr "BTCPay hlási neskoro prijatú platbu."
+
+#: apps/portal/crypto.py:69
+#, python-format
+msgid "%(asset)s on %(network)s"
+msgstr "%(asset)s na %(network)s"
+
+#: apps/portal/forms.py:6
+msgid "Network (optional)"
+msgstr "Sieť (nepovinné)"
+
+#: apps/portal/forms.py:7
+msgid "Transaction number or hash (optional)"
+msgstr "Číslo transakcie alebo hash (nepovinné)"
+
+#: apps/portal/forms.py:8
+msgid "Note (optional)"
+msgstr "Poznámka (nepovinné)"
+
+#: apps/portal/forms.py:13
+msgid "Other"
+msgstr "Iné"
+
+#: apps/portal/views.py:181
+msgid "This invoice can no longer be paid online."
+msgstr "Túto faktúru už nie je možné zaplatiť online."
+
+#: apps/portal/views.py:182
+msgid "This payment method is not available for this invoice."
+msgstr "Tento spôsob platby nie je pre túto faktúru dostupný."
+
+#: apps/portal/views.py:183
+msgid "That network or token is not available for this invoice."
+msgstr "Táto sieť alebo tento token nie je pre túto faktúru dostupný."
+
+#: apps/portal/views.py:184
+msgid "Nothing is left to pay on this invoice."
+msgstr "Na tejto faktúre už nie je čo platiť."
+
+#: apps/portal/views.py:185
+msgid "Exchange rates are unavailable right now. Try again in a minute."
+msgstr "Výmenné kurzy sú momentálne nedostupné. Skúste to o minútu znova."
+
+#: apps/portal/views.py:186
+msgid ""
+"The exchange rate cannot be fixed reliably right now. Try again in a minute."
+msgstr ""
+"Výmenný kurz sa momentálne nedá spoľahlivo určiť. Skúste to o minútu znova."
+
+#: apps/portal/views.py:213
+msgid ""
+"Too many payments are open right now. Please try again in a few minutes."
+msgstr ""
+"Práve je otvorených príliš veľa platieb. Skúste to, prosím, znova o "
+"niekoľko minút."
+
+#: apps/portal/views.py
+msgid "There have been too many payment attempts on this invoice today. Please try again tomorrow, or contact us."
+msgstr "Na túto faktúru bolo dnes príliš veľa pokusov o platbu. Skúste to, prosím, znova zajtra alebo nás kontaktujte."
+
+#: apps/portal/views.py:188
+msgid ""
+"This payment method is temporarily unavailable. Try another one, or try "
+"again shortly."
+msgstr ""
+"Tento spôsob platby je dočasne nedostupný. Skúste iný alebo to o chvíľu "
+"zopakujte."
+
+#: apps/portal/views.py:214
+msgid "Too many attempts. Wait a few minutes and try again."
+msgstr "Príliš veľa pokusov. Počkajte niekoľko minút a skúste to znova."
+
+#: apps/vault/views.py:17
+msgid "Too many attempts. Try again later."
+msgstr "Príliš veľa pokusov. Skúste to neskôr."
+
+#: templates/email/declared_staff.html:4 templates/email/declared_staff.txt:1
+#, python-format
+msgid "A client has declared a payment for %(ref)s. It needs your review."
+msgstr "Klient oznámil platbu k %(ref)s. Vyžaduje vašu kontrolu."
+
+#: templates/email/declared_staff.html:4 templates/email/declared_staff.txt:7
+msgid "Open the invoice on the staff page:"
+msgstr "Otvorte faktúru na stránke pre zamestnancov:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:1
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:1
+#: templates/email/partial.html:4 templates/email/partial.txt:1
+#: templates/email/receipt.html:4 templates/email/receipt.txt:1
+#, python-format
+msgid "Dear %(name)s,"
+msgstr "Dobrý deň, %(name)s,"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:3
+#, python-format
+msgid "%(org)s has sent you a payment request (%(ref)s)."
+msgstr "%(org)s vám zaslala žiadosť o platbu (%(ref)s)."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:4
+#, python-format
+msgid "%(org)s has sent you invoice %(ref)s."
+msgstr "%(org)s vám zaslala faktúru %(ref)s."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:8
+#, python-format
+msgid "Amount due: %(total)s"
+msgstr "Suma na úhradu: %(total)s"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:10
+#, python-format
+msgid "Due date: %(due)s"
+msgstr "Dátum splatnosti: %(due)s"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:12
+msgid "Pay online:"
+msgstr "Zaplatiť online:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:15
+msgid "View the invoice online:"
+msgstr "Zobraziť faktúru online:"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:18
+msgid "The payment request is attached as a PDF."
+msgstr "Žiadosť o platbu je priložená ako PDF."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:18
+msgid "The invoice is attached as a PDF."
+msgstr "Faktúra je priložená ako PDF."
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:19
+#: templates/email/receipt.html:4 templates/email/receipt.txt:11
+msgid ""
+"The PDF could not be attached to this e-mail. You can download it from the "
+"invoice page."
+msgstr ""
+"PDF sa nepodarilo priložiť k tomuto e-mailu. Môžete si ho stiahnuť zo "
+"stránky faktúry."
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:3
+#, python-format
+msgid ""
+"A key was uploaded for your e-mail address so that %(org)s can send you "
+"encrypted e-mail:"
+msgstr ""
+"Pre vašu e-mailovú adresu bol nahraný kľúč na šifrovanie e-mailov od %(org)s:"
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:5
+#, python-format
+msgid "Fingerprint: %(fingerprint)s"
+msgstr "Odtlačok: %(fingerprint)s"
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:7
+msgid "To start using it, open this link and press Confirm:"
+msgstr "Ak ho chcete začať používať, otvorte tento odkaz a stlačte Potvrdiť:"
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:10
+msgid ""
+"The link works for 7 days. Until you confirm, our e-mails to you stay as "
+"they are."
+msgstr ""
+"Odkaz platí 7 dní. Kým kľúč nepotvrdíte, naše e-maily vám budú chodiť ako "
+"doteraz."
+
+#: templates/email/key_confirm.html:4 templates/email/key_confirm.txt:12
+msgid "If you did not upload this key, ignore this e-mail: nothing changes."
+msgstr ""
+"Ak ste tento kľúč nenahrali vy, tento e-mail ignorujte. Nič sa nezmení."
+
+#: templates/email/partial.html:4 templates/email/partial.txt:3
+#, python-format
+msgid "%(org)s has received a partial payment for %(ref)s."
+msgstr "%(org)s prijala čiastočnú platbu k %(ref)s."
+
+#: templates/email/partial.html:4 templates/email/partial.txt:5
+#, python-format
+msgid "Amount received: %(paid)s"
+msgstr "Prijatá suma: %(paid)s"
+
+#: templates/email/partial.html:4 templates/email/partial.txt:7
+#, python-format
+msgid "Still outstanding: %(remaining)s"
+msgstr "Zostáva uhradiť: %(remaining)s"
+
+#: templates/email/partial.html:4 templates/email/partial.txt:9
+msgid "You can pay the rest here:"
+msgstr "Zvyšok môžete zaplatiť tu:"
+
+#: templates/email/partial.html:4 templates/email/partial.txt:10
+msgid "To pay the rest, please use the payment link from our original e-mail."
+msgstr "Zvyšok uhraďte prosím cez odkaz na platbu z nášho pôvodného e-mailu."
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:3
+#, python-format
+msgid "Thank you. %(org)s has received your payment for %(ref)s."
+msgstr "Ďakujeme. %(org)s prijala vašu platbu k %(ref)s."
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:5
+#, python-format
+msgid "Amount paid: %(total)s"
+msgstr "Zaplatená suma: %(total)s"
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:7
+msgid "View the receipt online:"
+msgstr "Zobraziť potvrdenie online:"
+
+#: templates/email/receipt.html:4 templates/email/receipt.txt:10
+msgid "Your receipt is attached as a PDF."
+msgstr "Potvrdenie o platbe je priložené ako PDF."
+
+#: templates/email/vault_sealed_staff.html:4
+#: templates/email/vault_sealed_staff.txt:1
+#, python-format
+msgid "The vault is sealed, so %(count)s e-mails cannot be sent."
+msgstr "Trezor je zapečatený, preto sa nedá odoslať %(count)s e-mailov."
+
+#: templates/email/vault_sealed_staff.html:4
+#: templates/email/vault_sealed_staff.txt:3
+msgid "Unlock it here:"
+msgstr "Odomknite ho tu:"
+
+#: templates/keys/confirm.html:2 templates/keys/confirm.html:4
+msgid "Confirm your encryption key"
+msgstr "Potvrďte svoj šifrovací kľúč"
+
+#: templates/keys/confirm.html:5 templates/keys/confirmed.html:5
+#: templates/keys/upload.html:7
+msgid "Fingerprint"
+msgstr "Odtlačok"
+
+#: templates/keys/confirm.html:7
+msgid ""
+"Press Confirm and our e-mails to you will be encrypted to this key from now "
+"on."
+msgstr "Stlačte Potvrdiť a odteraz vám budeme e-maily šifrovať týmto kľúčom."
+
+#: templates/keys/confirm.html:10
+msgid "Confirm"
+msgstr "Potvrdiť"
+
+#: templates/keys/confirm.html:12
+msgid "If you did not ask for this, close this page: nothing changes."
+msgstr "Ak ste o to nežiadali, zatvorte túto stránku. Nič sa nezmení."
+
+#: templates/keys/confirmed.html:2 templates/keys/confirmed.html:4
+msgid "Key confirmed"
+msgstr "Kľúč je potvrdený"
+
+#: templates/keys/confirmed.html:7
+msgid "From now on, our e-mails to you are encrypted to this key."
+msgstr "Odteraz vám e-maily šifrujeme týmto kľúčom."
+
+#: templates/keys/expired.html:2 templates/keys/expired.html:4
+msgid "This key cannot be used"
+msgstr "Tento kľúč sa nedá použiť"
+
+#: templates/keys/expired.html:2 templates/keys/expired.html:4
+msgid "This link does not work"
+msgstr "Tento odkaz nefunguje"
+
+#: templates/keys/expired.html:6
+msgid "Upload a working key from your invoice page."
+msgstr "Nahrajte funkčný kľúč na stránke faktúry."
+
+#: templates/keys/expired.html:7
+msgid ""
+"This link has expired. Upload the key again from your invoice page and we "
+"will send you a new one."
+msgstr ""
+"Platnosť tohto odkazu vypršala. Nahrajte kľúč znova na stránke faktúry a "
+"pošleme vám nový."
+
+#: templates/keys/expired.html:8
+msgid "This link has already been used, or the key it confirms was withdrawn."
+msgstr ""
+"Tento odkaz už bol použitý alebo kľúč, ktorý potvrdzuje, bol zrušený."
+
+#: templates/keys/expired.html:9
+msgid "This link is not valid. Check that you copied all of it."
+msgstr "Tento odkaz nie je platný. Skontrolujte, či ste ho skopírovali celý."
+
+#: templates/keys/upload.html:2 templates/keys/upload.html:4
+#: templates/portal/invoice.html:7
+msgid "Receive encrypted e-mail"
+msgstr "Dostávať šifrované e-maily"
+
+#: templates/keys/upload.html:6
+msgid "Check your e-mail"
+msgstr "Skontrolujte si e-mail"
+
+#: templates/keys/upload.html:9
+msgid ""
+"We sent a confirmation e-mail, encrypted to this key, to your address. Open "
+"it and follow the link inside to start using the key. Until then nothing "
+"changes. The link works for 7 days."
+msgstr ""
+"Na vašu adresu sme poslali potvrdzovací e-mail zašifrovaný týmto kľúčom. "
+"Otvorte ho a kliknite na odkaz v ňom, aby sa kľúč začal používať. Dovtedy sa "
+"nič nemení. Odkaz platí 7 dní."
+
+#: templates/keys/upload.html:11
+msgid ""
+"Upload your PGP public key or S/MIME certificate. Our e-mails to you, "
+"invoices and receipts included, will then be encrypted to it."
+msgstr ""
+"Nahrajte svoj verejný kľúč PGP alebo certifikát S/MIME. Naše e-maily vrátane "
+"faktúr a potvrdení o platbe vám potom budeme šifrovať týmto kľúčom."
+
+#: templates/keys/upload.html:12
+msgid ""
+"Upload only a public key or a certificate, never a private key or a .p12/."
+"pfx file."
+msgstr ""
+"Nahrajte iba verejný kľúč alebo certifikát, nikdy nie súkromný kľúč ani "
+"súbor .p12/.pfx."
+
+#: templates/keys/upload.html:15
+msgid "Paste the key"
+msgstr "Vložte kľúč"
+
+#: templates/keys/upload.html:17
+msgid "Or choose a file"
+msgstr "Alebo vyberte súbor"
+
+#: templates/keys/upload.html:19
+msgid "Upload the key"
+msgstr "Nahrať kľúč"
+
+#: templates/keys/upload.html:22
+msgid "Back to the invoice"
+msgstr "Späť na faktúru"
+
+#: templates/pdf/_base.html:8 templates/portal/_summary.html:5
+msgid "Number"
+msgstr "Číslo"
+
+#: templates/pdf/_base.html:9 templates/portal/_summary.html:6
+msgid "Issue date"
+msgstr "Dátum vystavenia"
+
+#: templates/pdf/_base.html:11 templates/portal/_summary.html:7
+msgid "Due date"
+msgstr "Dátum splatnosti"
+
+#: templates/pdf/_base.html:12 templates/portal/_summary.html:8
+msgid "Due on receipt"
+msgstr "Splatné ihneď"
+
+#: templates/pdf/_base.html:18 templates/portal/_summary.html:13
+msgid "From"
+msgstr "Dodávateľ"
+
+#: templates/pdf/_base.html:22 templates/portal/_summary.html:17
+msgid "Bill to"
+msgstr "Odberateľ"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+msgid "Description"
+msgstr "Popis"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+msgid "Qty"
+msgstr "Množstvo"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+msgid "Unit price"
+msgstr "Jednotková cena"
+
+#: templates/pdf/_base.html:29 templates/pdf/_base.html:37
+#: templates/portal/_summary.html:25 templates/portal/_summary.html:34
+msgid "Tax"
+msgstr "Daň"
+
+#: templates/pdf/_base.html:29 templates/portal/_summary.html:25
+#: templates/portal/pay.html:26 templates/portal/pay.html:31
+msgid "Amount"
+msgstr "Suma"
+
+#: templates/pdf/_base.html:35 templates/portal/_summary.html:32
+msgid "Subtotal"
+msgstr "Medzisúčet"
+
+#: templates/pdf/_base.html:36 templates/portal/_summary.html:33
+msgid "Discount"
+msgstr "Zľava"
+
+#: templates/pdf/_base.html:38 templates/portal/_summary.html:35
+msgid "Total"
+msgstr "Spolu"
+
+#: templates/pdf/_base.html:40 templates/portal/_summary.html:37
+msgid "Notes"
+msgstr "Poznámky"
+
+#: templates/pdf/invoice.html:2 templates/portal/_summary.html:4
+#: templates/portal/invoice.html:2 templates/portal/pay.html:2
+msgid "Payment request"
+msgstr "Žiadosť o platbu"
+
+#: templates/pdf/invoice.html:2 templates/portal/_summary.html:4
+#: templates/portal/invoice.html:2 templates/portal/pay.html:2
+msgid "Invoice"
+msgstr "Faktúra"
+
+#: templates/pdf/invoice.html:4 templates/portal/pay.html:10
+msgid "Payment"
+msgstr "Platba"
+
+#: templates/pdf/invoice.html:5 templates/pdf/receipt.html:8
+#: templates/portal/pay.html:12
+msgid "Payment reference"
+msgstr "Referencia platby"
+
+#: templates/pdf/invoice.html:10 templates/portal/pay.html:18
+msgid "Beneficiary"
+msgstr "Príjemca"
+
+#: templates/pdf/invoice.html:11 templates/portal/pay.html:19
+msgid "Beneficiary address"
+msgstr "Adresa príjemcu"
+
+#: templates/pdf/invoice.html:12 templates/pdf/invoice.html:16
+#: templates/portal/pay.html:20 templates/portal/pay.html:24
+msgid "Account"
+msgstr "Účet"
+
+#: templates/pdf/invoice.html:13 templates/portal/pay.html:21
+msgid "Bank"
+msgstr "Banka"
+
+#: templates/pdf/invoice.html:14 templates/portal/pay.html:22
+msgid "Bank address"
+msgstr "Adresa banky"
+
+#: templates/pdf/invoice.html:16 templates/portal/pay.html:24
+msgid "Intermediary bank"
+msgstr "Sprostredkujúca banka"
+
+#: templates/pdf/receipt.html:2
+msgid "Receipt"
+msgstr "Potvrdenie o platbe"
+
+#: templates/pdf/receipt.html:4
+msgid "PAID"
+msgstr "ZAPLATENÉ"
+
+#: templates/pdf/receipt.html:5
+msgid "Paid on"
+msgstr "Zaplatené dňa"
+
+#: templates/portal/_quote.html:3
+#, python-format
+msgid "Pay %(asset)s on %(network_name)s"
+msgstr "Platba v %(asset)s na %(network_name)s"
+
+#: templates/portal/_quote.html:4
+msgid "Amount to send"
+msgstr "Suma na odoslanie"
+
+#: templates/portal/_quote.html:6 templates/portal/_quote.html:9
+#: templates/portal/_quote.html:12
+msgid "Copied"
+msgstr "Skopírované"
+
+#: templates/portal/_quote.html:6 templates/portal/_quote.html:9
+#: templates/portal/_quote.html:12
+msgid "Copy"
+msgstr "Kopírovať"
+
+#: templates/portal/_quote.html:7
+msgid "Address"
+msgstr "Adresa"
+
+#: templates/portal/_quote.html:10
+msgid "Lightning invoice"
+msgstr "Lightning faktúra"
+
+#: templates/portal/_quote.html:13
+msgid "Open the payment page"
+msgstr "Otvoriť platobnú stránku"
+
+#: templates/portal/_quote.html:14
+msgid "QR code with the payment details"
+msgstr "QR kód s platobnými údajmi"
+
+#: templates/portal/_quote.html:16
+#, python-format
+msgid ""
+"Send exactly this amount of %(asset)s on %(network_name)s. Another token or "
+"network cannot be matched automatically."
+msgstr ""
+"Pošlite presne túto sumu v %(asset)s na %(network_name)s. Iný token alebo "
+"iná sieť sa nedá priradiť automaticky."
+
+#: templates/portal/_quote.html:17
+msgid "Valid until"
+msgstr "Platné do"
+
+#: templates/portal/_quote.html:17
+msgid "This amount has expired. Get a new one."
+msgstr "Platnosť tejto sumy skončila. Získajte novú."
+
+#: templates/portal/_quote.html:21
+msgid "Get a new amount"
+msgstr "Získať novú sumu"
+
+#: templates/portal/_quote.html:23
+msgid ""
+"After you have sent it, this page updates by itself. If it does not, use “I "
+"have paid” below."
+msgstr ""
+"Po odoslaní sa táto stránka aktualizuje sama. Ak sa tak nestane, použite "
+"nižšie „Oznámiť platbu“."
+
+#: templates/portal/_status.html:1 templates/portal/void.html:2
+#: templates/portal/void.html:4
+msgid "This payment request has been voided"
+msgstr "Táto žiadosť o platbu bola stornovaná"
+
+#: templates/portal/_status.html:1 templates/portal/void.html:2
+#: templates/portal/void.html:4
+msgid "This invoice has been voided"
+msgstr "Táto faktúra bola stornovaná"
+
+#: templates/portal/_status.html:2
+msgid "Payment received, our staff are checking it"
+msgstr "Platba prijatá, naši pracovníci ju kontrolujú"
+
+#: templates/portal/_status.html:3
+msgid "Payment seen, waiting for confirmation"
+msgstr "Platba zaznamenaná, čaká sa na potvrdenie"
+
+#: templates/portal/_status.html:4
+msgid "We have been told that you have paid. We are checking the payment."
+msgstr "Dostali sme informáciu, že ste zaplatili. Platbu overujeme."
+
+#: templates/portal/_status.html:5
+msgid "Partially paid. Please pay the remaining amount."
+msgstr "Čiastočne zaplatené. Uhraďte, prosím, zostávajúcu sumu."
+
+#: templates/portal/_status.html:6
+msgid "Paid. Thank you."
+msgstr "Zaplatené. Ďakujeme."
+
+#: templates/portal/_status.html:7
+msgid "Overdue. Please pay as soon as possible."
+msgstr "Po splatnosti. Uhraďte, prosím, čo najskôr."
+
+#: templates/portal/_status.html:8
+msgid "Awaiting payment"
+msgstr "Čaká sa na platbu"
+
+#: templates/portal/invoice.html:6
+msgid "Download PDF"
+msgstr "Stiahnuť PDF"
+
+#: templates/portal/pay.html:11
+msgid "Amount to pay"
+msgstr "Suma na úhradu"
+
+#: templates/portal/pay.html:13
+msgid "Please quote this reference in the payment."
+msgstr "Pri platbe uveďte, prosím, túto referenciu."
+
+#: templates/portal/pay.html:17
+msgid "Bank transfer"
+msgstr "Bankový prevod"
+
+#: templates/portal/pay.html:27
+msgid ""
+"When you send the transfer, choose OUR as the bank charges option, so that "
+"the full amount arrives."
+msgstr ""
+"Pri odoslaní prevodu zvoľte možnosť poplatkov OUR, aby dorazila celá suma."
+
+#: templates/portal/pay.html:30
+msgid "Online payment"
+msgstr "Online platba"
+
+#: templates/portal/pay.html:32
+msgid "Open payment link"
+msgstr "Otvoriť odkaz na platbu"
+
+#: templates/portal/pay.html:40
+msgid "Pay with crypto"
+msgstr "Platba kryptomenou"
+
+#: templates/portal/pay.html:41
+msgid ""
+"Choose a network and a token. You get the exact amount to send, and it is "
+"checked automatically."
+msgstr ""
+"Vyberte sieť a token. Dostanete presnú sumu na odoslanie a platba sa "
+"skontroluje automaticky."
+
+#: templates/portal/pay.html:55 templates/portal/pay.html:62
+msgid "I have paid"
+msgstr "Oznámiť platbu"
+
+#: templates/portal/pay.html:56
+msgid ""
+"Once you have paid, let us know. You may add the transaction number and a "
+"note."
+msgstr ""
+"Keď zaplatíte, dajte nám vedieť. Môžete pridať číslo transakcie a poznámku."
+
+#: templates/portal/pay.html:57
+msgid "Please correct the errors below."
+msgstr "Opravte, prosím, chyby uvedené nižšie."
+
+#: templates/portal/too_many.html:2 templates/portal/too_many.html:4
+msgid "Too many requests"
+msgstr "Príliš veľa požiadaviek"
+
+#: templates/portal/too_many.html:5
+msgid "Please wait a minute and try again."
+msgstr "Počkajte, prosím, minútu a skúste to znova."
+
+#: templates/portal/void.html:5
+msgid "Please do not pay it. Contact the sender if you have any questions."
+msgstr "Neplaťte ju, prosím. Ak máte otázky, kontaktujte odosielateľa."
+
+#: templates/vault/unavailable.html:3 templates/vault/unavailable.html:5
+msgid "Temporarily unavailable"
+msgstr "Dočasne nedostupné"
+
+#: templates/vault/unavailable.html:6
+msgid "Please try again in a few minutes."
+msgstr "Skúste to prosím znova o niekoľko minút."
+
+#: templates/vault/unlock.html:3 templates/vault/unlock.html:10
+msgid "Unlock"
+msgstr "Odomknúť"
+
+#: templates/vault/unlock.html:6
+msgid "The vault is unsealed."
+msgstr "Trezor je odomknutý."
+
+#: templates/vault/unlock.html:7
+msgid "Wrong password."
+msgstr "Nesprávne heslo."
+
+#: templates/vault/unlock.html:9
+msgid "Password"
+msgstr "Heslo"
+
+#: apps/portal/views.py:277
+msgid ""
+"We already have your notice of payment and are checking it. You do not need "
+"to send it again."
+msgstr ""
+"Vaše oznámenie o platbe už máme a overujeme ho. Nie je potrebné posielať ho "
+"znova."
+
+#: apps/notify/services.py:37
+#, python-format
+msgid "New encryption key for your e-mail from %(org)s"
+msgstr "Nový šifrovací kľúč pre vaše e-maily od %(org)s"
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:3
+#, python-format
+msgid "Someone uploaded a new encryption key for your e-mail address. Once it is confirmed, %(org)s will encrypt its e-mails to you with that key instead of your current one, the key this message is encrypted to."
+msgstr "Niekto nahral nový šifrovací kľúč pre vašu e-mailovú adresu. Keď bude potvrdený, %(org)s vám bude e-maily šifrovať ním namiesto vášho súčasného kľúča, ktorým je zašifrovaná táto správa."
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:5
+#, python-format
+msgid "Fingerprint of the new key: %(fingerprint)s"
+msgstr "Odtlačok nového kľúča: %(fingerprint)s"
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:7
+msgid "If you uploaded it yourself, there is nothing to do here."
+msgstr "Ak ste ho nahrali vy, nemusíte nič robiť."
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:9
+msgid "If you did not, open this link and cancel the new key there. It is refused, and your current key stays in use:"
+msgstr "Ak nie, otvorte tento odkaz a nový kľúč tam zrušte. Bude odmietnutý a naďalej sa bude používať váš súčasný kľúč:"
+
+#: templates/email/key_replacement.html:4 templates/email/key_replacement.txt:12
+msgid "The link works for 7 days."
+msgstr "Odkaz platí 7 dní."
+
+#: templates/keys/cancel.html:2 templates/keys/cancel.html:4
+msgid "Cancel the new encryption key"
+msgstr "Zrušenie nového šifrovacieho kľúča"
+
+#: templates/keys/cancel.html:7
+msgid "Someone uploaded this key for your e-mail address. If it was not you, cancel it here: it is refused, and our e-mails to you stay encrypted to your current key."
+msgstr "Niekto nahral tento kľúč pre vašu e-mailovú adresu. Ak ste to neboli vy, zrušte ho tu: bude odmietnutý a naše e-maily vám budeme naďalej šifrovať vaším súčasným kľúčom."
+
+#: templates/keys/cancel.html:9
+msgid "Cancel the new key"
+msgstr "Zrušiť nový kľúč"
+
+#: templates/keys/cancel.html:11
+msgid "If you uploaded this key yourself, close this page: nothing changes."
+msgstr "Ak ste tento kľúč nahrali vy, zatvorte túto stránku. Nič sa nezmení."
+
+#: templates/keys/cancelled.html:2 templates/keys/cancelled.html:4
+msgid "The new key was cancelled"
+msgstr "Nový kľúč bol zrušený"
+
+#: templates/keys/cancelled.html:5
+msgid "The new key was refused and will not be used."
+msgstr "Nový kľúč bol odmietnutý a nebude sa používať."
+
+#: templates/keys/cancelled.html:5
+msgid "Our e-mails to you stay encrypted to your current key."
+msgstr "Naše e-maily vám budeme naďalej šifrovať vaším súčasným kľúčom."
+
+#: templates/keys/cancel_unusable.html:5
+msgid "This link has expired. If a key you did not upload is in use, write to us and we will remove it."
+msgstr "Platnosť tohto odkazu vypršala. Ak sa používa kľúč, ktorý ste nenahrali, napíšte nám a odstránime ho."
+
+#: templates/keys/cancel_unusable.html:6
+msgid "This link has already been used: the new key was cancelled."
+msgstr "Tento odkaz už bol použitý: nový kľúč bol zrušený."
+
+#: templates/keys/cancel_refused.html:2 templates/keys/cancel_refused.html:4
+msgid "The new key could not be cancelled"
+msgstr "Nový kľúč sa nepodarilo zrušiť"
+
+#: templates/keys/cancel_refused.html:5
+msgid "Your previous key can no longer be used, so cancelling the new key would leave our e-mails to you unencrypted. The new key stays in use for now, and our staff have been told. Please write to us."
+msgstr "Váš predchádzajúci kľúč sa už nedá použiť, takže po zrušení nového kľúča by sme vám posielali e-maily nezašifrované. Nový kľúč preto zatiaľ zostáva v platnosti a naši pracovníci o tom vedia. Napíšte nám, prosím."
+
+#: templates/ui/_theme_switch.html
+msgid "Theme"
+msgstr "Vzhľad"
+
+#: templates/ui/_theme_switch.html
+msgid "Same as this device"
+msgstr "Podľa zariadenia"
+
+#: templates/ui/_theme_switch.html
+msgid "Light"
+msgstr "Svetlý"
+
+#: templates/ui/_theme_switch.html
+msgid "Dim"
+msgstr "Tlmený"
+
+#: templates/ui/_theme_switch.html
+msgid "Dark"
+msgstr "Tmavý"
+
+#: apps/portal/forms.py
+msgid "Choose a network"
+msgstr "Vyberte sieť"
+
+#: templates/portal/_quote.html
+msgid "Open in wallet"
+msgstr "Otvoriť v peňaženke"
+
+#: templates/keys/upload.html
+msgid "Choose a file"
+msgstr "Vybrať súbor"
+
+#: templates/keys/upload.html
+msgid "No file chosen"
+msgstr "Nie je vybraný žiadny súbor"
+
+#: templates/portal/pay.html
+msgid "Keep this page."
+msgstr "Uschovajte si túto stránku."
+
+#: templates/portal/pay.html
+msgid "Bookmark it or copy its address to come back to it. We e-mail you only once your payment has arrived."
+msgstr "Pridajte si ju medzi záložky alebo si skopírujte jej adresu, aby ste sa k nej mohli vrátiť. E-mail vám pošleme, až keď vaša platba dorazí."
+
+#: templates/links/unavailable.html
+msgid "This payment link is no longer available."
+msgstr "Tento platobný odkaz už nie je k dispozícii."
+
+#: templates/links/unavailable.html
+msgid "Contact the seller if you have any questions."
+msgstr "Ak máte otázky, obráťte sa na predajcu."
+
+#: templates/links/_field.html
+msgid "optional"
+msgstr "nepovinné"
+
+#: templates/links/page.html
+msgid "Price"
+msgstr "Cena"
+
+#: templates/links/page.html
+msgid "You choose the amount to pay."
+msgstr "Sumu, ktorú zaplatíte, si zvolíte sami."
+
+#: templates/links/page.html
+msgid "Your details"
+msgstr "Vaše údaje"
+
+#: templates/links/page.html
+msgid "We ask every buyer: the answer decides which of our companies bills you."
+msgstr "Pýtame sa každého kupujúceho: odpoveď určuje, ktorá z našich spoločností vám vystaví doklad."
+
+#: templates/links/page.html
+msgid "Continue to payment"
+msgstr "Pokračovať na platbu"
+
+#: templates/links/page.html
+msgid "Next you choose how to pay. Nothing is charged before you pay."
+msgstr "Ďalej si zvolíte, ako zaplatiť. Nič sa nestrhne, kým nezaplatíte."
+
+#: templates/links/page.html
+#, python-format
+msgid "Plus %(tax)s tax."
+msgstr "Plus daň %(tax)s."
+
+#: apps/links/forms.py
+msgid "Address line 1"
+msgstr "Adresa, riadok 1"
+
+#: apps/links/forms.py
+msgid "Address line 2"
+msgstr "Adresa, riadok 2"
+
+#: apps/links/forms.py
+msgid "City"
+msgstr "Mesto"
+
+#: apps/links/forms.py
+msgid "Postal code"
+msgstr "PSČ"
+
+#: apps/links/forms.py
+msgid "State or region"
+msgstr "Štát alebo kraj"
+
+#: apps/links/forms.py
+msgid "Country"
+msgstr "Krajina"
+
+#: apps/links/forms.py
+msgid "E-mail address"
+msgstr "E-mailová adresa"
+
+#: apps/links/forms.py
+msgid "Are you a US tax resident?"
+msgstr "Ste daňovým rezidentom USA?"
+
+#: apps/links/forms.py
+msgid "Yes, I am"
+msgstr "Áno, som"
+
+#: apps/links/forms.py
+msgid "No, I am not"
+msgstr "Nie, nie som"
+
+#: apps/links/forms.py
+msgid "Coupon code"
+msgstr "Zľavový kód"
+
+#: apps/links/forms.py
+#, python-format
+msgid "Amount (%(currency)s)"
+msgstr "Suma (%(currency)s)"
+
+#: apps/links/forms.py
+msgid "Quantity"
+msgstr "Množstvo"
+
+#: apps/links/forms.py
+msgid "Full name"
+msgstr "Meno a priezvisko"
+
+#: apps/links/forms.py
+msgid "Billing address"
+msgstr "Fakturačná adresa"
+
+#: apps/links/forms.py
+msgid "Shipping address"
+msgstr "Doručovacia adresa"
+
+#: apps/links/forms.py
+msgid "Phone"
+msgstr "Telefón"
+
+#: apps/links/forms.py
+#, python-format
+msgid "Between %(min)s and %(max)s."
+msgstr "Od %(min)s do %(max)s."
+
+#: apps/links/forms.py
+#, python-format
+msgid "At least %(min)s."
+msgstr "Najmenej %(min)s."
+
+#: apps/links/forms.py
+#, python-format
+msgid "At most %(max)s."
+msgstr "Najviac %(max)s."
+
+#: apps/links/forms.py
+#, python-format
+msgid "Choose a quantity from 1 to %(max)s."
+msgstr "Zvoľte množstvo od 1 do %(max)s."
+
+#: apps/links/forms.py
+msgid "Enter the amount as a plain number, such as 12.50."
+msgstr "Zadajte sumu ako obyčajné číslo, napríklad 12,50."
+
+#: apps/links/forms.py
+#, python-format
+msgid "The amount must be at least %(min)s."
+msgstr "Suma musí byť aspoň %(min)s."
+
+#: apps/links/forms.py
+msgid "The amount must be greater than zero."
+msgstr "Suma musí byť väčšia ako nula."
+
+#: apps/links/forms.py
+#, python-format
+msgid "The amount may be at most %(max)s."
+msgstr "Suma môže byť najviac %(max)s."
+
+#: apps/links/forms.py
+msgid "This code is not valid."
+msgstr "Tento kód nie je platný."
+
+#: apps/links/forms.py
+msgid "This code has been used up."
+msgstr "Tento kód už bol vyčerpaný."
+
+#: apps/links/views.py
+msgid "This payment link cannot be paid right now."
+msgstr "Tento platobný odkaz teraz nie je možné zaplatiť."
+
+#: apps/links/views.py
+msgid "This order cannot be placed. Check the details and try again."
+msgstr "Objednávku nie je možné vytvoriť. Skontrolujte údaje a skúste to znova."
+
+#: apps/notify/services.py
+#, python-format
+msgid "Order %(ref)s was paid through a payment link"
+msgstr "Objednávka %(ref)s bola zaplatená cez platobný odkaz"
+
+#: templates/email/invoice.html:4 templates/email/invoice.txt:1 templates/email/partial.html:4 templates/email/partial.txt:1 templates/email/receipt.html:4 templates/email/receipt.txt:1
+msgid "Hello,"
+msgstr "Dobrý deň,"
+
+#: templates/portal/_back.html:1
+#, python-format
+msgid "Back to %(host)s"
+msgstr "Späť na %(host)s"
+
+#: templates/portal/_quote.html templates/portal/pay.html
+msgid "A person confirms Monero and Zcash payments. This may take a while during European night hours."
+msgstr "Platby v Monero a Zcash potvrdzuje človek. V európskych nočných hodinách to môže chvíľu trvať."
+
+#: apps/notify/services.py
+#, python-format
+msgid "Staff change: %(ref)s"
+msgstr "Zmena v administrácii: %(ref)s"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "A change that needs a superuser and a recent second factor was made on the staff pages."
+msgstr "Na stránkach pre zamestnancov bola vykonaná zmena, ktorá vyžaduje superpoužívateľa a nedávno overený druhý faktor."
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "Who:"
+msgstr "Kto:"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "What:"
+msgstr "Čo:"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "When:"
+msgstr "Kedy:"
+
+#: templates/email/staff_change_staff.html templates/email/staff_change_staff.txt
+msgid "If you did not expect it, check it on the staff page and in the audit log:"
+msgstr "Ak ste ju nečakali, skontrolujte ju na stránke pre zamestnancov a v auditnom zázname:"
+
+#, python-format
+msgid "Reminder: invoice %(ref)s from %(org)s"
+msgstr "Pripomienka: úhrada faktúry %(ref)s od %(org)s"
+
+#, python-format
+msgid "This is a friendly reminder that the payment request %(ref)s from %(org)s is still open."
+msgstr "Dovoľujeme si pripomenúť, že žiadosť o platbu %(ref)s od %(org)s ešte nie je uhradená."
+
+#, python-format
+msgid "This is a friendly reminder that invoice %(ref)s from %(org)s is still open."
+msgstr "Dovoľujeme si pripomenúť, že faktúra %(ref)s od %(org)s ešte nie je uhradená."
+
+#, python-format
+msgid "Amount still due: %(total)s"
+msgstr "Zostáva uhradiť: %(total)s"
+
+msgid "If you have already paid, please ignore this message."
+msgstr "Ak ste už zaplatili, tento e-mail prosím ignorujte."
+
+#, python-format
+msgid "Reminder: payment request %(ref)s from %(org)s"
+msgstr "Pripomienka: žiadosť o platbu %(ref)s od %(org)s"

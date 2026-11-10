@@ -1,0 +1,14 @@
+{% extends "staff/auth.html" %}
+{% block title %}Staff sign-in{% endblock %}
+{% block content %}
+<h1>Staff sign-in</h1>
+<p class="hint">Your password first, then a passkey or a code from your authenticator app.</p>
+{% if limited %}<p class="error" role="alert">Too many attempts. Try again in a few minutes.</p>{% endif %}
+{% if form.non_field_errors %}<div class="error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+<form method="post" class="form-stack">{% csrf_token %}
+<input type="hidden" name="next" value="{{ next }}">
+<div class="field"><label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>{{ form.username }}{{ form.username.errors }}</div>
+<div class="field"><label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>{{ form.password }}{{ form.password.errors }}</div>
+<button type="submit" class="btn btn--primary btn--block">Continue</button>
+</form>
+{% endblock %}

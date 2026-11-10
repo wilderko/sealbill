@@ -1,0 +1,24 @@
+{% extends "staff/base.html" %}{% load ui %}
+{% block title %}E-mail outbox{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:settings' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Settings</a>
+<header class="page-head"><div class="page-head__text"><h1>E-mail outbox</h1>
+<p class="page-head__meta">Newest first. Recipients and contents are never shown here.</p></div></header>
+{% include "ui/_messages.html" %}
+<nav class="status-tabs" aria-label="State"><a href="{% url 'staff:outbox_list' %}"{% if not state %} aria-current="page"{% endif %}>All</a>{% for s in states %}<a href="?state={{ s }}"{% if s == state %} aria-current="page"{% endif %}>{{ s|capfirst }}</a>{% endfor %}</nav>
+{% if page.object_list %}<div class="card table-card"><div class="table-wrap table-wrap--long"><table>
+<thead><tr><th>Message</th><th>State</th><th>Kind</th><th class="num">Attempts</th><th>Why</th><th>Queued</th><th>Sent</th><th>Invoice</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for m in page.object_list %}<tr><td>#{{ m.pk }}</td><td class="cell-status">{% pill m.state %}</td><td data-label="Kind">{{ m.kind }}</td><td class="num" data-label="Attempts">{{ m.attempts }}</td><td data-label="Why">{{ m.last_error|default:"-" }}</td><td class="nowrap" data-label="Queued">{{ m.created_at|date:"Y-m-d H:i" }}</td><td class="nowrap" data-label="Sent">{{ m.sent_at|date:"Y-m-d H:i"|default:"-" }}</td>
+<td data-label="Invoice">{% if m.invoice_id %}<a class="strong-link" href="{% url 'staff:invoice' pk=m.invoice_id %}">{% invoice_ref m.invoice.number m.invoice_id %}</a>{% else %}<span class="muted">-</span>{% endif %}</td>
+<td class="actions-cell">{% if m.state == "failed" or m.state == "queued" %}<form method="post" action="{% url 'staff:retry_outbox' pk=m.pk %}" class="row-form">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button type="submit" class="btn btn--sm btn--primary">Retry now</button></form>{% endif %}
+{% if m.state == "failed" %}<details class="row-menu"><summary class="row-menu__toggle">Dismiss<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+<form method="post" action="{% url 'staff:dismiss_outbox' pk=m.pk %}" class="row-menu__panel">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><input name="reason" placeholder="Why it will not be sent" aria-label="Why it will not be sent" required maxlength="2000"> <button type="submit" class="btn btn--sm btn--danger-outline">Dismiss for good</button></form>
+</details>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% if page.paginator.num_pages > 1 %}<nav class="status-tabs" aria-label="Pages">
+{% if page.has_previous %}<a href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.previous_page_number }}">Previous</a>{% endif %}
+<span class="muted">Page {{ page.number }} of {{ page.paginator.num_pages }} ({{ page.paginator.count }} rows)</span>
+{% if page.has_next %}<a href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>{% endif %}
+{% else %}<div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-invoice"/></svg><p>No messages.</p></div>{% endif %}
+{% endblock %}

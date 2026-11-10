@@ -1,0 +1,8 @@
+[{"paymentMethodId": "BTC-CHAIN", "currency": "BTC", "destination": "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
+  "paymentLink": "bitcoin:bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4?amount=0.00123456",
+  "rate": "81000.12", "paymentMethodPaid": "0", "totalPaid": "0.00123456", "due": "0", "amount": "0.00123456",
+  "networkFee": "0", "payments": [], "activated": true},
+ {"paymentMethodId": "XMR-CHAIN", "currency": "XMR", "destination": "84Mm...subaddress",
+  "paymentLink": "monero:84Mm...subaddress?tx_amount=0.512345678901",
+  "rate": "195.17", "paymentMethodPaid": "0.512345678901", "totalPaid": "0.512345678901", "due": "0",
+  "amount": "0.512345678901", "networkFee": "0", "payments": [{"id": "tx1"}], "activated": true}]

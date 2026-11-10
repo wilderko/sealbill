@@ -1,0 +1,38 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{{ title }}{% endblock %}
+{% block shell_class %} client-shell--wide{% endblock %}
+{% block content %}
+<div class="link-layout">
+<section class="link-offer" aria-labelledby="offer-title">
+{% if image %}<img class="link-offer__image" src="{{ image }}" alt="">{% endif %}
+<h1 id="offer-title" class="link-offer__title">{{ title }}</h1>
+{% if description %}<p class="link-offer__text pre">{{ description }}</p>{% endif %}
+<div class="link-offer__price">
+{% if price %}<p class="due-hero__label">{% translate "Price" %}</p>
+<p class="due-hero__amount">{{ price }}</p>{% else %}<p class="link-offer__choose">{% translate "You choose the amount to pay." %}</p>
+{% if form.bounds_text %}<p class="hint">{{ form.bounds_text }}</p>{% endif %}{% endif %}
+{% if tax_percent %}<p class="hint">{% blocktranslate with tax=tax_percent %}Plus {{ tax }} tax.{% endblocktranslate %}</p>{% endif %}
+</div>
+</section>
+<section class="card link-order" aria-labelledby="order-title">
+<div class="card-body">
+<h2 id="order-title" class="card-title">{% translate "Your details" %}</h2>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+{% if form.errors %}<p class="error" role="alert">{% translate "Please correct the errors below." %}</p>{% endif %}
+<form method="post" class="form-stack">{% csrf_token %}
+{% for field in form.purchase_fields %}{% include "links/_field.html" with short=True %}{% endfor %}
+{% for field in form.detail_fields %}{% include "links/_field.html" %}{% endfor %}
+{% for section in form.address_sections %}<fieldset class="field-group"><legend>{{ section.title }}{% if section.optional %} <span class="optional">{% translate "optional" %}</span>{% endif %}</legend>
+<div class="form-grid">{% for field in section.fields %}{% include "links/_field.html" %}{% endfor %}</div></fieldset>{% endfor %}
+{% with field=form.us_tax_resident %}<fieldset class="field{% if field.errors %} field--error{% endif %}"><legend>{{ field.label }}</legend>
+<div class="radio-row">{% for radio in field %}<label class="check" for="{{ radio.id_for_label }}">{{ radio.tag }} <span>{{ radio.choice_label }}</span></label>{% endfor %}</div>
+<p class="helptext">{% translate "We ask every buyer: the answer decides which of our companies bills you." %}</p>
+{{ field.errors }}</fieldset>{% endwith %}
+{% if "coupon" in form.fields %}{% include "links/_field.html" with field=form.coupon %}{% endif %}
+<div class="form-actions"><button type="submit" class="btn btn--primary btn--block">{% translate "Continue to payment" %}</button></div>
+<p class="hint link-order__next">{% translate "Next you choose how to pay. Nothing is charged before you pay." %}</p>
+</form>
+</div>
+</section>
+</div>
+{% endblock %}

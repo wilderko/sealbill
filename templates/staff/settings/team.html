@@ -1,0 +1,22 @@
+{% extends "staff/base.html" %}
+{% block title %}Team{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:settings' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Settings</a>
+<header class="page-head"><div class="page-head__text"><h1>Team</h1>
+<p class="page-head__meta">Everyone who can sign in to this site, and the second factors they have. Removing a factor is recorded in the audit log.</p></div></header>
+{% include "ui/_messages.html" %}
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+{% if not user.is_superuser %}<div class="notice"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><p>Only a superuser may remove another person's second factor. Your own you can manage here.</p></div>{% endif %}
+{% if not fresh %}<div class="notice reverify"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><p>Removing a second factor needs one given in the last ten minutes.</p><a class="btn btn--sm" href="{{ reverify_url }}">Verify again</a></div>{% endif %}
+{% for m in members %}<section class="block">
+<h2>{{ m.user.get_username }}{% if m.is_self %} (you){% endif %}</h2>
+<p class="hint">{% if m.user.is_superuser %}Superuser. {% endif %}{% if not m.user.is_active %}Inactive. {% endif %}Last sign-in {{ m.user.last_login|date:"Y-m-d H:i"|default:"never" }}.</p>
+{% if m.factors %}<div class="card table-card"><div class="table-wrap"><table class="factor-table">
+<thead><tr><th>Name</th><th>Kind</th><th>Added</th><th>Last used</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for f in m.factors %}<tr><td class="factor-name">{{ f.name }}</td><td data-label="Kind">{% if f.kind == "totp" %}Authenticator app{% else %}Passkey{% endif %}</td><td class="nowrap" data-label="Added">{{ f.created_at|date:"Y-m-d H:i"|default:"-" }}</td><td class="nowrap" data-label="Last used">{{ f.last_used_at|date:"Y-m-d H:i"|default:"never" }}</td>
+<td class="actions-cell">{% if not m.is_self and not user.is_superuser %}<span class="muted">Superuser only</span>{% else %}<form method="post" action="{% url 'staff:team_factor_remove' %}" class="row-form" data-confirm="Remove {{ f.name }} from {{ m.user.get_username }}?">{% csrf_token %}<input type="hidden" name="kind" value="{{ f.kind }}"><input type="hidden" name="pk" value="{{ f.pk }}"><button type="submit" class="btn btn--sm btn--danger-outline">Remove</button></form>{% endif %}</td></tr>
+{% endfor %}</tbody></table></div></div>
+{% else %}<p class="empty-line">No second factor: this account cannot sign in. Enrol one on the server: <span class="mono">payinv-manage create_staff_totp {{ m.user.get_username }} --replace</span>.</p>{% endif %}
+</section>
+{% endfor %}
+{% endblock %}

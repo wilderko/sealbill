@@ -1,0 +1,26 @@
+{% extends "ui/base.html" %}{% load i18n %}
+{% block body_class %}staff{% endblock %}
+{% block body %}<div class="app">
+{% if user.is_authenticated and user.is_verified %}<aside class="rail"><div class="rail-inner">
+<a class="rail-brand" href="{% url 'staff:needs_person' %}"><span class="brand-mark" aria-hidden="true"><svg class="icon"><use href="#i-invoice"/></svg></span><span>Invoicing</span></a>
+<nav class="rail-nav" aria-label="Main">
+<a href="{% url 'staff:needs_person' %}"{% if nav_current == "needs_person" %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-inbox"/></svg><span class="nav-label">Needs a person</span>{% with n=nav_counts.needs_person %}{% if n %}<span class="count count--attention" title="{{ n }} open">{{ n }}<span class="sr-only"> open</span></span>{% endif %}{% endwith %}</a>
+<a href="{% url 'staff:invoice_list' %}"{% if nav_current == "invoices" %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-invoice"/></svg><span class="nav-label">Invoices</span>{% with n=nav_counts.invoices %}{% if n %}<span class="count count--label" title="{{ n }} sent and not yet paid">{{ n }} unpaid</span>{% endif %}{% endwith %}</a>
+<a href="{% url 'staff:invoice_new' %}"{% if nav_current == "invoice_new" %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span class="nav-label">New invoice</span></a>
+<a href="{% url 'staff:contact_list' %}"{% if nav_current == "contacts" %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-bookmark"/></svg><span class="nav-label">Contacts</span></a>
+<a href="{% url 'staff:link_list' %}"{% if nav_current == "links" %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-link"/></svg><span class="nav-label">Payment links</span></a>
+<a href="{% url 'staff:exports' %}"{% if nav_current == "exports" %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span class="nav-label">Exports</span></a>
+<a href="{% url 'staff:settings' %}"{% if nav_current == "settings" %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-gear"/></svg><span class="nav-label">Settings</span></a>
+</nav>
+<div class="rail-foot">
+{% language "en" %}{% include "ui/_theme_switch.html" %}{% endlanguage %}
+<div class="rail-user"><span class="avatar" aria-hidden="true">{{ user.get_username|first|upper }}</span><span class="rail-user__name">{{ user.get_username }}</span>
+<a class="btn btn--ghost btn--icon rail-security" href="{% url 'staff:security' %}" title="Security: passkeys and authenticators"{% if nav_current == "security" %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg><span class="sr-only">Security</span></a>
+<form method="post" action="{% url 'staff:logout' %}" class="rail-signout">{% csrf_token %}<button type="submit" class="btn btn--ghost btn--icon" title="Sign out"><svg class="icon" aria-hidden="true"><use href="#i-signout"/></svg><span class="sr-only">Sign out</span></button></form></div>
+</div>
+</div></aside>{% endif %}
+<main class="main" id="main"><div class="main-inner">
+{% block content %}{% endblock %}
+</div></main>
+</div>
+{% endblock %}

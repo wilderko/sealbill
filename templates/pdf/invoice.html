@@ -1,0 +1,26 @@
+{% extends "pdf/_base.html" %}{% load i18n %}
+{% block heading %}{% if invoice.kind == "payment_request" %}{% translate "Payment request" %}{% else %}{% translate "Invoice" %}{% endif %}{% endblock %}
+{% block payment %}
+<h2>{% translate "Payment" %}</h2>
+<div><span class="label">{% translate "Payment reference" %}</span><div class="reference">{{ reference }}</div></div>
+{% for m in methods %}
+<div class="method">
+{% if m.kind == "bank" %}
+  <strong>{{ m.label }}</strong>
+  {% if m.beneficiary_name %}<div>{% translate "Beneficiary" %}: {{ m.beneficiary_name }}</div>{% endif %}
+  {% if m.beneficiary_address %}<div>{% translate "Beneficiary address" %}:<div class="pre">{{ m.beneficiary_address }}</div></div>{% endif %}
+  {% if m.account_number %}<div>{% translate "Account" %}: {{ m.account_number }}</div>{% endif %}
+  {% if m.bank_name %}<div>{% translate "Bank" %}: {{ m.bank_name }}{% if m.bank_swift %} · SWIFT {{ m.bank_swift }}{% endif %}</div>{% elif m.bank_swift %}<div>SWIFT {{ m.bank_swift }}</div>{% endif %}
+  {% if m.bank_address %}<div>{% translate "Bank address" %}:<div class="pre">{{ m.bank_address }}</div></div>{% endif %}
+  {% if m.intermediary_bank_name or m.intermediary_swift or m.intermediary_account %}
+  <div>{% translate "Intermediary bank" %}: {{ m.intermediary_bank_name }}{% if m.intermediary_swift %} · SWIFT {{ m.intermediary_swift }}{% endif %}{% if m.intermediary_account %} · {% translate "Account" %} {{ m.intermediary_account }}{% endif %}</div>
+  {% endif %}
+  {% if m.instructions %}<div class="pre">{{ m.instructions }}</div>{% endif %}
+{% else %}
+  <strong>{{ m.label }}</strong>
+  {% if m.url %}<div>{{ m.url }}</div>{% endif %}
+  {% if m.instructions %}<div class="pre">{{ m.instructions }}</div>{% endif %}
+{% endif %}
+</div>
+{% endfor %}
+{% endblock %}

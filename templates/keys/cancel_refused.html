@@ -1,0 +1,9 @@
+{% extends "portal/base.html" %}{% load i18n %}
+{% block title %}{% translate "The new key could not be cancelled" %}{% endblock %}
+{% block content %}
+<div class="card narrow-card"><div class="card-body">
+<div class="card-icon card-icon--warn" aria-hidden="true"><svg class="icon"><use href="#i-alert"/></svg></div>
+<h1>{% translate "The new key could not be cancelled" %}</h1>
+<p>{% translate "Your previous key can no longer be used, so cancelling the new key would leave our e-mails to you unencrypted. The new key stays in use for now, and our staff have been told. Please write to us." %}</p>
+</div></div>
+{% endblock %}

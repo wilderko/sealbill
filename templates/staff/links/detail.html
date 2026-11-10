@@ -1,0 +1,89 @@
+{% extends "staff/base.html" %}{% load ui %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:link_list' %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Payment links</a>
+<header class="page-head">
+<div class="page-head__text"><h1>{{ title }}</h1>
+<p class="page-head__meta">Payment link #{{ link.pk }} · {{ org_name }} · {{ status_text }}</p></div>
+<div class="page-head__actions">
+<a class="btn btn--primary" href="{% url 'staff:link_edit' pk=link.pk %}">Edit link</a>
+{% if url %}<a class="btn" href="{{ url }}" target="_blank" rel="noopener noreferrer">Open the page<svg class="icon" aria-hidden="true"><use href="#i-external"/></svg></a>{% endif %}
+</div>
+</header>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+<div class="detail-grid">
+<section class="card detail-facts"><div class="card-body">
+<h2 class="card-title">Settings</h2>
+{% if image %}<img class="link-thumb" src="{{ image }}" alt="">{% endif %}
+<dl class="kv">
+<div><dt>Price</dt><dd>{{ price_text }}</dd></div>
+{% if tax_text %}<div><dt>Tax</dt><dd>{{ tax_text }} %</dd></div>{% endif %}
+<div><dt>Document</dt><dd>{% if link.kind == "payment_request" %}Payment request{% else %}Invoice{% endif %}</dd></div>
+<div><dt>Per order</dt><dd>{% if link.max_quantity == 0 %}Any quantity up to 200{% elif link.max_quantity == 1 %}One{% else %}Up to {{ link.max_quantity }}{% endif %}</dd></div>
+<div><dt>Methods</dt><dd>{{ method_text }}</dd></div>
+<div><dt>Asks for</dt><dd>E-mail, US tax residence{% if link.name_field != "off" %}, name{% if link.name_field == "optional" %} (optional){% endif %}{% endif %}{% if link.billing_field != "off" %}, billing address{% if link.billing_field == "optional" %} (optional){% endif %}{% endif %}{% if link.shipping_field != "off" %}, shipping address{% if link.shipping_field == "optional" %} (optional){% endif %}{% endif %}{% if link.phone_field != "off" %}, phone{% if link.phone_field == "optional" %} (optional){% endif %}{% endif %}{% for q in custom %}, “{{ q.label }}”{% if not q.required %} (optional){% endif %}{% endfor %}</dd></div>
+<div><dt>Uses</dt><dd>{{ uses }}{% if link.max_uses %} of {{ link.max_uses }}{% endif %} <span class="muted">(paid, and unpaid ones held 60 minutes)</span></dd></div>
+<div><dt>Valid until</dt><dd>{% if link.valid_until %}{{ link.valid_until|date:"Y-m-d H:i" }} UTC{% else %}No end{% endif %}</dd></div>
+<div><dt>Fulfilment</dt><dd>{% if link.fulfillment %}Paid orders wait to be fulfilled{% else %}Not used{% endif %}</dd></div>
+<div><dt>Staff e-mail</dt><dd>{% if link.notify_staff %}For each paid order{% else %}None{% endif %}</dd></div>
+</dl>
+{% if link.internal_note %}<p class="hint pre">{{ link.internal_note }}</p>{% endif %}
+</div></section>
+
+<div class="detail-main">
+<section class="card"><div class="card-body stack">
+<h2 class="card-title">Share</h2>
+{% if url %}<div class="share">
+<img class="share__qr" src="{{ qr_preview }}" alt="QR code of the link">
+<div class="share__body stack">
+<div class="copy-field"><span class="copy-field__label">Link</span><span class="copy-field__value mono">{{ url }}</span><button type="button" class="btn btn--sm copy-btn" data-copy="{{ url }}" data-done="Copied"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>Copy</span></button></div>
+<p class="hint">Anyone with this URL can buy. Add <span class="mono">?promoCode=CODE</span> to fill in a coupon.</p>
+<div class="share__downloads">
+<a class="btn btn--sm" href="{% url 'staff:link_qr_png' pk=link.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>QR as PNG</a>
+<a class="btn btn--sm" href="{% url 'staff:link_qr_svg' pk=link.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>QR as SVG</a>
+<a class="btn btn--sm" href="{% url 'staff:link_sheet_pdf' pk=link.pk %}" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Printable sheet (PDF)</a>
+</div>
+</div></div>
+<div class="field"><label for="button-snippet">Button for a web page</label>
+<textarea id="button-snippet" class="mono" rows="5" readonly>{{ snippet }}</textarea>
+<div><button type="button" class="btn btn--sm copy-btn" data-copy="{{ snippet }}" data-done="Copied"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>Copy the HTML</span></button></div></div>
+{% else %}<p class="error" role="alert">The URL cannot be shown: its stored copy does not open with the current key. Replace the URL to share a new one.</p>{% endif %}
+<details class="disclosure disclosure--inline"><summary class="btn btn--sm btn--danger-outline">Replace the URL</summary>
+<form method="post" action="{% url 'staff:link_rotate' pk=link.pk %}" class="form-stack">{% csrf_token %}
+<p class="hint">A new URL replaces this one, and the QR codes, the sheet and the button made from it change with it. The old URL stops working at once, wherever it was shared; orders already made are not touched.</p>
+<div class="form-actions"><button type="submit" class="btn btn--danger-outline">Yes, replace the URL</button></div></form>
+</details>
+</div></section>
+
+{% if to_fulfil %}<section class="block" id="to-fulfil">
+<div class="queue-head"><h2>To fulfil</h2><span class="count count--attention">{{ to_fulfil.total }}</span></div>
+{% include "staff/links/_orders.html" with rows=to_fulfil empty="" %}{% include "staff/_capped.html" with section=to_fulfil %}
+</section>{% endif %}
+
+<section class="block">
+<h2>Coupons</h2>
+<div class="card table-card"><div class="table-wrap"><table>
+<thead><tr><th>Code</th><th class="num">Discount</th><th class="num">Used</th><th>Valid until</th><th>State</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>
+{% for c in coupons %}<tr><td><span class="cell-main strong">{{ c.code }}</span>{% if c.name %}<span class="cell-sub">{{ c.name }}</span>{% endif %}</td><td class="num cell-amount" data-label="Discount">{{ c.percent_text }} %</td><td class="num" data-label="Used">{{ c.uses }}{% if c.max_uses %} of {{ c.max_uses }}{% endif %}</td><td class="nowrap" data-label="Valid until">{{ c.valid_until|date:"Y-m-d H:i"|default:"No end" }}</td><td data-label="State">{{ c.state_text }}</td>
+<td class="actions-cell">{% if c.share_url %}<button type="button" class="btn btn--sm copy-btn" data-copy="{{ c.share_url }}" data-done="Copied"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>Copy link with code</span></button>{% endif %}
+<form method="post" action="{% url 'staff:coupon_toggle' pk=c.pk %}" class="inline">{% csrf_token %}<button type="submit" class="btn btn--sm{% if c.active %} btn--ghost{% endif %}">{% if c.active %}Turn off{% else %}Turn on{% endif %}</button></form></td></tr>
+{% empty %}<tr class="empty-row"><td colspan="6">No coupons yet.</td></tr>{% endfor %}
+</tbody></table></div></div>
+<details class="disclosure disclosure--inline"{% if coupon_form.errors %} open{% endif %}><summary class="btn">Add a coupon</summary>
+<div class="card"><div class="card-body">
+<form method="post" action="{% url 'staff:coupon_add' pk=link.pk %}" class="form-stack">{% csrf_token %}
+{{ coupon_form.non_field_errors }}
+<div class="form-grid">{% for field in coupon_form %}{% include "ui/_field.html" %}{% endfor %}</div>
+<p class="hint">One coupon per order. The percentage comes off the price before tax.</p>
+<div class="form-actions"><button type="submit" class="btn btn--primary">Add coupon</button></div>
+</form></div></div>
+</details>
+</section>
+
+<section class="block">
+<h2>Orders</h2>
+{% include "staff/links/_orders.html" with rows=orders empty="No orders yet. An order appears here as soon as a buyer continues to payment." %}{% include "staff/_capped.html" with section=orders %}
+</section>
+</div>
+</div>
+{% endblock %}

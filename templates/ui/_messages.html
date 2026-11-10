@@ -1,0 +1,4 @@
+{% for message in messages %}{% if message.level_tag == "error" %}<div class="error" role="alert"><p>{{ message }}</p></div>
+{% elif message.level_tag == "warning" %}<div class="notice notice--warn" role="status"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><p>{{ message }}</p></div>
+{% else %}<div class="notice notice--ok" role="status"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg><p>{{ message }}</p></div>
+{% endif %}{% endfor %}

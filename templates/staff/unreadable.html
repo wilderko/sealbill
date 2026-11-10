@@ -1,0 +1,8 @@
+{% extends "staff/base.html" %}
+{% block title %}A stored value cannot be read{% endblock %}
+{% block content %}
+<header class="page-head"><div class="page-head__text"><h1>A stored value cannot be read</h1></div></header>
+<div class="notice notice--warn" role="alert"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+<div><p>The page <code>{{ path }}</code> needs a stored value that was written with a key the vault no longer holds, so it cannot be shown. Nothing was changed.</p>
+<p>The administrator, or a person who still has the old key, is needed to recover it.</p></div></div>
+{% endblock %}

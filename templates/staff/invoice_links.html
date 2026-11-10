@@ -1,0 +1,28 @@
+{% extends "staff/base.html" %}
+{% block title %}Client links{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'staff:invoice' pk=invoice.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>Invoice {{ invoice.number|default:invoice.pk }}</a>
+<header class="page-head"><div class="page-head__text"><h1>Client links, invoice {{ invoice.number|default:invoice.pk }}</h1></div></header>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+<div class="narrow">
+{% if reissued %}
+<div class="notice notice--ok"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg><p><strong>New links. They are shown only here, now; they are stored as hashes and cannot be shown again.</strong></p></div>
+<div class="card"><div class="card-body stack">
+<div class="copy-field"><span class="copy-field__label">View</span><span class="copy-field__value mono">{{ view_url }}</span><button type="button" class="btn btn--sm copy-btn" data-copy="{{ view_url }}" data-done="Copied"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>Copy</span></button></div>
+<div class="copy-field"><span class="copy-field__label">Pay</span><span class="copy-field__value mono">{{ pay_url }}</span><button type="button" class="btn btn--sm copy-btn" data-copy="{{ pay_url }}" data-done="Copied"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg><span data-copy-label>Copy</span></button></div>
+<p class="hint">The old links no longer work.{% if emailed %} The new ones were queued in an e-mail to the client.{% else %} Nothing was e-mailed: pass these on yourself.{% endif %}</p>
+</div></div>
+<p><a class="btn" href="{% url 'staff:invoice' pk=invoice.pk %}">Back to the invoice</a></p>
+{% else %}
+{% if wrong_issuer %}<p class="error" role="alert">The contact is a US tax resident, but this invoice was issued by {{ invoice.org.slug }}, not by the US-resident organization. Void it and create it again (it is listed under Needs a person). New links will not be e-mailed for it.</p>{% endif %}
+<div class="card"><div class="card-body">
+<p>Reissuing replaces both links. <strong>The old links stop working</strong>, including the ones already in the client's mailbox, and e-mails not yet sent with the old links are cancelled.</p>
+<form method="post" action="{% url 'staff:invoice_links' pk=invoice.pk %}" class="form-stack">{% csrf_token %}
+{{ form.non_field_errors }}
+{% for field in form %}{% include "ui/_field.html" %}{% endfor %}
+<div class="form-actions"><button type="submit" class="btn btn--primary">Reissue links</button><a class="btn btn--ghost" href="{% url 'staff:invoice' pk=invoice.pk %}">Cancel</a></div>
+</form>
+</div></div>
+{% endif %}
+</div>
+{% endblock %}
