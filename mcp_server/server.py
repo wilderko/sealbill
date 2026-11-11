@@ -6,7 +6,7 @@ from typing import Any
 
 from mcp.server.mcpserver import MCPServer
 
-from mcp_server.client import Api, ApiError
+from mcp_server.client import Api, ApiError, check_base_url
 
 PRIVILEGED = ("payments:confirm", "admin")
 # Capability links: whoever holds one sees (or pays) the invoice. Kept out of the agent's transcript
@@ -148,6 +148,10 @@ def main():
     token = os.environ.get("PAY_API_TOKEN", "").strip()
     if not url or not token:
         _refuse("PAY_API_URL and PAY_API_TOKEN must both be set.")
+    try:
+        check_base_url(url)
+    except ValueError as exc:
+        _refuse(f"{exc}; the token is never sent in the clear.")
     api = Api(url, token)
     try:
         me = api.get("/api/v1/me")

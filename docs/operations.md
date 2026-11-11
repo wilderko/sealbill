@@ -69,11 +69,18 @@ uv run manage.py create_api_token --org <slug> --name agent --scopes read,invoic
 ```
 
 At start the server calls `GET /api/v1/me` and exits with code 2 if the token holds `payments:confirm`
-or `admin`, if `PAY_API_URL` or `PAY_API_TOKEN` is missing, or if the API cannot be reached.
+or `admin`, if `PAY_API_URL` or `PAY_API_TOKEN` is missing, if `PAY_API_URL` is not https (plain http only on
+`127.0.0.1`, `::1` or `localhost`, so the token never travels in the clear), or if the API cannot be reached.
 
 ```bash
 PAY_API_URL=https://<your-invoicing-host> PAY_API_TOKEN=<token> uv run --group mcp python -m mcp_server
 ```
+
+The `mcp` group is optional and never installed by `uv sync --no-dev`, so a production server does not
+carry it. The official SDK (`mcp`, published from `modelcontextprotocol/python-sdk` with a PyPI attestation)
+depends on `httpx2` and `httpcore2`, Pydantic's fork of httpx (`github.com/pydantic/httpx2`). Those two carry
+no PyPI attestation; on 2026-11-11 their 2.16.0 wheels were compared file by file with the repository's
+`v2.16.0` tag (identical, no `.pth` or install hook), and `uv.lock` pins their hashes.
 
 Client configuration (`mcpServers` JSON; use your own paths and values):
 
@@ -303,13 +310,13 @@ may answer:
 
 | Variable | Meaning |
 |---|---|
-| `EVM_RPC_URLS` | JSON: network name to a list of RPC URLs, replacing the defaults |
+| `EVM_RPC_URLS` | JSON: network name to a list of RPC URLs, replacing the defaults (three operators a network). A transfer is final only once endpoints of two different operators (counted by domain) each hold it, as recorded, in a block they call final: one endpoint alone could invent a transfer. Configure at least two operators a network; with one, that one decides alone, as before |
 | `TRONGRID_API_URL`, `TRONGRID_API_KEY` | Tron watcher |
 | `SOLANA_RPC_URLS` | Comma separated, tried in order |
 | `TONCENTER_API_URL`, `TONCENTER_API_KEY` | TON watcher |
 | `FX_FRANKFURTER_URL` | Frankfurter (ECB): the EUR to other-fiat leg, multiplied into both prices. It has no second source; Bitstamp and Coinbase are the two cross-checked sources, and a divergence over 100 bps refuses the quote. A Frankfurter answer dated more than 5 days ago is refused (Thursday's rate on Easter Tuesday morning is 5 days old and still used), and so is one more than 10 % from the last rate accepted for that currency, or another rate for a day already accepted (the ECB never changes a published rate, so a source inside the bound cannot walk the rate away in a few calls; an answer older than the accepted day is not used, the accepted rate is). Crypto quotes in that currency are then refused: staff are told, and Needs a person lists it under "Exchange rates refused" with what to do. A stale rate is waited out; a jump that is real (check the ECB's rate) is accepted there, with a note, and audited |
 | `TON_ENABLED` | `true` turns TON on; leave it `false` until the credit leg is verified (above) |
-| `RAILS_HTTP_ENABLED` | `false` stops every outbound rails call (tests set it) |
+| `RAILS_HTTP_ENABLED` | `false` stops every outbound rails call: chains, exchange rates, BTCPay, Lightning and NWC (tests set it). It is not a switch for everything: webhook deliveries have `WEBHOOK_HTTP_ENABLED`, and e-mail goes out through `EMAIL_BACKEND`. To cut the app off the network in an incident, stop `pay-worker` (it makes the scheduled calls) and seal the vault (`seal_vault`) |
 | `LOCAL_LIGHTNING_PORT` | The one port an LND or CLN on this machine is reached on (loopback, plain http allowed there). Default unset: no rail URL may lead to this machine at all. BTCPay, LNbits and any other rail URL must resolve to public addresses only (audit SEC-4) |
 | `MIGRATION_NOTE_LANGUAGE` | Language of the note stored on the payment of an invoice imported from Zaprite or Request Finance: `en` (default) or `sk`. Notes already stored are not changed |
 | `INVOICE_REMINDER_DAYS` | Days after sending, default 30; `0` turns the reminder off. The worker's `invoice_reminders` job runs once at worker start and then every 24 hours (with the vault sealed at start, the run does nothing and the next attempt is up to 24 hours after the unlock). It queues one letter, ever, per unpaid invoice that this system mails itself, replacing the invoice's links, and logs one line `invoice reminders: N queued` at INFO when N is not zero. The first run after a deploy reminds every qualifying invoice whatever its age. It skips an invoice while a quote is open or a payment is detected or in review, for a US tax resident on a non-US issuer (staff's "wrong issuer" queue) and while the contact's encryption key has failed; a later run asks again |
@@ -319,6 +326,16 @@ may answer:
 | `WEBHOOK_ALLOW_URL_PREFIXES` | Comma separated https URL prefixes, each ending in `/`, delivered to although their host resolves to a denied address: a receiver that lives on this host's own address. Production: `https://shop.example.com/payments/webhook/invoicing/`. Matched on the normalised endpoint URL (host in any case, port 443 written or not) when the endpoint is created and before every delivery, and by the connection itself; a URL with a `.` or `..` segment, plain or percent-encoded, never matches, and neither do the host's other paths, a subdomain or the address. It lifts the deny list only, never the private-address rule. An entry that is not such a prefix is a system check error (`webhooks.E002`). `WEBHOOK_ALLOW_HOSTS`, which allowed every path of a host, is gone: setting it stops the start (`webhooks.E003`). Default empty |
 
 ### What runs while the vault is sealed
+
+**Wrong passwords at `/unlock/`** are limited to 5 per 5 minutes per address and to 20 per 15 minutes from
+every address together; an unseal starts both over. Whoever fills the second can keep the page from unlocking,
+never the server: `manage.py unseal_vault` has no limit, and the refusal says so. The tenth wrong password of an
+episode alerts staff.
+
+**Sealing on purpose (an incident):** `manage.py seal_vault` (`payinv-manage seal_vault` on a systemd host)
+removes the key file, and every process holding the key, the web workers and the worker included, drops it
+on its next use. A restart of `pay-web` does not seal: the runtime directory with the key file is kept.
+Unseal again with `unseal_vault` or at `/unlock/`.
 
 While sealed, the pay page (`/p/`), payment links (`/l/`) and the API (`/api/`) answer 503, so **no client can get a quote,
 chain rails included**, and `/` redirects to `/unlock/`. The worker's chain watchers, payment
@@ -442,7 +459,10 @@ Paid orders of a link with fulfilment on are listed "to fulfil" until someone ma
   payment open (`apps/rails/gateways/idle_probe.py`).
 - **Backups**: `deploy/backup/backup-db.sh` writes one AES-256 encrypted archive,
   `pay-DATE.tar.enc`, holding the `pg_dump` **and the vault config** (`vault.json`: the salt
-  and the sentinel, never the key) into `$BACKUP_DIR` (mode 0600, 14 days kept). Run it from
+  and the sentinel, never the key) into `$BACKUP_DIR` (mode 0600, 14 days kept), with
+  `pay-DATE.tar.enc.hmac` beside it: the HMAC-SHA256 of the archive under a key derived from the
+  same passphrase (`archive-mac.py`). AES-CBC alone cannot tell a changed archive, so the restore
+  checks it before it decrypts anything. Run it from
   cron with `BACKUP_DIR`, `BACKUP_PASSPHRASE_FILE`, `VAULT_CONFIG_PATH` and `DATABASE_URL` set
   (the same values as the app's; without `DATABASE_URL` the script falls back to the `PG*`
   variables and refuses to run if `PGDATABASE` is unset). Restore:
@@ -450,7 +470,11 @@ Paid orders of a link with fulfilment on are listed "to fulfil" until someone ma
   ```bash
   deploy/backup/restore-db.sh pay-DATE.tar.enc            # database + vault.json
   deploy/backup/restore-db.sh --force pay-DATE.tar.enc    # also replace a different vault.json
+  deploy/backup/restore-db.sh --unverified pay-DATE.tar.enc  # an archive made before 2026-11-11 (no .hmac)
   ```
+
+  An archive that does not match its `.hmac` (changed, or another passphrase) is refused before
+  anything is decrypted or restored; one without a `.hmac` is refused unless `--unverified`.
 
   `restore-db.sh` needs `BACKUP_PASSPHRASE_FILE`, `VAULT_CONFIG_PATH`, `VAULT_KEY_PATH` and
   `DATABASE_URL` (or `PG*`). It refuses, before touching the database, to overwrite an existing

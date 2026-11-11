@@ -1,4 +1,6 @@
 """HTTP access to the public API. Knows nothing about Django."""
+from urllib.parse import urlsplit
+
 import requests
 
 TIMEOUT = 15
@@ -11,8 +13,23 @@ class ApiError(Exception):
         self.error = error
 
 
+LOOPBACK = ("127.0.0.1", "::1", "localhost")
+
+
+def check_base_url(base_url: str) -> None:
+    """The token travels in every request: https, or plain http on this machine's loopback only
+    (audit 2026-11-11: any PAY_API_URL was used, http:// included). ValueError otherwise."""
+    parts = urlsplit(str(base_url).strip())
+    if parts.scheme == "https" and parts.hostname:
+        return
+    if parts.scheme == "http" and parts.hostname in LOOPBACK:
+        return
+    raise ValueError("PAY_API_URL must be https (plain http only on 127.0.0.1, ::1 or localhost)")
+
+
 class Api:
     def __init__(self, base_url: str, token: str):
+        check_base_url(base_url)
         self.base_url = base_url.rstrip("/")
         self._token = token
 

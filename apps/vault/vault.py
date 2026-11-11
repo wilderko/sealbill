@@ -40,6 +40,9 @@ class Vault:
     this process (sealed) if it no longer opens it. The key file is left alone: another worker may
     have just unsealed under the new vault.json and written its key there, which is then picked up.
     A vault.json that cannot be read is no verdict, and the key stays until a readable one appears.
+
+    Each use also costs one `stat` of the key file: sealing removes it (`seal`, `manage.py seal_vault`),
+    and every process holding the key then drops it on its next use.
     """
 
     def __init__(self):
@@ -125,10 +128,27 @@ class Vault:
         else:
             logger.error("Vault key file %s does not open the sentinel; staying sealed", ident[0])
 
+    def _check_key_file(self) -> None:
+        """Called with the lock held and a key in hand: drop the key once the key file is gone. Sealing
+        removes that file, so every process that took the key from it seals on its next use, not only
+        the one that sealed (audit 2026-11-11: the web workers and the worker kept the key in memory,
+        and sealing in an incident stopped nothing). A file that cannot be looked at is no verdict."""
+        try:
+            os.stat(self._key_path())
+        except FileNotFoundError:
+            logger.warning("Vault key file is gone; this process is sealed too")
+            self._key = None
+            self._seen = None
+            self._config_seen = None
+        except OSError:
+            pass
+
     def _current_key(self):
         with self._lock:
             if self._key is not None:
                 self._check_config()
+            if self._key is not None:
+                self._check_key_file()
             if self._key is None:
                 self._load_from_file()
             return self._key

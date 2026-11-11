@@ -29,6 +29,7 @@ carry ids and reason codes only, never an address, an amount or a hash.
 """
 
 import base64
+import dataclasses
 import datetime
 import logging
 import re
@@ -137,6 +138,8 @@ def ingest(transfer: Transfer, *, account: RailAccount, declared_invoice: Invoic
         if declared_invoice is not None and _unattributed(found):
             return _reattribute(found.pk, declared_invoice.pk)
         return found
+    if transfer.final and not _corroborated(transfer):
+        transfer = dataclasses.replace(transfer, final=False)  # `settle_if_final` asks again
     try:
         with transaction.atomic():
             return _record(transfer, tx, account, declared_invoice.pk if declared_invoice is not None else None)
@@ -146,6 +149,23 @@ def ingest(transfer: Transfer, *, account: RailAccount, declared_invoice: Invoic
         if found is None:
             raise
         return found
+
+
+def _corroborated(transfer: Transfer) -> bool:
+    """Whether a transfer its watcher calls final is final for us: a family whose adapter can ask a
+    second operator (`corroborated`, EVM) must have it agree (audit 2026-11-11). Anything going wrong
+    here is "not yet", never "not paid"."""
+    try:
+        check = getattr(adapter_for(transfer.network), "corroborated", None)
+    except LookupError:
+        return True
+    if check is None:
+        return True
+    try:
+        return bool(check(transfer))
+    except Exception as exc:  # noqa: BLE001 - a second opinion that fails is no opinion
+        logger.info("second opinion on a %s transfer failed (%s)", transfer.network, type(exc).__name__)
+        return False
 
 
 def _ours(account: RailAccount, address: str) -> bool:

@@ -1226,3 +1226,7 @@ msgstr "%(standard)s : QR code avec les détails de ce virement"
 #: templates/portal/pay.html:63
 msgid "Scan one of these codes in your banking app: it fills in the account, the amount and the reference."
 msgstr "Scannez l'un de ces codes dans l'application de votre banque : elle remplit le compte, le montant et la référence de paiement."
+
+#: apps/vault/views.py
+msgid "Too many unlock attempts right now. Unlock from the server with manage.py unseal_vault, or try again later."
+msgstr "Trop de tentatives de déverrouillage en ce moment. Déverrouillez le coffre depuis le serveur avec manage.py unseal_vault, ou réessayez plus tard."

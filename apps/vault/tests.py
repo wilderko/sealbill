@@ -52,6 +52,36 @@ class VaultCoreTest(VaultTestCase):
                 self.assertFalse(vault.unseal(PW))
                 self.assertFalse(vault.is_unsealed())
 
+    def test_sealing_reaches_every_process_holding_the_key(self):
+        # Audit 2026-11-11: seal() dropped the key in its own process only; the web workers and the
+        # worker kept theirs in memory, so sealing in an incident stopped nothing.
+        vault.init(PW)
+        self.assertTrue(vault.unseal(PW))
+        other = Vault()  # another process, reading the same key file
+        self.assertTrue(other.is_unsealed())
+        vault.seal()
+        self.assertFalse(other.is_unsealed())
+        with self.assertRaises(VaultSealed):
+            other.fernet()
+
+    def test_the_seal_vault_command_seals_every_process(self):
+        from io import StringIO
+
+        from django.core.management import call_command
+
+        vault.init(PW)
+        vault.unseal(PW)
+        other = Vault()
+        self.assertTrue(other.is_unsealed())
+        out = StringIO()
+        call_command("seal_vault", stdout=out)
+        self.assertIn("sealed", out.getvalue())
+        self.assertFalse(self.key_path.exists())
+        self.assertFalse(vault.is_unsealed())
+        self.assertFalse(other.is_unsealed())
+        self.assertTrue(other.unseal(PW))  # the password opens it again
+        self.assertTrue(vault.is_unsealed())
+
     def test_wrong_password_stays_sealed(self):
         vault.init(PW)
         self.assertFalse(vault.unseal("nope"))
@@ -128,6 +158,30 @@ class VaultWebTest(VaultTestCase):
                 self.client.post("/unlock/", {"password": "bad"}, HTTP_X_FORWARDED_FOR="1.1.1.1, 9.9.9.9")
         r = self.client.post("/unlock/", {"password": "bad"}, HTTP_X_FORWARDED_FOR="2.2.2.2, 9.9.9.9")
         self.assertEqual(r.status_code, 429)
+
+    def test_unlock_attempts_from_every_address_together_are_capped(self):
+        # Audit 2026-11-11: the limit was per address only, so many addresses multiplied it.
+        from django.test import override_settings
+
+        from apps.vault import views
+
+        vault.init(PW)
+        with self.assertLogs("apps.vault.unlock_attempts", "WARNING"):
+            for i in range(views.UNLOCK_LIMIT_ALL):
+                r = self.client.post("/unlock/", {"password": "bad"}, HTTP_X_FORWARDED_FOR=f"10.0.{i}.1")
+                self.assertEqual(r.status_code, 401)
+        r = self.client.post("/unlock/", {"password": PW}, HTTP_X_FORWARDED_FOR="10.9.9.9")  # a fresh address
+        self.assertContains(r, "unseal_vault", status_code=429)
+        self.assertFalse(vault.is_unsealed())
+        # The server's own command is never limited: the owner gets in whatever happens to the page.
+        from io import StringIO
+        from unittest import mock
+
+        from django.core.management import call_command
+
+        with mock.patch("sys.stdin", StringIO(PW + "\n")):
+            call_command("unseal_vault", stdout=StringIO())
+        self.assertTrue(vault.is_unsealed())
 
     def test_gate_api_503_public_503_staff_redirect_when_sealed(self):
         r = self.client.get("/api/v1/invoices")

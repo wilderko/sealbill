@@ -12,7 +12,9 @@
 #                           It is split into PG* variables, and a password into a private passfile,
 #                           so it never reaches a command line (deploy/backup/pgenv.sh).
 #                           Without it, set PGHOST, PGUSER, PGDATABASE (and PGPASSFILE if needed).
-# Writes pay-<UTC time>.tar.enc: tar(db.dump, vault.json) encrypted with openssl AES-256-CBC.
+# Writes pay-<UTC time>.tar.enc: tar(db.dump, vault.json) encrypted with openssl AES-256-CBC, and beside it
+# pay-<UTC time>.tar.enc.hmac, the HMAC-SHA256 of that archive (archive-mac.py), which restore-db.sh checks
+# before it decrypts anything: AES-CBC alone cannot tell a changed archive (audit 2026-11-11).
 set -euo pipefail
 umask 077
 
@@ -37,7 +39,7 @@ chmod 700 "$BACKUP_DIR"
 out="$BACKUP_DIR/pay-$(date -u +%Y%m%dT%H%M%SZ).tar.enc"
 tmp="$out.partial"
 d=$(mktemp -d)
-trap 'rm -f "$tmp"; rm -rf "$d"' EXIT
+trap 'rm -f "$tmp" "$tmp.hmac"; rm -rf "$d"' EXIT
 # shellcheck source=pgenv.sh
 . "$here/pgenv.sh"
 load_pg_env
@@ -48,8 +50,10 @@ pg_dump --format=custom > "$d/archive/db.dump"
 cp "$VAULT_CONFIG_PATH" "$d/archive/vault.json"
 tar -C "$d/archive" -cf - db.dump vault.json \
   | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -pass "file:$BACKUP_PASSPHRASE_FILE" -out "$tmp"
-chmod 600 "$tmp"
+python3 -I "$here/archive-mac.py" sign "$tmp" "$BACKUP_PASSPHRASE_FILE" > "$tmp.hmac"
+chmod 600 "$tmp" "$tmp.hmac"
+mv "$tmp.hmac" "$out.hmac"
 mv "$tmp" "$out"
 
-find "$BACKUP_DIR" -maxdepth 1 -name 'pay-*.enc' -type f -mtime "+$KEEP_DAYS" -delete
+find "$BACKUP_DIR" -maxdepth 1 \( -name 'pay-*.enc' -o -name 'pay-*.enc.hmac' \) -type f -mtime "+$KEEP_DAYS" -delete
 echo "wrote $out"

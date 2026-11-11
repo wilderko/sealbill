@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Restore an archive made by backup-db.sh: the database (into DATABASE_URL, or the PG*
 # variables) and the vault config (to VAULT_CONFIG_PATH).
-# Usage: restore-db.sh [--force] pay-DATE.tar.enc
+# Usage: restore-db.sh [--force] [--unverified] pay-DATE.tar.enc
+# The archive is checked against pay-DATE.tar.enc.hmac (archive-mac.py) before anything is decrypted:
+# a changed archive, or one made with another passphrase, is refused. An archive made before
+# 2026-11-11 has no .hmac and is refused too, unless --unverified says to restore it unchecked.
 # Needs BACKUP_PASSPHRASE_FILE, VAULT_CONFIG_PATH and VAULT_KEY_PATH (the app's tmpfs key file).
 # An existing vault.json that differs from the archive's is never replaced without --force:
 # it may be the only copy that opens another database. Nothing is restored when it refuses.
@@ -16,11 +19,17 @@
 set -euo pipefail
 umask 077
 force=0
-if [ "${1:-}" = "--force" ]; then
-  force=1
-  shift
-fi
-[ $# -eq 1 ] || { echo "usage: $0 [--force] <archive.tar.enc>" >&2; exit 2; }
+unverified=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --force) force=1; shift ;;
+    --unverified) unverified=1; shift ;;
+    --) shift; break ;;
+    -*) echo "usage: $0 [--force] [--unverified] <archive.tar.enc>" >&2; exit 2 ;;
+    *) break ;;
+  esac
+done
+[ $# -eq 1 ] || { echo "usage: $0 [--force] [--unverified] <archive.tar.enc>" >&2; exit 2; }
 : "${BACKUP_PASSPHRASE_FILE:?set BACKUP_PASSPHRASE_FILE}"
 : "${VAULT_CONFIG_PATH:?set VAULT_CONFIG_PATH (where the app reads vault.json)}"
 : "${VAULT_KEY_PATH:?set VAULT_KEY_PATH (the key file of the vault being replaced; it is removed)}"
@@ -71,6 +80,19 @@ if [ "${PAY_RESTORE_SKIP_UNIT_CHECK:-}" != "1" ]; then
     echo "Stop them first: systemctl stop pay-web.socket pay-web pay-worker" >&2
     exit 1
   fi
+fi
+
+# Integrity first: nothing is decrypted from an archive that cannot be shown to be the one written.
+if [ -e "$archive.hmac" ]; then
+  if ! python3 -I "$here/archive-mac.py" verify "$archive" "$BACKUP_PASSPHRASE_FILE" "$archive.hmac"; then
+    echo "$archive does not match $archive.hmac: it was changed, or this is not the passphrase it was" >&2
+    echo "made with; nothing restored." >&2
+    exit 1
+  fi
+elif [ "$unverified" -ne 1 ]; then
+  echo "$archive has no $archive.hmac, so whether it was changed cannot be checked; nothing restored." >&2
+  echo "An archive made before 2026-11-11 has none: run again with --unverified to restore it unchecked." >&2
+  exit 1
 fi
 
 d=$(mktemp -d)

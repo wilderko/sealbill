@@ -121,7 +121,8 @@ What is below is what the code does; the operations manual explains how to run i
   `ALLOW_EMPTY_PROXY_SECRET=true` says no other account can reach the app. The systemd units run with a read-only file system, `NoNewPrivileges` and
   `ProtectHome`, and serve gunicorn on a Unix socket only Apache's group can reach.
 - **Encrypted backups.** `deploy/backup/backup-db.sh` writes one AES-256 encrypted archive holding
-  the database dump and `vault.json` (salt and sentinel, never the key).
+  the database dump and `vault.json` (salt and sentinel, never the key), with an HMAC-SHA256 beside it
+  that `restore-db.sh` checks before it decrypts anything.
 
 Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
 

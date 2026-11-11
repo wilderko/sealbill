@@ -147,6 +147,13 @@ class ToolTests(unittest.TestCase):
 
 
 class ClientTests(unittest.TestCase):
+
+    def test_the_client_refuses_plain_http_off_loopback(self):
+        for url in ("http://pay.example", "ftp://pay.example", "pay.example"):
+            with self.subTest(url), self.assertRaises(ValueError):
+                client.Api(url, "t")
+        for url in ("https://pay.example/", "http://127.0.0.1:8000", "http://localhost:8000", "http://[::1]:8000"):
+            client.Api(url, "t")
     def response(self, status=200, body=None, reason="OK"):
         r = mock.Mock(status_code=status, reason=reason)
         r.json.return_value = body if body is not None else {}
@@ -223,6 +230,15 @@ class MainTests(unittest.TestCase):
         code, err, build, _ = self.run_main({"PAY_API_URL": "https://x", "PAY_API_TOKEN": "SECRET-TOKEN"}, api)
         self.assertEqual(code, 2)
         self.assertNotIn("SECRET-TOKEN", err)
+        build.assert_not_called()
+
+    def test_refuses_to_send_the_token_over_plain_http(self):
+        # Audit 2026-11-11: the token went to any PAY_API_URL, http:// included.
+        code, err, build, ctor = self.run_main({"PAY_API_URL": "http://pay.example", "PAY_API_TOKEN": "SECRET-TOKEN"})
+        self.assertEqual(code, 2)
+        self.assertIn("https", err)
+        self.assertNotIn("SECRET-TOKEN", err)
+        ctor.assert_not_called()
         build.assert_not_called()
 
     def test_starts_with_safe_scopes(self):

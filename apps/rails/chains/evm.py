@@ -23,6 +23,7 @@ import logging
 import re
 import time
 from decimal import ROUND_CEILING, Decimal
+from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.db import transaction
@@ -56,15 +57,22 @@ NATIVE_SCAN_MAX_SECONDS = 120  # and at most this long a run, whichever comes fi
 _monotonic = time.monotonic  # the walk's clock (tests replace it)
 L2_FAST_USD = 1000
 L2_FAST_AGE_S = 300
+# A transfer is final only once endpoints of this many different operators each say so (`corroborated`):
+# one endpoint alone could invent a transfer, its receipt and a finalized block (audit 2026-11-11).
+CORROBORATING_OPERATORS = 2
 
+# Three operators a network, each answering the `finalized` tag (checked 2026-11-11): a transfer is
+# final only once two of them agree (`corroborated`), so one of them may be down. cloudflare-eth.com
+# does not know `finalized` and polygon-rpc.com answers 401; both are gone.
 DEFAULT_RPC_URLS = {
-    "ethereum": ["https://ethereum-rpc.publicnode.com", "https://cloudflare-eth.com"],
-    "optimism": ["https://optimism-rpc.publicnode.com", "https://mainnet.optimism.io"],
-    "polygon": ["https://polygon-bor-rpc.publicnode.com", "https://polygon.drpc.org", "https://polygon-rpc.com"],
-    "arbitrum": ["https://arbitrum-one-rpc.publicnode.com", "https://arb1.arbitrum.io/rpc"],
-    "avalanche": ["https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc"],
-    "bsc": ["https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org"],
-    "base": ["https://base-rpc.publicnode.com", "https://mainnet.base.org"],
+    "ethereum": ["https://ethereum-rpc.publicnode.com", "https://eth.drpc.org", "https://eth-mainnet.public.blastapi.io"],
+    "optimism": ["https://optimism-rpc.publicnode.com", "https://mainnet.optimism.io", "https://optimism.drpc.org"],
+    "polygon": ["https://polygon-bor-rpc.publicnode.com", "https://polygon.drpc.org", "https://1rpc.io/matic"],
+    "arbitrum": ["https://arbitrum-one-rpc.publicnode.com", "https://arb1.arbitrum.io/rpc", "https://arbitrum.drpc.org"],
+    "avalanche": ["https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc",
+                  "https://avalanche.drpc.org"],
+    "bsc": ["https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc.drpc.org"],
+    "base": ["https://base-rpc.publicnode.com", "https://mainnet.base.org", "https://base.drpc.org"],
 }
 
 GAP_WORDS = {
@@ -100,39 +108,57 @@ def _hex(n: int) -> str:
     return hex(n)
 
 
-def _call(network: str, method: str, params: list, *, refusals: list | None = None):
-    """One JSON-RPC call, failing over across endpoints. An `error` object is a failure of
-    that endpoint (the next one is tried), except a too-large range, which is the caller's.
-    `refusals`, when given, collects every endpoint that answered and said no (an error object
-    or a 4xx), as opposed to one that could not be reached."""
+def _ask(url: str, network: str, method: str, params: list, *, refusals: list | None = None):
+    """One JSON-RPC call to one endpoint. An `error` object is a failure of that endpoint
+    (`http.Unavailable`), except a too-large range, which is the caller's (`RangeTooLarge`).
+    `refusals`, when given, collects the endpoint when it answered and said no (an error object or
+    a 4xx), as opposed to one that could not be reached."""
     service = f"evm:{network}"
+    try:
+        answer = http.post_json(url, {"jsonrpc": "2.0", "id": 1, "method": method, "params": params},
+                                service=service, timeout=20)
+    except http.Refused as refused:  # a 4xx from one endpoint says nothing about the next
+        if refusals is not None:
+            refusals.append(url)
+        raise http.Unavailable(service, str(refused.status)) from None
+    if not isinstance(answer, dict):
+        raise http.Unavailable(service, "bad_answer")
+    err = answer.get("error")
+    if err:
+        msg = str(err.get("message", "") if isinstance(err, dict) else err).lower()
+        if method == "eth_getLogs" and any(w in msg for w in _RANGE_WORDS):
+            raise RangeTooLarge()
+        if refusals is not None:
+            refusals.append(url)
+        raise http.Unavailable(service, "rpc_error")
+    if "result" not in answer:
+        raise http.Unavailable(service, "bad_answer")
+    return answer["result"]
 
-    def one(url):
-        try:
-            answer = http.post_json(url, {"jsonrpc": "2.0", "id": 1, "method": method, "params": params},
-                                    service=service, timeout=20)
-        except http.Refused as refused:  # a 4xx from one endpoint says nothing about the next
-            if refusals is not None:
-                refusals.append(url)
-            raise http.Unavailable(service, str(refused.status)) from None
-        if not isinstance(answer, dict):
-            raise http.Unavailable(service, "bad_answer")
-        err = answer.get("error")
-        if err:
-            msg = str(err.get("message", "") if isinstance(err, dict) else err).lower()
-            if method == "eth_getLogs" and any(w in msg for w in _RANGE_WORDS):
-                raise RangeTooLarge()
-            if refusals is not None:
-                refusals.append(url)
-            raise http.Unavailable(service, "rpc_error")
-        if "result" not in answer:
-            raise http.Unavailable(service, "bad_answer")
-        return answer["result"]
 
+def _call(network: str, method: str, params: list, *, refusals: list | None = None):
+    """One JSON-RPC call, failing over across endpoints (`_ask` on each in turn)."""
     urls = rpc_urls(network)
     if not urls:
-        raise http.Unavailable(service, "no_endpoint")
-    return http.first_answer(urls, one)
+        raise http.Unavailable(f"evm:{network}", "no_endpoint")
+    return http.first_answer(urls, lambda url: _ask(url, network, method, params, refusals=refusals))
+
+
+def _operator(url: str) -> str:
+    """Who runs an endpoint, near enough: the last two labels of its host (publicnode.com, drpc.org)."""
+    host = (urlsplit(url).hostname or url).lower().rstrip(".")
+    return ".".join(host.split(".")[-2:])
+
+
+def operators(network: str) -> list[str]:
+    """The configured endpoints of `network`, one per operator, in the configured order."""
+    seen, out = set(), []
+    for url in rpc_urls(network):
+        who = _operator(url)
+        if who not in seen:
+            seen.add(who)
+            out.append(url)
+    return out
 
 
 def _int(value, network: str) -> int:
@@ -178,8 +204,9 @@ def _ranges(numbers) -> list[tuple[int, int]]:
 class _Run:
     """State shared by one scan or lookup: the block-time cache and the finalized block."""
 
-    def __init__(self, network: str):
+    def __init__(self, network: str, url: str | None = None):
         self.network = network
+        self.url = url  # one endpoint only (a second opinion), else every endpoint with failover
         self.net = NETWORKS[network]
         self._times: dict[int, datetime.datetime] = {}
         self._finalized: int | None = None
@@ -196,9 +223,14 @@ class _Run:
     def unavailable(self, kind: str) -> http.Unavailable:
         return http.Unavailable(f"evm:{self.network}", kind)
 
+    def call(self, method: str, params: list, *, refusals: list | None = None):
+        if self.url is not None:
+            return _ask(self.url, self.network, method, params, refusals=refusals)
+        return _call(self.network, method, params, refusals=refusals)
+
     def receipt(self, tx_hash: str):
         if tx_hash not in self._receipts:
-            self._receipts[tx_hash] = _call(self.network, "eth_getTransactionReceipt", [tx_hash])
+            self._receipts[tx_hash] = self.call("eth_getTransactionReceipt", [tx_hash])
         return self._receipts[tx_hash]
 
     def place_in_tx(self, log: dict) -> int:
@@ -229,7 +261,7 @@ class _Run:
             self.spend_split_call()
             refusals: list[str] = []
             try:
-                result = _call(self.network, "eth_getBlockReceipts", [_hex(number)], refusals=refusals)
+                result = self.call("eth_getBlockReceipts", [_hex(number)], refusals=refusals)
             except http.Unavailable:
                 if refusals and len(refusals) == len(rpc_urls(self.network)):
                     self._block_receipts[number] = None
@@ -259,7 +291,7 @@ class _Run:
 
     def block_time(self, number: int) -> datetime.datetime:
         if number not in self._times:
-            block = _call(self.network, "eth_getBlockByNumber", [_hex(number), False])
+            block = self.call("eth_getBlockByNumber", [_hex(number), False])
             if not isinstance(block, dict):
                 raise http.Unavailable(f"evm:{self.network}", "block_missing")
             ts = _int(block.get("timestamp"), self.network)
@@ -271,7 +303,7 @@ class _Run:
 
     def finalized_number(self) -> int:
         if self._finalized is None:
-            block = _call(self.network, "eth_getBlockByNumber", ["finalized", False])
+            block = self.call("eth_getBlockByNumber", ["finalized", False])
             if not isinstance(block, dict):
                 raise http.Unavailable(f"evm:{self.network}", "block_missing")
             self._finalized = _int(block.get("number"), self.network)
@@ -648,7 +680,7 @@ class EvmAdapter:
 
     def _status(self, run: _Run, payment, tx: str) -> Status:
         network = run.network
-        receipt = _call(network, "eth_getTransactionReceipt", [tx])
+        receipt = run.call("eth_getTransactionReceipt", [tx])
         if receipt is None:
             return self._not_found(run, payment, tx)
         if not isinstance(receipt, dict):
@@ -661,13 +693,55 @@ class EvmAdapter:
         if receipt.get("status") != "0x1" or not self._still_there(run, receipt, payment, tx, amount):
             return "dropped" if number <= run.finalized_number() else "pending"
         when = run.block_time(number)
-        return "final" if run.is_final(payment.contract or "", amount, number, when) else "pending"
+        if not run.is_final(payment.contract or "", amount, number, when):
+            return "pending"
+        # Final as one endpoint tells it: final for us once another operator's endpoint agrees.
+        return "final" if self.corroborated(payment) else "pending"
+
+    def corroborated(self, transfer) -> bool:
+        """Whether endpoints of `CORROBORATING_OPERATORS` different operators each hold the transfer as
+        it was recorded (a successful receipt, the token log at its place or the native transaction,
+        the same recipient and amount) in a block that endpoint itself calls final. One endpoint can be
+        compromised or simply lie: it could invent a transfer, a receipt and a finalized block alone
+        (audit 2026-11-11, high 2). With fewer operators configured, all of them must agree. An
+        endpoint that cannot be reached, or does not agree, is no vote; nothing here says "dropped".
+        `transfer` is a `Transfer` or a `Payment` (the same field names)."""
+        network = transfer.network
+        urls = operators(network)
+        need = min(CORROBORATING_OPERATORS, len(urls))
+        if need == 0:
+            return False
+        tx = str(transfer.tx_hash or "").strip().lower()
+        try:
+            amount = int(transfer.amount_base_units or 0)
+        except (TypeError, ValueError):
+            return False
+        agreed = 0
+        for url in urls:
+            run = _Run(network, url=url)
+            try:
+                receipt = run.call("eth_getTransactionReceipt", [tx])
+                if not isinstance(receipt, dict) or receipt.get("status") != "0x1":
+                    continue
+                number = _int(receipt.get("blockNumber"), network)
+                if not self._still_there(run, receipt, transfer, tx, amount):
+                    continue
+                if not run.is_final(transfer.contract or "", amount, number, run.block_time(number)):
+                    continue
+            except (http.Unavailable, RangeTooLarge, TypeError, ValueError, KeyError, AttributeError, OSError,
+                    OverflowError):
+                continue
+            agreed += 1
+            if agreed >= need:
+                return True
+        logger.info("evm %s: a final transfer is not yet confirmed by %s operators (%s agreed)", network, need, agreed)
+        return False
 
     def _not_found(self, run: _Run, payment, tx: str) -> Status:
         number = payment.block_number
         if number is None or number > run.finalized_number():
             return "pending"  # not yet known: the block it was seen in is not final
-        block = _call(run.network, "eth_getBlockByNumber", [_hex(number), False])
+        block = run.call("eth_getBlockByNumber", [_hex(number), False])
         if not isinstance(block, dict) or not isinstance(block.get("transactions"), list):
             raise run.unavailable("block_missing" if block is None else "bad_answer")
         listed = {str(t.get("hash") if isinstance(t, dict) else t).lower() for t in block["transactions"]}
@@ -681,7 +755,7 @@ class EvmAdapter:
         to = (payment.to_address or "").strip().lower()
         contract = (payment.contract or "").strip().lower()
         if not contract:
-            native = _call(network, "eth_getTransactionByHash", [tx])
+            native = run.call("eth_getTransactionByHash", [tx])
             if native is None:
                 raise run.unavailable("tx_missing")
             if not isinstance(native, dict):

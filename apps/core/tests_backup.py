@@ -97,6 +97,61 @@ class BackupScriptTests(ScriptStubs):
         self.assertNotIn("s3cret-pw", log)  # neither in argv nor in PGPASSWORD
         self.assertIn("pgpassword:unset db:pay", log)
 
+    def test_every_archive_has_its_mac_beside_it(self):
+        archive = self.backup()
+        mac = Path(str(archive) + ".hmac")
+        self.assertTrue(mac.exists())
+        self.assertEqual(stat.S_IMODE(mac.stat().st_mode), 0o600)
+        self.assertRegex(mac.read_text(), r"^[0-9a-f]{64}\n$")
+
+    def test_a_changed_archive_is_refused_before_anything_is_decrypted(self):
+        # Audit 2026-11-11: AES-CBC carries no integrity, and the restore used to decrypt whatever it got.
+        archive = self.backup()
+        data = bytearray(archive.read_bytes())
+        data[40] ^= 0x01  # one bit, in the ciphertext
+        archive.write_bytes(bytes(data))
+        self.vault_json.unlink()
+        r = self.run_script("restore-db.sh", str(archive))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("does not match", r.stderr)
+        self.assertFalse((self.d / "restored.dump").exists())  # the database was not touched
+        self.assertFalse(self.vault_json.exists())
+
+    def test_another_passphrase_is_refused_by_the_mac(self):
+        archive = self.backup()
+        other = self.d / "other-passphrase"
+        other.write_text("not the backup passphrase\n")
+        r = self.run_script("restore-db.sh", str(archive), BACKUP_PASSPHRASE_FILE=str(other))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("does not match", r.stderr)
+
+    def test_an_archive_without_a_mac_needs_unverified(self):
+        archive = self.backup()
+        Path(str(archive) + ".hmac").unlink()  # as every archive made before 2026-11-11
+        self.vault_json.unlink()
+        r = self.run_script("restore-db.sh", str(archive))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("--unverified", r.stderr)
+        self.assertFalse((self.d / "restored.dump").exists())
+        r = self.run_script("restore-db.sh", "--unverified", str(archive))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual((self.d / "restored.dump").read_bytes(), b"PGDMP-fake-dump")
+
+    def test_old_archives_and_their_macs_go_together(self):
+        made = self.backup()
+        old = made.with_name("pay-20010909T014640Z.tar.enc")  # a name of its own: both run in one second
+        old_mac = Path(str(old) + ".hmac")
+        made.rename(old)
+        Path(str(made) + ".hmac").rename(old_mac)
+        long_ago = 1_000_000_000  # 2001
+        os.utime(old, (long_ago, long_ago))
+        os.utime(old_mac, (long_ago, long_ago))
+        r = self.run_script("backup-db.sh")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertFalse(old.exists())
+        self.assertFalse(old_mac.exists())
+        self.assertEqual(len(list((self.d / "backups").glob("pay-*.tar.enc.hmac"))), 1)
+
     def test_backup_refuses_without_the_vault_config(self):
         r = self.run_script("backup-db.sh", VAULT_CONFIG_PATH=str(self.d / "missing.json"))
         self.assertNotEqual(r.returncode, 0)

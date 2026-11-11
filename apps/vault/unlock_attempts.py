@@ -18,6 +18,8 @@ ALERT_AFTER = 10
 EPISODE_S = 24 * 60 * 60
 BUCKET = "unlock-failures"
 IDENT = "vault"
+# Every address together (`views.UNLOCK_LIMIT_ALL`); an unseal starts it over, like the episode.
+ALL_BUCKET, ALL_IDENT = "unlock-all", "all"
 ALERTED_KEY = "rl:unlock-failures-alerted:vault"
 
 
@@ -42,6 +44,7 @@ def unsealed() -> None:
     """The episode is over: the next wrong password starts counting from one."""
     try:
         reset(BUCKET, IDENT)
+        reset(ALL_BUCKET, ALL_IDENT)
         caches["ratelimit"].delete(ALERTED_KEY)
     except Exception as exc:  # noqa: BLE001 - never stand between a correct password and the vault
         logger.error("unlock-failure counter: store unavailable (%s)", type(exc).__name__)
