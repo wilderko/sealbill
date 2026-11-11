@@ -45,8 +45,9 @@ def finality_refresh():
 
 
 def declarations_verify():
-    from apps.payments import matching
+    from apps.payments import matching, services
     matching.verify_open_declarations()
+    services.tell_staff_about_declarations()  # only the claims a person has to act on
 
 
 def btcpay_poll():

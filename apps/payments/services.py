@@ -9,7 +9,9 @@ from apps.audit import services as audit
 from apps.invoices.errors import InvoiceError
 from apps.invoices.models import Invoice
 from apps.invoices.money import stored_total
-from apps.invoices.services import SETTLED, confirmed_total_minor, lock_invoice, recompute_status
+from apps.invoices.services import (
+    INVOICE_PLAIN_FIELDS, SETTLED, confirmed_total_minor, lock_invoice, recompute_status,
+)
 from apps.payments.models import Declaration, Payment
 from apps.quotes.models import Quote
 from apps.rails import addresses
@@ -39,9 +41,10 @@ def declare_payment(invoice: Invoice, *, network: str = "", tx_hash: str = "", n
 
     Allowed from sent, overdue, partially_paid and declared. A claim naming the network and
     transaction of an open one is folded into it: that declaration is returned and nothing new is
-    recorded. A fourth open claim is refused with TooManyDeclarations. Staff are told, and
-    `invoice.declared` is emitted, when the claim is the invoice's only open one (a repeat while
-    another is open must not mail them or the webhooks again).
+    recorded. A fourth open claim is refused with TooManyDeclarations. `invoice.declared` is emitted
+    when the claim is the invoice's only open one (a repeat while another is open must not reach the
+    webhooks again). Staff are e-mailed only when they have to act (`tell_staff_if_needed`): at once
+    for a claim nobody else can check, later or never for one naming a transaction.
     Re-reads the row under a lock so a void racing with this loses cleanly.
     """
     from apps.payments.matching import _tx_key  # matching imports this module
@@ -67,10 +70,85 @@ def declare_payment(invoice: Invoice, *, network: str = "", tx_hash: str = "", n
                      {"invoice": fresh.pk, "network": network, "tx_hash": tx_hash}, actor_name="client")
         recompute_status(fresh)
         if first_open:
-            _notify_staff(fresh)
             webhooks.invoice_event("invoice.declared", fresh, declaration_id=declaration.pk)
+        tell_staff_if_needed(declaration)  # at once only when nobody else can check it
     invoice.status = fresh.status
     return declaration
+
+
+# A named transaction on a chain the system reads is given this long to be found before staff are
+# e-mailed (the owner, 2026-11-11: a letter only when a person has to act). The look-up job runs every
+# five minutes, so the letter goes out within half an hour and five minutes.
+DECLARATION_GRACE_S = 30 * 60
+
+
+def _checkable(d: Declaration) -> bool:
+    """The system can look the claim up itself: it names a transaction on a network it reads."""
+    from apps.rails.models import ton_blocked
+
+    net = NETWORKS.get(d.network)
+    return bool((d.tx_hash or "").strip()) and net is not None and not ton_blocked(net.family)
+
+
+def _found_for_this_invoice(d: Declaration) -> bool:
+    """Money of the named transaction is recorded against the declared invoice: it settles, or its
+    payment is in review, which has a letter of its own."""
+    from apps.payments.matching import _tx_key
+
+    key = _tx_key(d.network, d.tx_hash)
+    return any(_tx_key(p.network, p.tx_hash) == key for p in Payment.objects.filter(
+        invoice_id=d.invoice_id, network=d.network).only("pk", "network", "tx_hash"))
+
+
+def needs_a_person(d: Declaration, now=None) -> bool:
+    """Whether an open claim needs staff now: nobody but a person can check it; or the named
+    transaction was found and none of its money is this invoice's; or nothing was found within
+    `DECLARATION_GRACE_S`. A matched or dismissed claim never does."""
+    if d.state != "open":
+        return False
+    if not _checkable(d):
+        return True
+    if _found_for_this_invoice(d):
+        return False
+    if d.verified_at is not None:
+        return True  # found, but the money is another invoice's (or none of it reached us)
+    now = now or timezone.now()
+    return (now - d.created_at).total_seconds() >= DECLARATION_GRACE_S
+
+
+def tell_staff_if_needed(declaration: Declaration, now=None) -> bool:
+    """E-mail staff about `declaration` if it needs a person and nobody was told yet; True when a
+    letter was queued. One letter while an invoice has a claim open that staff were told about: a
+    second claim is marked as told with it."""
+    d = Declaration.objects.only(*DECLARATION_PLAIN_FIELDS).get(pk=declaration.pk)
+    if d.staff_told_at is not None or not needs_a_person(d, now):
+        return False
+    with transaction.atomic():
+        if not Declaration.objects.filter(pk=d.pk, staff_told_at__isnull=True).update(
+                staff_told_at=now or timezone.now()):
+            return False  # told by another run a moment ago
+        already = (Declaration.objects.filter(invoice_id=d.invoice_id, state="open", staff_told_at__isnull=False)
+                   .exclude(pk=d.pk).exists())
+        if already:
+            return False
+        _notify_staff(Invoice.objects.only(*INVOICE_PLAIN_FIELDS).get(pk=d.invoice_id))
+    return True
+
+
+def tell_staff_about_declarations(now=None, limit: int = 200) -> int:
+    """The `declarations_verify` job, after its look-ups: every open claim staff were not told about
+    yet, oldest first. Returns how many letters were queued. One that fails is logged and asked again
+    next time, never stopping the others."""
+    import logging
+
+    told = 0
+    for pk in (Declaration.objects.filter(state="open", staff_told_at__isnull=True)
+               .order_by("created_at", "pk").values_list("pk", flat=True)[:limit]):
+        try:
+            told += tell_staff_if_needed(Declaration(pk=pk), now)
+        except Exception as exc:  # noqa: BLE001 - one claim never stops the others
+            logging.getLogger(__name__).error("staff letter for declaration #%s failed (%s)", pk, type(exc).__name__)
+    return told
 
 
 def _notify_staff(invoice: Invoice) -> None:

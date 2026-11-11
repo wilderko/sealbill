@@ -276,6 +276,7 @@ class EvmWrongMoneyTests(EvmBase):
     """Money that must never settle the invoice, whatever its amount says."""
 
     def test_a_token_not_on_the_allow_list_is_never_seen_even_when_declared(self):
+        clock = Clock(self)
         pk, pay = self.sent_invoice()
         quote = self.quote(pay, self.method, "arbitrum", "USDC")
         node = self.nodes["arbitrum"]
@@ -288,6 +289,10 @@ class EvmWrongMoneyTests(EvmBase):
         self.assertEqual(Declaration.objects.get(invoice_id=pk).state, "open")
         self.assertNotSettled(pk, pay, status="declared")
         self.assertEqual(Quote.objects.get(pk=quote.pk).state, "open")
+        # Nothing of ours in it: staff are e-mailed once the half hour to find it is over.
+        self.assertFalse(OutboxMessage.objects.filter(kind="declared_staff", invoice_id=pk).exists())
+        clock.advance(31 * 60)
+        self.work("declarations_verify")
         self.assertTrue(OutboxMessage.objects.filter(kind="declared_staff", invoice_id=pk).exists())
 
     def test_another_allow_listed_token_of_the_same_amount_goes_to_review(self):

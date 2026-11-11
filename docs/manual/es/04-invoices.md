@@ -74,7 +74,7 @@ Un cliente no paga en cripto «el importe de la factura»: paga una **cotizació
 
 ![Una cotización](../img/pay-quote.png)
 
-El cuadro **He pagado** permite al cliente comunicar un pago (red, hash de la transacción y una nota, todo opcional). La factura pasa a `declared` y aparece en Needs a person; un hash indicado se busca en la cadena. Una declaración es una afirmación, nunca dinero: por sí sola no liquida nada.
+El cuadro **He pagado** permite al cliente comunicar un pago (red, hash de la transacción y una nota, todo opcional). La factura pasa a `declared` y aparece en Needs a person; un hash indicado se busca en la cadena. Una declaración es una afirmación, nunca dinero: por sí sola no liquida nada. El personal recibe un correo solo cuando tiene que actuar: enseguida cuando solo una persona puede comprobar la declaración (sin hash, o en una red que el sistema no lee) o cuando el dinero de la transacción indicada fue a otra factura, y a la media hora cuando el hash no se encontró. Un hash cuyo dinero es de esta factura no envía correo: el pago se liquida solo, o pasa a revisión, que tiene su propio correo.
 
 ![Una factura con la declaración de un cliente](../img/invoice-declared.png)
 

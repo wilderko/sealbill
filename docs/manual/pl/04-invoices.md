@@ -74,7 +74,7 @@ Klient nie płaci w krypto „kwoty faktury": płaci **ofertę kursową** (quote
 
 ![Oferta kursowa](../img/pay-quote.png)
 
-Pole **Zgłaszam płatność** pozwala klientowi zgłosić płatność (sieć, skrót transakcji i notatka, wszystko opcjonalne). Faktura zmienia status na `declared` i trafia do Needs a person; podany skrót jest sprawdzany w łańcuchu. Zgłoszenie to twierdzenie, nigdy pieniądze: samo niczego nie rozlicza.
+Pole **Zgłaszam płatność** pozwala klientowi zgłosić płatność (sieć, skrót transakcji i notatka, wszystko opcjonalne). Faktura zmienia status na `declared` i trafia do Needs a person; podany skrót jest sprawdzany w łańcuchu. Zgłoszenie to twierdzenie, nigdy pieniądze: samo niczego nie rozlicza. Pracownicy dostają e-mail tylko wtedy, gdy muszą działać: od razu, gdy zgłoszenie może sprawdzić tylko człowiek (bez skrótu lub w sieci, której system nie czyta) albo gdy pieniądze z podanej transakcji trafiły do innej faktury, oraz po pół godzinie, gdy skrótu nie znaleziono. Skrót, którego pieniądze należą do tej faktury, nie wysyła e-maila: płatność rozlicza się sama albo trafia do weryfikacji, o której przychodzi osobny e-mail.
 
 ![Faktura ze zgłoszeniem klienta](../img/invoice-declared.png)
 

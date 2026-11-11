@@ -23,6 +23,9 @@ class Declaration(models.Model):
     # not be done, and when it was found among the transfers to our addresses.
     verify_attempts = models.PositiveIntegerField(default=0)
     verified_at = models.DateTimeField(null=True, blank=True)
+    # When staff were e-mailed about it, or found that they need not be: only a claim they must act
+    # on is mailed (`services.tell_staff_if_needed`, the owner's rule of 2026-11-11).
+    staff_told_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at", "-pk"]

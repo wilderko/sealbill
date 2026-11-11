@@ -32,7 +32,7 @@ from apps.invoices.pdf import _context, _logo_uri, format_money, render_invoice_
 from apps.invoices.services import SETTLED
 from apps.payments.matching import verify_declaration
 from apps.payments.models import Payment
-from apps.payments.services import TooManyDeclarations, declare_payment, remaining_minor
+from apps.payments.services import TooManyDeclarations, declare_payment, remaining_minor, tell_staff_if_needed
 from apps.quotes.errors import QuoteError
 from apps.quotes.models import Quote
 from apps.quotes.services import QUOTE_REQUEST_BUDGET_S, create_quote
@@ -372,5 +372,9 @@ def declare(request, invoice, token, lang):
         return _render_pay(request, invoice, token, lang, status=409)
     if tx_hash and network in NETWORKS:
         _verify_now(invoice, declaration, network, tx_hash)
+        try:  # found, but the money is another invoice's: staff are told now, not in half an hour
+            tell_staff_if_needed(declaration)
+        except Exception as exc:  # noqa: BLE001 - after the save nothing may become a 500; the job asks again
+            logger.info("declaration letter check did not finish (%s)", type(exc).__name__)
     suffix = f"?lang={lang}" if "lang" in request.GET else ""
     return redirect(f"/p/{token}/{suffix}")

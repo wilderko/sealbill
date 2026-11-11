@@ -74,7 +74,7 @@ Klient v kryptoměně neplatí „částku faktury": platí **kurzovou nabídku*
 
 ![Kurzová nabídka](../img/pay-quote.png)
 
-Pole **Oznámit platbu** umožňuje klientovi nahlásit platbu (síť, hash transakce a poznámku, vše volitelné). Faktura se stane `declared` a objeví se v Needs a person; zadaný hash se vyhledá na blockchainu. Prohlášení je tvrzení, ne peníze: samo nic nevyrovná.
+Pole **Oznámit platbu** umožňuje klientovi nahlásit platbu (síť, hash transakce a poznámku, vše volitelné). Faktura se stane `declared` a objeví se v Needs a person; zadaný hash se vyhledá na blockchainu. Prohlášení je tvrzení, ne peníze: samo nic nevyrovná. E-mail přijde zaměstnancům jen tehdy, když je třeba jednat: hned, když tvrzení může ověřit jen člověk (bez hashe nebo na síti, kterou systém nečte), nebo když peníze z uvedené transakce patří jiné faktuře, a po půl hodině, když se hash nenašel. Hash, jehož peníze patří této faktuře, e-mail nepošle: platba se vyrovná sama, nebo jde ke kontrole, o které přijde vlastní e-mail.
 
 ![Faktura s prohlášením klienta](../img/invoice-declared.png)
 

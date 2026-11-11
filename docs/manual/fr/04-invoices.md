@@ -74,7 +74,7 @@ Un client ne paie pas « le montant de la facture » en crypto : il paie un **de
 
 ![Un devis de change](../img/pay-quote.png)
 
-La zone **J'ai payé** permet au client de signaler un paiement (réseau, hachage de transaction et une note, le tout facultatif). La facture passe à `declared` et apparaît dans Needs a person ; un hachage fourni est recherché sur la chaîne. Une déclaration est une affirmation, jamais de l'argent : elle ne règle rien par elle-même.
+La zone **J'ai payé** permet au client de signaler un paiement (réseau, hachage de transaction et une note, le tout facultatif). La facture passe à `declared` et apparaît dans Needs a person ; un hachage fourni est recherché sur la chaîne. Une déclaration est une affirmation, jamais de l'argent : elle ne règle rien par elle-même. Le personnel reçoit un e-mail seulement quand il doit agir : tout de suite quand seule une personne peut vérifier la déclaration (sans hachage, ou sur un réseau que le système ne lit pas) ou quand l'argent de la transaction indiquée est allé à une autre facture, et au bout d'une demi-heure quand le hachage n'a pas été trouvé. Un hachage dont l'argent revient à cette facture n'envoie pas d'e-mail : le paiement se règle seul, ou passe en examen, qui a son propre e-mail.
 
 ![Une facture avec la déclaration d'un client](../img/invoice-declared.png)
 

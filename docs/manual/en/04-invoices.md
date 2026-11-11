@@ -102,7 +102,10 @@ A client does not pay "the invoice amount" in crypto: they pay a **quote**.
 
 The **I have paid** box lets a client report a payment (network, transaction hash and a note, all optional). The invoice
 becomes `declared` and appears in Needs a person; a hash that is given is looked up on the chain. A declaration is a
-claim, never money: it settles nothing by itself.
+claim, never money: it settles nothing by itself. Staff are e-mailed only when they have to act: at once when nothing
+but a person can check the claim (no hash, or a network the system does not read) or when the named transaction's money
+went to another invoice, and after half an hour when the hash was not found. A hash whose money is this invoice's sends
+no e-mail: the payment settles, or goes to review, which has a letter of its own.
 
 ![An invoice with a client's declaration](../img/invoice-declared.png)
 

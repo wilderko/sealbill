@@ -74,7 +74,7 @@ Ein Kunde zahlt in Krypto nicht „den Rechnungsbetrag": Er zahlt ein **Kursange
 
 ![Ein Kursangebot](../img/pay-quote.png)
 
-Mit dem Feld **Ich habe bezahlt** kann ein Kunde eine Zahlung melden (Netzwerk, Transaktions-Hash und eine Notiz, alles optional). Die Rechnung wird `declared` und erscheint in Needs a person; ein angegebener Hash wird auf der Chain nachgeschlagen. Eine Erklärung ist eine Behauptung, nie Geld: Sie begleicht von sich aus nichts.
+Mit dem Feld **Ich habe bezahlt** kann ein Kunde eine Zahlung melden (Netzwerk, Transaktions-Hash und eine Notiz, alles optional). Die Rechnung wird `declared` und erscheint in Needs a person; ein angegebener Hash wird auf der Chain nachgeschlagen. Eine Erklärung ist eine Behauptung, nie Geld: Sie begleicht von sich aus nichts. Mitarbeitende bekommen nur dann eine E-Mail, wenn sie handeln müssen: sofort, wenn nur ein Mensch die Behauptung prüfen kann (kein Hash oder ein Netzwerk, das das System nicht liest) oder wenn das Geld der genannten Transaktion an eine andere Rechnung ging, und nach einer halben Stunde, wenn der Hash nicht gefunden wurde. Ein Hash, dessen Geld zu dieser Rechnung gehört, schickt keine E-Mail: Die Zahlung begleicht sich selbst oder geht in die Prüfung, zu der eine eigene E-Mail kommt.
 
 ![Eine Rechnung mit Erklärung eines Kunden](../img/invoice-declared.png)
 
