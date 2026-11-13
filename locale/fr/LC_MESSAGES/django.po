@@ -1210,6 +1210,10 @@ msgstr "Rappel : demande de paiement %(ref)s de %(org)s"
 msgid "PAY by square (Slovakia)"
 msgstr "PAY by square (Slovaquie)"
 
+#: apps/invoices/bank_qr.py:46
+msgid "payme (Slovakia)"
+msgstr "payme (Slovaquie)"
+
 #: apps/invoices/bank_qr.py:37
 msgid "QR Platba (Czech Republic)"
 msgstr "QR Platba (Tchéquie)"
@@ -1222,6 +1226,10 @@ msgstr "QR code EPC (SEPA)"
 #, python-format
 msgid "%(standard)s: QR code with this transfer's details"
 msgstr "%(standard)s : QR code avec les détails de ce virement"
+
+#: templates/portal/pay.html:61
+msgid "Open in your banking app (payme)"
+msgstr "Ouvrir dans l’application bancaire (payme)"
 
 #: templates/portal/pay.html:63
 msgid "Scan one of these codes in your banking app: it fills in the account, the amount and the reference."

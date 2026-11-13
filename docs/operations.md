@@ -186,16 +186,30 @@ so the client scans instead of typing (`apps/invoices/bank_qr.py`):
 
 | Invoice | Account | Codes |
 |---|---|---|
-| EUR | IBAN of a SEPA country | PAY by square (Slovakia), QR Platba (Czech Republic), EPC QR / GiroCode (SEPA) |
+| EUR | IBAN of a SEPA country | PAY by square and payme (Slovakia), QR Platba (Czech Republic), EPC QR / GiroCode (SEPA) |
 | CZK | Czech IBAN | QR Platba |
 | anything else | | none |
 
-Each code carries the IBAN, the BIC when it is valid, the beneficiary, **the amount still due**, the
-currency and the payment reference. PAY by square and QR Platba also carry a variable symbol: the digits
-of the invoice number, when there are at most ten (`2026-0007` gives `20260007`). An IBAN outside SEPA gets
-no code at all, because a Slovak or Czech app would refuse it or turn it into a SWIFT payment with fees.
+Each code carries the IBAN, the BIC when it is valid (payme has no field for one), the beneficiary, **the
+amount still due**, the currency and the payment reference. PAY by square, payme and QR Platba also carry
+a variable symbol: the digits of the invoice number, when there are at most ten (`2026-0007` gives
+`20260007`). An IBAN outside SEPA gets no code at all, because a Slovak or Czech app would refuse it or
+turn it into a SWIFT payment with fees.
 PAY by square is written as version 1.1.0 and its encoder is pinned to the bysquare reference library's
 golden string (`apps/invoices/tests_bank_qr.py`). There is no setting to switch the codes off.
+
+**payme** is the Slovak Banking Association's newer standard (Payment Link Standard 2.0, payme.sk). The
+code is a web address, `https://payme.sk/2/p/PME?IBAN=…&AM=…&CC=EUR&PI=…&MSG=…&CN=…`, which a Slovak
+banking app opens as a filled-in transfer. So on a phone, where the client cannot scan their own screen,
+the pay page shows **Open in your banking app (payme)** above the codes. A computer with a mouse does not
+show the button, and on the PDF the payme code is a link. The link is built the way payme.sk's own
+generator builds an invoice: type `/p/` (a SEPA transfer the client can still edit), the variable symbol
+as `PI=/VS…/SS/KS` (the reference itself when there is no symbol), the reference as `MSG`, the beneficiary
+as `CN`, in the standard's recommended characters (diacritics dropped). Without a beneficiary name, or for
+more than 999 999.99 EUR, there is no payme code, because the standard does not allow one.
+Sealbill never contacts payme.sk. A phone whose banking app does not take payme links opens the address
+in the browser instead, and then payme.sk, run by the Slovak Banking Association, sees the transfer's
+details and shows them with a PAY by square code.
 
 ## Crypto rails
 

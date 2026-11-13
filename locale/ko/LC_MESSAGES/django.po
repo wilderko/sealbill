@@ -1172,6 +1172,10 @@ msgstr "결제 안내: %(org)s의 결제 요청 %(ref)s"
 msgid "PAY by square (Slovakia)"
 msgstr "PAY by square (슬로바키아)"
 
+#: apps/invoices/bank_qr.py:46
+msgid "payme (Slovakia)"
+msgstr "payme (슬로바키아)"
+
 #: apps/invoices/bank_qr.py:37
 msgid "QR Platba (Czech Republic)"
 msgstr "QR Platba (체코)"
@@ -1184,6 +1188,10 @@ msgstr "EPC QR 코드 (SEPA)"
 #, python-format
 msgid "%(standard)s: QR code with this transfer's details"
 msgstr "%(standard)s: 이 이체 정보가 담긴 QR 코드"
+
+#: templates/portal/pay.html:61
+msgid "Open in your banking app (payme)"
+msgstr "은행 앱에서 열기 (payme)"
 
 #: templates/portal/pay.html:63
 msgid "Scan one of these codes in your banking app: it fills in the account, the amount and the reference."

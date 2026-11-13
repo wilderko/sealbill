@@ -1,5 +1,7 @@
-"""Bank-transfer QR codes: PAY by square (Slovakia), QR Platba (Czech Republic), EPC QR (SEPA)."""
+"""Bank-transfer QR codes: PAY by square and payme (Slovakia), QR Platba (Czech Republic), EPC QR (SEPA)."""
+import re
 from decimal import Decimal
+from urllib.parse import parse_qs, urlsplit
 
 from django.test import SimpleTestCase
 
@@ -99,6 +101,55 @@ class IbanTests(SimpleTestCase):
         self.assertEqual(bank_qr.variable_symbol(""), "")
 
 
+PAYME_IBAN = "SK6807200002891987426353"  # the Payment Link Standard 2.0's example account
+
+
+class PaymeTests(SimpleTestCase):
+    """The Slovak Banking Association's Payment Link Standard 2.0 (payme.sk/en/docs/Payment_Link_standard_2_0.pdf)."""
+
+    def link(self, **kw):
+        args = {"iban": PAYME_IBAN, "amount": Decimal("8.59"), "message": "Thank you for lunch",
+                "variable_symbol": "", "beneficiary_name": "Alice Payee", **kw}
+        return bank_qr.payme(**args)
+
+    def test_the_standards_person_to_person_example(self):
+        # §4.1.1, without the due date: payme.sk's own generator builds an invoice as type /p/.
+        self.assertEqual(self.link(), "https://payme.sk/2/p/PME?IBAN=SK6807200002891987426353&AM=8.59&CC=EUR"
+                                      "&MSG=Thank+you+for+lunch&CN=Alice+Payee")
+
+    def test_a_variable_symbol_goes_into_the_payment_identification_as_payme_sk_writes_it(self):
+        url = self.link(variable_symbol="2546874464")
+        self.assertIn("&PI=%2FVS2546874464%2FSS%2FKS&", url)  # /VS…/SS/KS, the generator's canonical form
+        self.assertEqual(parse_qs(urlsplit(url).query)["PI"], ["/VS2546874464/SS/KS"])
+
+    def test_without_a_variable_symbol_the_reference_is_the_payment_identification(self):
+        url = self.link(payment_id="RF6320260007")
+        self.assertEqual(parse_qs(urlsplit(url).query)["PI"], ["RF6320260007"])
+
+    def test_a_reference_that_breaks_the_slash_rules_is_left_out_of_the_payment_identification(self):
+        for ref in ("/abc", "abc/", "a//b", "x" * 36):
+            with self.subTest(ref=ref):
+                self.assertNotIn("PI", parse_qs(urlsplit(self.link(payment_id=ref)).query))
+
+    def test_the_amount_has_two_decimals_and_at_most_nine_characters(self):
+        self.assertIn("&AM=100.00&", self.link(amount=Decimal("100")))
+        self.assertIn("&AM=999999.99&", self.link(amount=Decimal("999999.99")))
+        self.assertIsNone(self.link(amount=Decimal("1000000")))
+        self.assertIsNone(self.link(amount=Decimal("0")))
+
+    def test_the_creditors_name_is_mandatory(self):
+        self.assertIsNone(self.link(beneficiary_name="  "))
+
+    def test_text_keeps_to_the_recommended_characters(self):
+        q = parse_qs(urlsplit(self.link(message="Faktúra č. 7 & spol.", beneficiary_name="Žltý kôň s.r.o.")).query)
+        self.assertEqual(q["CN"], ["Zlty kon s.r.o."])
+        self.assertEqual(q["MSG"], ["Faktura c. 7 spol."])
+
+    def test_lengths_follow_the_standard(self):
+        q = parse_qs(urlsplit(self.link(message="m" * 200, beneficiary_name="n" * 100)).query)
+        self.assertEqual((len(q["MSG"][0]), len(q["CN"][0])), (140, 70))
+
+
 class CodesForTests(SimpleTestCase):
     def method(self, **kw):
         return {"kind": "bank", "account_number": SK_IBAN, "bank_swift": "TATRSKBX",
@@ -108,8 +159,19 @@ class CodesForTests(SimpleTestCase):
         return [c["standard"] for c in bank_qr.codes_for(method, amount_minor=amount_minor, currency=currency,
                                                          reference="RF6320260007", invoice_number="2026-0007")]
 
-    def test_a_eur_account_gets_all_three(self):
-        self.assertEqual(self.standards(self.method()), ["pay_by_square", "qr_platba", "epc"])
+    def test_a_eur_account_gets_all_four(self):
+        self.assertEqual(self.standards(self.method()), ["pay_by_square", "payme", "qr_platba", "epc"])
+
+    def test_payme_needs_the_beneficiarys_name(self):
+        self.assertEqual(self.standards(self.method(beneficiary_name="")), ["pay_by_square", "qr_platba"])
+
+    def test_only_payme_is_a_link_the_page_can_open(self):
+        codes = bank_qr.codes_for(self.method(), amount_minor=133700, currency="EUR",
+                                  reference="RF6320260007", invoice_number="2026-0007")
+        links = {c["standard"]: c.get("link") for c in codes}
+        self.assertEqual(links["payme"], next(c["text"] for c in codes if c["standard"] == "payme"))
+        self.assertTrue(links["payme"].startswith("https://payme.sk/2/p/PME?IBAN=" + SK_IBAN + "&AM=1337.00&CC=EUR"))
+        self.assertEqual([k for k, v in links.items() if v], ["payme"])
 
     def test_a_czk_account_gets_qr_platba_only(self):
         self.assertEqual(self.standards(self.method(account_number=CZ_IBAN), currency="CZK"), ["qr_platba"])
@@ -158,13 +220,33 @@ class PayPageAndPdfTests(UnsealedVaultMixin, TestCase):
                                 lines=[{"name": "Service", "quantity": 1, "unit_price_minor": 133700}])
         return send_invoice(inv)
 
-    def test_the_pay_page_shows_the_three_codes_for_a_eur_iban(self):
+    def test_the_pay_page_shows_the_four_codes_for_a_eur_iban(self):
         invoice, _view, pay = self.sent(SK_IBAN)
         r = self.client.get(f"/p/{pay}/?lang=en")
         self.assertContains(r, 'class="bank-qr"')
-        self.assertContains(r, "data:image/svg+xml;base64,", count=3)
-        for label in ("PAY by square (Slovakia)", "QR Platba (Czech Republic)", "EPC QR (SEPA)"):
+        self.assertContains(r, "data:image/svg+xml;base64,", count=4)
+        for label in ("PAY by square (Slovakia)", "payme (Slovakia)", "QR Platba (Czech Republic)", "EPC QR (SEPA)"):
             self.assertContains(r, label)
+
+    def test_the_pay_page_opens_the_payme_link_in_the_banking_app(self):
+        # On a phone the client cannot scan their own screen: the payme link opens the banking app instead.
+        # noreferrer, because the pay page's address is the client's capability link.
+        from html import unescape
+
+        invoice, _view, pay = self.sent(SK_IBAN)
+        r = self.client.get(f"/p/{pay}/?lang=en")
+        html = r.content.decode()
+        (href,) = re.findall(r'<a class="btn[^"]*" href="(https://payme\.sk/[^"]+)" rel="noopener noreferrer"', html)
+        q = parse_qs(urlsplit(unescape(href)).query)
+        self.assertEqual((q["IBAN"], q["AM"], q["CC"], q["CN"]), ([SK_IBAN], ["1337.00"], ["EUR"], ["Seller s.r.o."]))
+        self.assertEqual(q["PI"], [f"/VS{bank_qr.variable_symbol(invoice.number)}/SS/KS"])
+        self.assertContains(r, "Open in your banking app (payme)")
+
+    def test_a_czk_invoice_has_no_payme_link(self):
+        _invoice, _view, pay = self.sent(CZ_IBAN, currency="CZK")
+        r = self.client.get(f"/p/{pay}/?lang=en")
+        self.assertContains(r, "QR Platba (Czech Republic)")
+        self.assertNotContains(r, "payme.sk")
 
     def test_the_codes_carry_the_amount_due_and_the_reference(self):
         from apps.invoices.pdf import _context
@@ -177,6 +259,7 @@ class PayPageAndPdfTests(UnsealedVaultMixin, TestCase):
         self.assertEqual((fields[3], fields[4], fields[10]), ("1337", "EUR", payment_reference(invoice)))
         self.assertIn("EUR1337.00", by["epc"])
         self.assertIn("AM:1337.00*CC:EUR", by["qr_platba"])
+        self.assertEqual(parse_qs(urlsplit(by["payme"]).query)["MSG"], [payment_reference(invoice)])
 
     def test_an_account_that_is_not_an_iban_shows_no_code(self):
         _invoice, _view, pay = self.sent("0123456789/0100")
@@ -198,4 +281,9 @@ class PayPageAndPdfTests(UnsealedVaultMixin, TestCase):
         reader = PdfReader(io.BytesIO(render_invoice_pdf(invoice, "en")))
         text = "\n".join(p.extract_text() for p in reader.pages)
         self.assertIn("PAY by square (Slovakia)", text)
+        self.assertIn("payme (Slovakia)", text)
+        links = [a["/A"]["/URI"] for p in reader.pages for a in (o.get_object() for o in p.get("/Annots", []))
+                 if a.get("/A", {}).get("/URI")]
+        # The payme code is clickable (WeasyPrint may give one link several boxes); nothing else is a link.
+        self.assertEqual({u.split("?")[0] for u in links}, {"https://payme.sk/2/p/PME"})
         self.assertIn("EPC QR (SEPA)", text)

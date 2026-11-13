@@ -70,9 +70,11 @@ The payment box has up to three tabs, **crypto first**:
 - **Pay with crypto**: the client picks a network and a token, for example "USDC on Arbitrum One".
 - **Bank transfer**: the bank account of the invoice's currency (beneficiary, account number, bank, amount, each with a
   copy button), the **payment reference** (an ISO 11649 reference such as `RF3120260001`) and your instructions in the
-  client's language. For EUR to the IBAN of a SEPA country three QR codes are added (PAY by square, QR Platba and EPC
-  QR), for CZK to a Czech IBAN the QR Platba code: the client scans one in their banking app, and the account, the
-  amount still due and the reference are filled in. The PDF invoice prints the same codes.
+  client's language. For EUR to the IBAN of a SEPA country four QR codes are added (PAY by square, payme, QR Platba and
+  EPC QR), for CZK to a Czech IBAN the QR Platba code: the client scans one in their banking app, and the account, the
+  amount still due and the reference are filled in. On a phone, where there is nothing to scan, the client taps **Open
+  in your banking app (payme)** instead, and a Slovak banking app opens with the transfer filled in. The PDF invoice
+  prints the same codes, and its payme code is also a link.
 - **Online payment**: the fiat links (Revolut, PayPal and so on).
 
 ![Bank transfer](../img/pay-bank.png)

@@ -1,9 +1,9 @@
-"""QR codes a banking app reads to fill in a bank transfer: PAY by square (Slovakia), QR Platba
-(SPAYD, Czech Republic) and the EPC QR code (GiroCode, SEPA).
+"""QR codes a banking app reads to fill in a bank transfer: PAY by square and payme (Slovakia), QR
+Platba (SPAYD, Czech Republic) and the EPC QR code (GiroCode, SEPA).
 
 Each code carries the account, the amount still due, the currency and the payment reference, so
 the client has nothing to type. A code is offered only where its standard fits: EUR to the IBAN of
-a SEPA country gets all three, CZK to a Czech IBAN gets QR Platba. Anything else gets none, because
+a SEPA country gets all four, CZK to a Czech IBAN gets QR Platba. Anything else gets none, because
 a banking app would refuse such a code or turn it into a SWIFT payment with fees. Bank transfers are still recorded by a person (Sealbill does not read the bank):
 the codes only make the transfer easier to get right.
 
@@ -13,6 +13,14 @@ two-byte header and the payload length, in base32hex without padding. It is writ
 1.1.0, which every Slovak banking app reads; 1.2.0 differs only in the header and in requiring the
 beneficiary's name, which these codes always carry. EPC follows EPC069-12 (version 002, UTF-8,
 SEPA credit transfer), QR Platba the Czech Banking Association's SPAYD 1.0.
+
+payme is the Slovak Banking Association's Payment Link Standard 2.0: a web address on payme.sk that a
+Slovak banking app opens as a payment order, so it works as a link on a phone as well as a QR code. A
+phone whose banking app does not take payme links opens the address in the browser, and payme.sk then
+shows the details with a PAY by square code: in that case, and only then, payme.sk sees the transfer.
+Sealbill itself never calls payme.sk. The link is built the way payme.sk's own generator builds an
+invoice: type /p/ (an ordinary SEPA transfer the client can still edit), the variable symbol in the
+payment identification as /VS…/SS/KS (the reference when there is no symbol), the reference as the message.
 """
 import binascii
 import lzma
@@ -20,6 +28,7 @@ import re
 import struct
 import unicodedata
 from decimal import Decimal
+from urllib.parse import quote_plus, urlencode
 
 from django.utils.translation import gettext_lazy as _
 
@@ -34,6 +43,7 @@ SEPA_COUNTRIES = frozenset(
 
 LABELS = {
     "pay_by_square": _("PAY by square (Slovakia)"),
+    "payme": _("payme (Slovakia)"),
     "qr_platba": _("QR Platba (Czech Republic)"),
     "epc": _("EPC QR (SEPA)"),
 }
@@ -133,6 +143,41 @@ def pay_by_square(*, iban: str, bic: str, amount: Decimal, currency: str, note: 
     return encode_pay_by_square("\t".join(fields), version=1)
 
 
+# -- payme (Payment Link Standard 2.0) ---------------------------------------------------------------
+
+PAYME_BASE = "https://payme.sk/2/p/PME"   # version 2, person-to-person type (invoices too), payme.sk scheme
+_PAYME_DROP = re.compile(r"[^A-Za-z0-9/\-?:().,'+ ]")  # Annex A, the recommended characters
+
+
+def _payme_text(text, limit: int) -> str:
+    """`text` in the standard's recommended characters (Annex A), diacritics off, at most `limit` long."""
+    return re.sub(r" {2,}", " ", _PAYME_DROP.sub("", deburr(text))).strip()[:limit].strip()
+
+
+def payme(*, iban: str, amount: Decimal, message: str, variable_symbol: str, beneficiary_name: str,
+          payment_id: str = "") -> str | None:
+    """The payme link for one EUR transfer, or None when the standard does not allow it (no creditor's
+    name, an amount over nine characters). The payment identification is the variable symbol as
+    /VS…/SS/KS, or else `payment_id` when it keeps to the identification's rules (at most 35 characters,
+    no slash at either end, no double slash)."""
+    name = _payme_text(beneficiary_name, 70)
+    am = f"{amount:.2f}"
+    if not name or amount <= 0 or len(am) > 9:
+        return None
+    msg = _payme_text(message, 140)
+    if variable_symbol:
+        pi = f"/VS{variable_symbol}/SS/KS"
+    else:
+        pi = _payme_text(payment_id, 999)
+        if len(pi) > 35 or pi.startswith("/") or pi.endswith("/") or "//" in pi:
+            pi = ""
+    query = [("IBAN", iban), ("AM", am), ("CC", "EUR")]
+    query += [("PI", pi)] if pi else []
+    query += [("MSG", msg)] if msg else []
+    query.append(("CN", name))
+    return PAYME_BASE + "?" + urlencode(query, quote_via=quote_plus)
+
+
 # -- EPC QR (GiroCode) -------------------------------------------------------------------------------
 
 def epc_qr(*, iban: str, bic: str, amount: Decimal, beneficiary_name: str, reference: str) -> str | None:
@@ -175,7 +220,8 @@ def spayd(*, iban: str, bic: str, amount: Decimal, currency: str, message: str, 
 def codes_for(method: dict, *, amount_minor: int, currency: str, reference: str, invoice_number: str) -> list[dict]:
     """The QR codes for one bank method (a snapshot dict), for `amount_minor` still due in `currency`.
 
-    Each is {"standard", "label", "text", "image"}; an empty list when none fits."""
+    Each is {"standard", "label", "text", "image", "link"}, where `link` is the text again when the code is
+    a web address a phone can open (payme) and empty otherwise; an empty list when none fits."""
     from apps.invoices.currencies import minor_units
     from apps.portal.qr import qr_data_uri
 
@@ -193,9 +239,12 @@ def codes_for(method: dict, *, amount_minor: int, currency: str, reference: str,
     if currency == "EUR":
         texts.append(("pay_by_square", pay_by_square(iban=iban, bic=bic, amount=amount, currency=currency,
                                                      note=reference, variable_symbol=vs, beneficiary_name=name)))
+        texts.append(("payme", payme(iban=iban, amount=amount, message=reference, variable_symbol=vs,
+                                     beneficiary_name=name, payment_id=reference)))
     texts.append(("qr_platba", spayd(iban=iban, bic=bic, amount=amount, currency=currency, message=reference,
                                      variable_symbol=vs, beneficiary_name=name)))
     if currency == "EUR":
         texts.append(("epc", epc_qr(iban=iban, bic=bic, amount=amount, beneficiary_name=name, reference=reference)))
-    return [{"standard": key, "label": LABELS[key], "text": text, "image": qr_data_uri(text)}
+    return [{"standard": key, "label": LABELS[key], "text": text, "image": qr_data_uri(text),
+             "link": text if key == "payme" else ""}
             for key, text in texts if text]

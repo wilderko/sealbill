@@ -53,7 +53,7 @@ Počítají se jen **potvrzené** platby. Odeslanou fakturu už nelze upravit: j
 Platební okno má až tři záložky, **krypto první**:
 
 - **Platba kryptoměnou**: klient vybere síť a token, např. „USDC on Arbitrum One".
-- **Bankovní převod**: bankovní účet v měně faktury (příjemce, číslo účtu, banka, částka, každé s tlačítkem kopírování), **referenční číslo platby** (reference ISO 11649, např. `RF3120260001`) a vaše pokyny v jazyce klienta. U EUR na IBAN země SEPA přibudou tři QR kódy (PAY by square, QR Platba a EPC QR), u CZK na český IBAN kód QR Platba: klient jeden naskenuje v bankovní aplikaci a účet, zbývající částka i reference se vyplní samy. Stejné kódy jsou vytištěny i na PDF faktuře.
+- **Bankovní převod**: bankovní účet v měně faktury (příjemce, číslo účtu, banka, částka, každé s tlačítkem kopírování), **referenční číslo platby** (reference ISO 11649, např. `RF3120260001`) a vaše pokyny v jazyce klienta. U EUR na IBAN země SEPA přibudou čtyři QR kódy (PAY by square, payme, QR Platba a EPC QR), u CZK na český IBAN kód QR Platba: klient jeden naskenuje v bankovní aplikaci a účet, zbývající částka i reference se vyplní samy. Na telefonu, kde není co skenovat, klient místo toho klepne na **Otevřít v bankovní aplikaci (payme)** a otevře se mu slovenská bankovní aplikace s vyplněným převodem. Stejné kódy jsou vytištěny i na PDF faktuře a kód payme je v ní zároveň odkazem.
 - **Online platba**: fiat odkazy (Revolut, PayPal apod.).
 
 ![Bankovní převod](../img/pay-bank.png)

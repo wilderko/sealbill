@@ -16,7 +16,7 @@
   <div>{% translate "Intermediary bank" %}: {{ m.intermediary_bank_name }}{% if m.intermediary_swift %} · SWIFT {{ m.intermediary_swift }}{% endif %}{% if m.intermediary_account %} · {% translate "Account" %} {{ m.intermediary_account }}{% endif %}</div>
   {% endif %}
   {% if m.instructions %}<div class="pre">{{ m.instructions }}</div>{% endif %}
-  {% if m.qr_codes %}<div class="bank-qr">{% for c in m.qr_codes %}<div class="bank-qr__item"><img src="{{ c.image }}" alt=""><div class="bank-qr__label">{{ c.label }}</div></div>{% endfor %}</div>{% endif %}
+  {% if m.qr_codes %}<div class="bank-qr">{% for c in m.qr_codes %}<div class="bank-qr__item">{% if c.link %}<a href="{{ c.link }}"><img src="{{ c.image }}" alt=""></a>{% else %}<img src="{{ c.image }}" alt="">{% endif %}<div class="bank-qr__label">{{ c.label }}</div></div>{% endfor %}</div>{% endif %}
 {% else %}
   <strong>{{ m.label }}</strong>
   {% if m.url %}<div>{{ m.url }}</div>{% endif %}

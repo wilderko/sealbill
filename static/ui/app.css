@@ -700,7 +700,10 @@ form.htmx-request button.choice::after {
 .quote-qr .qr { display: block; width: 168px; height: 168px; }
 /* Bank-transfer QR codes (PAY by square, QR Platba, EPC): one row of up to three, white behind each code.
    On a phone they shrink rather than wrap: the client there saves one, a scan needs another screen. */
-.bank-qr { display: grid; grid-template-columns: repeat(3, minmax(0, 156px)); gap: 8px; margin: 14px 0 10px; }
+.bank-qr { display: grid; grid-template-columns: repeat(2, minmax(0, 156px)); gap: 8px; margin: 14px 0 10px; }
+.payme-open { margin: 14px 0 0; }
+/* The payme link opens a banking app, which a computer with a mouse does not have: there the codes are scanned. */
+@media (hover: hover) and (pointer: fine) { .payme-open { display: none; } }
 .bank-qr__item { min-width: 0; margin: 0; padding: 8px 8px 6px; border-radius: var(--r); background: #ffffff; border: 1px solid var(--line); text-align: center; }
 .bank-qr__item .qr { display: block; width: 100%; height: auto; aspect-ratio: 1; }
 .bank-qr__item figcaption { margin-top: 6px; font-size: 0.75rem; line-height: 1.3; color: #3a4252; overflow-wrap: anywhere; }

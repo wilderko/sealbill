@@ -53,7 +53,7 @@ Die **Rechnungsseite** `/i/…` zeigt das Dokument, ein PDF zum Herunterladen un
 Der Zahlungsbereich hat bis zu drei Reiter, **Krypto zuerst**:
 
 - **Mit Kryptowährung bezahlen**: Der Kunde wählt ein Netzwerk und einen Token, zum Beispiel „USDC on Arbitrum One".
-- **Banküberweisung**: das Bankkonto der Rechnungswährung (Begünstigter, Kontonummer, Bank, Betrag, jeweils mit Kopierschaltfläche), die **Zahlungsreferenz** (eine ISO-11649-Referenz wie `RF3120260001`) und Ihre Hinweise in der Sprache des Kunden. Bei EUR an die IBAN eines SEPA-Landes kommen drei QR-Codes hinzu (PAY by square, QR Platba und EPC-QR), bei CZK an eine tschechische IBAN der QR-Platba-Code: Der Kunde scannt einen davon in seiner Banking-App, und Konto, offener Betrag und Referenz sind ausgefüllt. Die PDF-Rechnung druckt dieselben Codes.
+- **Banküberweisung**: das Bankkonto der Rechnungswährung (Begünstigter, Kontonummer, Bank, Betrag, jeweils mit Kopierschaltfläche), die **Zahlungsreferenz** (eine ISO-11649-Referenz wie `RF3120260001`) und Ihre Hinweise in der Sprache des Kunden. Bei EUR an die IBAN eines SEPA-Landes kommen vier QR-Codes hinzu (PAY by square, payme, QR Platba und EPC-QR), bei CZK an eine tschechische IBAN der QR-Platba-Code: Der Kunde scannt einen davon in seiner Banking-App, und Konto, offener Betrag und Referenz sind ausgefüllt. Auf dem Handy, wo es nichts zu scannen gibt, tippt der Kunde stattdessen auf **In der Banking-App öffnen (payme)**, und eine slowakische Banking-App öffnet sich mit ausgefüllter Überweisung. Die PDF-Rechnung druckt dieselben Codes, und ihr payme-Code ist zugleich ein Link.
 - **Online-Zahlung**: die Fiat-Links (Revolut, PayPal und so weiter).
 
 ![Banküberweisung](../img/pay-bank.png)

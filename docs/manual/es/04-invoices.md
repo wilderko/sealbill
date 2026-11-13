@@ -53,7 +53,7 @@ La **página de la factura** `/i/…` muestra el documento, un PDF para descarga
 El cuadro de pago tiene hasta tres pestañas, **cripto primero**:
 
 - **Pagar con criptomonedas**: el cliente elige una red y un token, por ejemplo «USDC on Arbitrum One».
-- **Transferencia bancaria**: la cuenta bancaria de la moneda de la factura (beneficiario, número de cuenta, banco, importe, cada uno con botón de copiar), la **referencia de pago** (una referencia ISO 11649 como `RF3120260001`) y sus instrucciones en el idioma del cliente. En EUR a un IBAN de un país SEPA se añaden tres códigos QR (PAY by square, QR Platba y EPC QR), en CZK a un IBAN checo el código QR Platba: el cliente escanea uno en su aplicación bancaria y la cuenta, el importe pendiente y la referencia se rellenan solos. La factura en PDF imprime los mismos códigos.
+- **Transferencia bancaria**: la cuenta bancaria de la moneda de la factura (beneficiario, número de cuenta, banco, importe, cada uno con botón de copiar), la **referencia de pago** (una referencia ISO 11649 como `RF3120260001`) y sus instrucciones en el idioma del cliente. En EUR a un IBAN de un país SEPA se añaden cuatro códigos QR (PAY by square, payme, QR Platba y EPC QR), en CZK a un IBAN checo el código QR Platba: el cliente escanea uno en su aplicación bancaria y la cuenta, el importe pendiente y la referencia se rellenan solos. En el móvil, donde no hay nada que escanear, el cliente pulsa en cambio **Abrir en la aplicación del banco (payme)** y se abre una aplicación bancaria eslovaca con la transferencia rellenada. La factura en PDF imprime los mismos códigos, y su código payme es además un enlace.
 - **Pago en línea**: los enlaces fiat (Revolut, PayPal y demás).
 
 ![Transferencia bancaria](../img/pay-bank.png)
